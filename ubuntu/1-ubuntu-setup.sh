@@ -38,30 +38,6 @@ set -euo pipefail
 
 
 # ------------------------------------------------------------------------------
-# https://cn.ubuntu.com/pro
-sudo pro attach C1fNYhSKakFcaXf77wgse9XF725K6
-sudo pro enable esm-apps esm-infra livepatch
-# pro status --all
-# ------------------------------------------------------------------------------
-
-
-# ------------------------------------------------------------------------------
-# apt list --installed | grep program_name
-# 一些软件源配置可被改进为现代化的配置方法。请运行“apt modernize-sources”来进行此操作
-sudo apt modernize-sources -y
-# 🏆 最佳实践，完美组合
-# 更新 APT 包列表、升级 APT 包、 删除无用依赖、清理无效缓存
-sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean -y
-# 更新 Flatpak 应用、更新 Snap 应用
-# sudo flatpak update -y && sudo snap refresh
-# 查看可以升级的软件包	apt list --upgradable
-# 配置文件残留处理
-# sudo apt autoremove --purge
-# sudo apt purge -y gnome-shell-extension-desktop-icons-ng
-# ------------------------------------------------------------------------------
-
-
-# ------------------------------------------------------------------------------
 # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
 # gsettings list-schemas
 # gsettings list-schemas | grep 'org.gnome.shell.extensions'
@@ -88,10 +64,10 @@ gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 40
 # 开启夜灯
 gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
 
-# 配置 Ubuntu Dock (自定义Dock栏)
-gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
 # 取消面板模式，改为类似 MacOS 系统的 Dock 栏模式
 gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
+# 配置 Ubuntu Dock (自定义Dock栏)
+gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
 # 智能隐藏 Dock 栏
 gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
 gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
@@ -107,13 +83,37 @@ gnome-extensions disable ding@rastersoft.com
 
 
 # ------------------------------------------------------------------------------
+# apt list --installed | grep program_name
+# 一些软件源配置可被改进为现代化的配置方法。请运行“apt modernize-sources”来进行此操作
+sudo apt modernize-sources -y
+# 🏆 最佳实践，完美组合
+# 更新 APT 包列表、升级 APT 包、 删除无用依赖、清理无效缓存
+sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean -y
+# 更新 Flatpak 应用、更新 Snap 应用
+# sudo flatpak update -y && sudo snap refresh
+# 查看可以升级的软件包	apt list --upgradable
+# 配置文件残留处理
+# sudo apt autoremove --purge
+# sudo apt purge -y gnome-shell-extension-desktop-icons-ng
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# https://cn.ubuntu.com/pro
+sudo pro attach C1fNYhSKakFcaXf77wgse9XF725K6
+sudo pro enable esm-apps esm-infra livepatch
+# pro status --all
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
 # build-essential 本质上是一个“元包”，本身不包含内容，而是依赖一系列具体的软件包。
 # 因此，通过 APT 查询它的依赖关系，就能知道它会安装什么
 # 包含：gcc, g++, make, libc6-dev, dpkg-dev 等
 # 使用 APT 包管理器查询依赖关系 apt-cache depends build-essential
 sudo apt install -y \
 git fastfetch wl-clipboard \
-build-essential cmake npm \
+build-essential cmake \
 curl wget file net-tools \
 libxdo-dev libssl-dev \
 libwebkit2gtk-4.1-dev \
