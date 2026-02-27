@@ -91,6 +91,9 @@ install_vpn() {
     sudo apt install -y ./FlClash-0.8.92-linux-amd64.deb
     sudo apt install -y ./v2rayN-linux-64.deb
     
+    # 配置文件残留处理
+    # sudo apt purge -y flclash
+    
     
     if [ ! -d "WhiteSur-*" ]; then
         install_themes_and_icons
