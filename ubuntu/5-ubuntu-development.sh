@@ -1,0 +1,246 @@
+#!/bin/bash
+# ==============================================================================
+# 脚本名称: 5-ubuntu-development.sh
+# 功能描述：自动安装并配置常用字体、主题、图标、光标
+# 适用系统：Ubuntu / Debian 系列 (bash)
+# 作者：龙茶清欢 (基于用户背景定制)
+# 使用方法：chmod +x 5-ubuntu-development.sh && ./5-ubuntu-development.sh
+# ==============================================================================
+
+# Ubuntu 操作系统 ISO 阿里云和中科大加速下载网址：
+# https://mirrors.aliyun.com/ubuntu-cdimage/releases/
+# https://mirrors.ustc.edu.cn/ubuntu-cdimage/releases/
+# cd ~/下载 && git clone https://cdn.gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
+# cd ~/文档/linux-setup && git add . && git commit -m 'backup' && git push
+
+# ------------------------------------------------------------------------------
+# 1. 安全与规范设置 (Best Practices)
+# ------------------------------------------------------------------------------
+# set -e: 遇到错误立即退出，防止错误级联
+# set -u: 使用未定义变量时报错，避免隐式空值
+# set -o pipefail: 管道中任一命令失败则整个管道失败
+set -euo pipefail
+
+
+# 🏆 最佳实践，完美组合
+# 更新 APT 包列表、升级 APT 包、 删除无用依赖、清理无效缓存
+sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean -y
+
+
+# ------------------------------------------------------------------------------
+# 通过 apt 安装 (推荐)
+# https://ubuntu.com/toolchains
+sudo apt install -y default-jdk maven
+echo "🐍 你刚安装的 java 版本号为：$(java --version)"
+echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
+# whereis maven
+# nautilus admin:/usr/share/maven
+# 配置 maven 阿里云 aliyun 加速镜像	https://maven.aliyun.com/mvn/guide
+cat << EOF | tee -a $HOME/.m2/settings.xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+
+  <mirrors>
+    <mirror>
+      <id>aliyunmaven</id>
+      <mirrorOf>*</mirrorOf>
+      <name>阿里云公共仓库</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+  </mirrors>
+
+</settings>
+EOF
+
+# 安装对应的代码编辑器
+sudo snap install --classic intellij-idea
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# 第七步：安装 Rust
+echo "🦀 安装 Rust..."
+# Rust Web 常用的框架 Axum 目前排名性能总榜 7，需要使用 pg 数据库，数据来自性能测试网站	https://www.techempower.com/benchmarks 
+# 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
+# 配置 crates.io 国内中科大 ustc 加速镜像源	 https://mirrors.ustc.edu.cn/help/crates.io-index.html
+
+# 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新。
+# 配置 Rust Toolchain 反向代理 	https://developer.aliyun.com/mirror/rustup
+# 指定 rustup 自身更新元数据的地址（即 rustup 如何检查自身版本、下载新版本）
+echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup' >> ~/.bash_profile
+# 指定 Rust 工具链和组件的下载地址（如 rustc,cargo,rust-std 等）
+echo 'export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup' >> ~/.bash_profile
+source ~/.bash_profile
+# cat ~/.bash_profile
+
+# 用 shell 执行从标准输入来的脚本，并把 -y 作为参数传给那个脚本，告诉它：自动安装，不要问我！
+# 自动确认所有提示，使用默认设置安装（相当于 yes）
+# 使用阿里云安装脚本
+curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
+# 使用官方安装脚本
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# 激活 Rust 环境
+. "$HOME/.cargo/env"
+
+# rustup update
+# 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
+mkdir -vp ${CARGO_HOME:-$HOME/.cargo}
+
+cat << EOF | tee -a ${CARGO_HOME:-$HOME/.cargo}/config.toml
+# 配置 Cargo 国内加速镜像源，可选：aliyun、ustc、tuna 此处默认选择 aliyun
+# 使用稀疏协议（sparse）减少元数据下载量，大幅加速
+[source.crates-io]
+replace-with = 'aliyun'
+
+# aliyun 阿里云 crates.io 镜像	https://developer.aliyun.com/mirror/rustup 
+[source.aliyun]
+registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+[registries.aliyun]
+index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+
+# ustc 中科大 crates.io 镜像 	https://mirrors.ustc.edu.cn/help/crates.io-index.html
+[source.ustc]
+registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+[registries.ustc]
+index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+EOF
+
+# 安装对应的代码编辑器
+sudo snap install --classic rustrover android-studio
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# 第六步：安装 Go 语言
+echo "🐹 安装 Go 语言..."
+# Go 国内加速镜像	https://learnku.com/go/wikis/38122
+# golang 中文学习文档	https://golang.halfiisland.com/
+# golang 官方网站	https://golang.google.cn/
+# golang 公共软件包仓库	https://pkg.go.dev/
+sudo apt install -y golang-go
+echo "🐍 你刚安装的 golang 版本号为：$(go version)"
+# Go 1.13+：默认启用，无需额外配置。但使用  go env GO111MODULE 显示为空
+# 并不代表 Go Modules 未开启，而是表示你没有显式配置该变量，Go 将使用内部默认值
+# 设置为 auto（推荐，Go 1.13+ 默认逻辑）
+# go env -w GO111MODULE=auto
+# 或者强制开启 Go Modules 功能
+go env -w GO111MODULE=on
+# 1. 设置模块代理（加速下载）
+# 阿里云Go Module代理仓库服务	https://developer.aliyun.com/mirror/goproxy
+go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
+# 2. 设置校验和数据库（避免超时）
+go env -w GOSUMDB=sum.golang.google.cn
+# 查看配置是否成功
+# go env GO111MODULE
+# go env GOPROXY
+# go env GOSUMDB
+
+# 设置 GOPATH 为 ~/go
+mkdir -p $HOME/.go
+go env -w GOPATH=$HOME/.go
+# 查看当前环境
+# go env GOPATH
+
+# 安装对应的代码编辑器
+sudo snap install --classic goland
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# 通过 apt 安装 (推荐)
+# https://ubuntu.com/toolchains
+sudo apt install -y nodejs npm
+# 最新地址 淘宝 NPM 镜像站喊你切换新域名啦!
+npm config set registry https://registry.npmmirror.com
+sudo npm install -g bun
+echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
+# bun run config --help
+# bun --config
+# 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
+cat << EOF | tee -a $HOME/.bunfig.toml
+[install]
+# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为	https://developer.aliyun.com/mirror/NPM
+registry = "https://registry.npmmirror.com"
+EOF
+# which node
+# whereis node
+# whereis bun
+# 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
+# 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
+# 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
+
+# 安装对应的代码编辑器
+sudo snap install --classic webstorm
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+sudo apt install -y podman podman-compose
+# 启用用户级 socket
+systemctl --user enable --now podman.socket
+# systemctl --user status podman
+# https://github.com/containers/podman/blob/cea9340242f3f6cf41f20fb0b6239aa3db5decd6/docs/tutorials/socket_activation.md
+# cat /usr/lib/systemd/user/podman.socket
+# ls $XDG_RUNTIME_DIR/podman/podman.sock
+# unix:///run/user/1000/podman/podman.sock
+# podman info
+
+# 配置国内加速镜像仓库
+# 主要用于 登录到容器镜像仓库（Registry），以便拉取（pull）私有镜像或推送（push）镜像到仓库
+# lcqh2635@gmail.com
+# podman login
+# cat /etc/containers/registries.conf
+# 备份到同目录（添加 .bak 后缀）
+sudo cp /etc/containers/registries.conf{,.bak}
+# 检查 .bak 文件是否存在
+# ls -l /etc/containers
+# 从同目录 .bak 文件恢复
+# sudo cp /etc/containers/registries.conf{.bak,}
+cat << EOF | tee -a /etc/containers/registries.conf
+# 定义未指定镜像仓库前缀时，默认搜索的镜像仓库列表
+# 例如执行 "podman pull nginx" 会自动从 "docker.io" 查找 "library/nginx"
+unqualified-search-registries = ["docker.io"]
+
+# Podman 优先尝试从 registry.mirror 拉取镜像，如果加速器不可用/镜像不存在，则自动回退到 location 指定的官方地址
+# 官方仓库地址（最终回退地址）
+[[registry]]
+# 匹配的镜像仓库前缀（支持通配符 *）
+# 例如 "docker.io" 会匹配所有 "docker.io/xxx" 的镜像
+prefix = "docker.io"
+# 实际访问的仓库服务器地址
+# Docker Hub 的官方注册表地址
+location = "registry-1.docker.io"
+
+# 镜像加速器地址（优先使用的镜像源）
+# 添加该仓库的镜像加速器（Mirror）以阿里云镜像加速为示例
+[[registry.mirror]]
+# 镜像加速器地址（替换为你的阿里云镜像加速URL）
+location = "docker.1ms.run"
+# 是否允许不安全的 HTTP 连接（生产环境建议 false）
+insecure = false
+EOF
+
+# 创建网络
+podman network create podman-net
+podman pull redis:latest
+podman pull postgres:latest
+sudo snap install --classic datagrip
+
+# Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
+# 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
+# IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择 Unix 套接字 ，然后下拉选择 rootless 版地址
+sudo flatpak install -y flathub com.github.marhkb.Pods
+# ------------------------------------------------------------------------------
+
+
+echo "==========开发环境安装配置完成，需要重启才能生效！！！=========="
+# 询问用户是否立刻重启
+read -p "是否立即重启系统？(y/n): " answer
+if [[ $answer == "y" || $answer == "Y" ]]; then
+    sudo reboot
+else
+    echo "已取消立即重启，但系统将在5分钟后自动重启，请保存您的工作！！！"
+fi
