@@ -183,15 +183,25 @@ configure_gnome_extensions() {
 
     sudo apt-get install -y gettext
     mkdir -p ~/下载/extensions && cd ~/下载/extensions
-        
-    git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
-    zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
     
     git clone https://gh-proxy.com/https://github.com/aunetx/blur-my-shell.git
     cd ~/下载/extensions/blur-my-shell && make install
     
+    git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
+    cd ~/下载/extensions/disable-unredirect && make install
+    
+    git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
+    cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
+    
     git clone https://gitlab.gnome.org/jrahmatzadeh/just-perfection.git
     cd ~/下载/extensions/just-perfection && ./scripts/build.sh -i
+    
+    git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
+    cd ~/下载/extensions/gnome-rounded-corners && make
+    gnome-extensions install -f Rounded_Corners@lennart-k.zip
+    
+    git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
+    cd ~/下载/extensions/rounded-window-corners && just install
     
     git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
     cd ~/下载/extensions/add-to-desktop && ./build.sh
@@ -207,29 +217,19 @@ configure_gnome_extensions() {
     cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh
     gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
     
-    git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
-    cd ~/下载/extensions/disable-unredirect && make install
-    
     git clone https://gitlab.com/smedius/desktop-icons-ng.git
     cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
-    
-    git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
-    cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
     
     git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
     cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension
     # 用户级别安装
     meson setup builddir --prefix=~/.local && meson install -C builddir
     
-    git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
-    cd ~/下载/extensions/gnome-rounded-corners && make
-    gnome-extensions install -f Rounded_Corners@lennart-k.zip
-    
-    git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
-    cd ~/下载/extensions/rounded-window-corners && just install
-    
     git clone https://gh-proxy.com/https://github.com/icedman/search-light.git
     cd ~/下载/extensions/search-light && make
+    
+    git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
+    zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
     
     git clone https://gh-proxy.com/https://github.com/amivaleo/Show-Desktop-Button.git
     cd ~/下载/extensions
