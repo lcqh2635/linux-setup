@@ -63,6 +63,8 @@ gsettings set org.gnome.desktop.interface show-battery-percentage true
 gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
 # 开启夜灯
 gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+# 设置强调色为蓝色
+gsettings set org.gnome.desktop.interface accent-color 'blue'
 
 # 取消面板模式，改为类似 MacOS 系统的 Dock 栏模式
 gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false

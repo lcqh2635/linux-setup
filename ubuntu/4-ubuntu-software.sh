@@ -62,19 +62,12 @@ sudo snap refresh
 # 查看哪些 Snap 有更新
 sudo snap refresh --list
 # 安装 snap 软件包
-sudo snap install linsticky forecast resonance halftone cavasik mission-center
-sudo snap install --classic rustup go gradle
 sudo snap install --classic intellij-idea webstorm rustrover goland pycharm datagrip clion android-studio
 
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
 # https://ghproxylist.com/
 # https://www.freeclashnode.com/
-
-https://clashverge.net/downloads/
-https://github.com/hiddify/hiddify-app/releases
-https://github.com/chen08209/FlClash/releases
-https://github.com/2dust/v2rayN/releases
 
 install_vpn() {
     # 进入到下载目录
@@ -91,8 +84,8 @@ install_vpn() {
     sudo apt install -y ./FlClash-0.8.92-linux-amd64.deb
     sudo apt install -y ./v2rayN-linux-64.deb
     
-    # 配置文件残留处理
-    # sudo apt purge -y flclash
+    # 动作：卸载主包 + 删除配置文件 + 自动清理不再需要的依赖包
+    # sudo apt autoremove --purge -y flclash
     
     
     if [ ! -d "WhiteSur-*" ]; then
