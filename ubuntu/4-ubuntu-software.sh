@@ -146,8 +146,6 @@ sudo flatpak install -y flathub org.gnome.Totem
 sudo flatpak install -y flathub org.gnome.dspy
 # File Roller 是一款用于打开、创建和修改归档和压缩归档文件的 GNOME 应用程序
 sudo flatpak install -y flathub org.gnome.FileRoller
-# 一个简单的应用程序，可以控制你的磁盘使用和可用空间
-sudo flatpak install -y flathub org.gnome.baobab
 # 选择一个作系统，让Box在虚拟机中下载并安装
 sudo flatpak install -y flathub org.gnome.Boxes
 # Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合

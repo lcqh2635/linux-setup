@@ -92,9 +92,15 @@ sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && s
 # 更新 Flatpak 应用、更新 Snap 应用
 # sudo flatpak update -y && sudo snap refresh
 # 查看可以升级的软件包	apt list --upgradable
-# 配置文件残留处理
-# sudo apt autoremove --purge
-# sudo apt purge -y gnome-shell-extension-desktop-icons-ng
+
+# # 在 apt 命令中，添加 -y 或 --yes 参数即可实现自动确认（自动回答 "Yes"）
+# 简单结论：推荐使用第二种（或者分两步走），因为它能更彻底地清理空间
+# 动作：仅卸载主包，并删除其配置文件（purge 的作用）不会自动卸载它安装时带来的依赖包（例如解码器、字体等）
+# sudo apt purge -y ubuntu-restricted-extras
+# 动作：卸载主包 + 删除配置文件 + 自动清理不再需要的依赖包
+# sudo apt autoremove --purge -y ubuntu-restricted-extras
+# 和上面的效果等价
+# sudo apt purge -y ubuntu-restricted-extras && sudo apt autoremove -y
 # ------------------------------------------------------------------------------
 
 
@@ -144,6 +150,7 @@ timeshift software-properties-gtk \
 libadwaita-1-examples
 # 安装额外的多媒体插件，使您能够播放各种视频和音频类型
 sudo apt install -y multimedia-all
+# sudo apt info ubuntu-restricted-extras
 # ------------------------------------------------------------------------------
 
 
@@ -185,6 +192,9 @@ sudo flatpak install -y flathub io.github.realmazharhussain.GdmSettings
 sudo flatpak install -y flathub io.gitlab.adhami3310.Impression
 # 用干净、无干扰的标记删除编辑器专注于你的写作
 sudo flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+# Save Desktop 可帮助您轻松备份、还原和同步整个桌面环境。它保存和导入您的主题，图标，字体，壁纸，扩展，桌面文件夹，Flatpak应用程序及其数据，
+# 以及其他桌面设置-所有在一个存档。选择要包含的内容，并通过自动定期保存和同步来保持设备之间的设置一致
+sudo flatpak install -y flathub io.github.vikdevelop.SaveDesktop
 # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
 sudo flatpak install -y flathub com.google.Chrome
 # Brave 致力于通过为用户提供更安全、更快速、更好的浏览体验来修复网络，同时通过一个基于注意力的奖励生态系统，扩大对内容创作者的支持
