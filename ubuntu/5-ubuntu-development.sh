@@ -36,6 +36,11 @@ echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
 # whereis maven
 # nautilus admin:/usr/share/maven
 # 配置 maven 阿里云 aliyun 加速镜像	https://maven.aliyun.com/mvn/guide
+# -v (verbose)：详细模式。
+# 作用：每创建一个目录，都会在终端打印一条提示信息。让用户知道命令到底执行了什么
+# -p (parents)：父目录模式。
+# 作用 ：如果指定的路径中父目录不存在，会自动递归创建。如果目录已经存在，不会报错，而是静默成功。
+mkdir -vp $HOME/.m2
 cat << EOF | tee -a $HOME/.m2/settings.xml
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -87,6 +92,13 @@ curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup
 
 # rustup update
 # 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
+
+# -v (verbose)：详细模式。
+# 作用：每创建一个目录，都会在终端打印一条提示信息。让用户知道命令到底执行了什么
+# -p (parents)：父目录模式。
+# 作用 ：如果指定的路径中父目录不存在，会自动递归创建。如果目录已经存在，不会报错，而是静默成功。
+#  ${MAVEN_HOME:-$HOME/.m2} 这是 Shell 参数扩展（Parameter Expansion） 语法，格式为 ${变量名:-默认值}
+# 作用：检查环境变量 MAVEN_HOME 是否已设置且非空。如果是：使用 MAVEN_HOME 的值作为目录路径。如果否（未设置或为空）：使用默认值 $HOME/.m2
 mkdir -vp ${CARGO_HOME:-$HOME/.cargo}
 
 cat << EOF | tee -a ${CARGO_HOME:-$HOME/.cargo}/config.toml
