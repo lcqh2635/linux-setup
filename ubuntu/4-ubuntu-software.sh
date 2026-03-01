@@ -72,6 +72,7 @@ sudo install -d -m 0755 /etc/apt/keyrings
 # 导入 Mozilla APT 密钥环：
 # ls /etc/apt/keyrings && cat /etc/apt/keyrings/packages.mozilla.org.asc
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+# cat /etc/apt/sources.list.d/mozilla.sources
 # 接下来，将 Mozilla APT 库添加到 sources.list 中，对于 Debian Trixie 及更新版本
 cat <<EOF | sudo tee /etc/apt/sources.list.d/mozilla.sources
 Types: deb
@@ -83,6 +84,7 @@ Signed-By: /etc/apt/keyrings/packages.mozilla.org.asc
 EOF
 # nautilus admin:/etc/apt/preferences.d
 # sudo rm /etc/apt/preferences.d/mozilla
+# cat /etc/apt/preferences.d/mozilla
 # 配置 APT 优先使用 Mozilla 库中的包
 echo '
 Package: *
@@ -90,7 +92,7 @@ Pin: origin packages.mozilla.org
 Pin-Priority: 1000
 ' | sudo tee /etc/apt/preferences.d/mozilla
 # 更新软件列表并安装 firefox（或 firefox-esr、-beta、-nightly、-devedition 之一）
-sudo apt-get update && sudo apt-get install firefox
+sudo apt-get update && sudo apt-get install -y firefox
 
 
 # 在 Ubuntu 上搭建 Google Chrome APT 仓库
@@ -99,9 +101,11 @@ sudo apt-get update && sudo apt-get install firefox
 sudo apt update -y
 # 安装必需的Chrome依赖，安装用于安全下载和GPG密钥管理所需的包：
 sudo apt install -y ca-certificates curl
+# ls /usr/share/keyrings
 # 导入 Google Chrome 的 GPG 签名密钥
 # APT 需要 GPG 密钥来验证从外部仓库下载的包的真实性。下载谷歌的公用签名密钥，转换为二进制格式，并存储在系统密钥环目录中：
 curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
+# cat /etc/apt/sources.list.d/google-chrome.sources
 # 添加 Google Chrome APT 仓库
 # 使用现代 DEB822 格式创建仓库配置文件，该格式比传统单行格式更清晰且易于维护：
 cat <<EOF | sudo tee /etc/apt/sources.list.d/google-chrome.sources
@@ -119,6 +123,7 @@ apt-cache policy google-chrome-stable
 # 在 Ubuntu 上安装 Google Chrome，仓库配置好后，用APT安装你喜欢的 Chrome 频道
 # 安装 Google Chrome Stable 稳定版经过谷歌质量保证团队的全面测试，是日常浏览的最安全选择：
 sudo apt install -y google-chrome-stable
+# sudo apt autoremove --purge -y google-chrome-stable
 
 
 # VPN 相关软件和订阅来源
