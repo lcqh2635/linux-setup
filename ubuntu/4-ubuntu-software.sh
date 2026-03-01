@@ -64,7 +64,7 @@ sudo snap refresh --list
 
 
 sudo apt update -y
-sudo apt autoremove --purge -y firefox
+sudo apt autoremove --purge -y firefox && sudo snap remove firefox
 # 在 Ubuntu 上搭建 Firefox APT 仓库
 # https://support.mozilla.org/zh-CN/kb/install-firefox-linux?redirectslug=linux-firefox&redirectlocale=zh-CN
 # 创建一个保存 APT 库密钥的目录：
