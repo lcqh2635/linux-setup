@@ -430,6 +430,7 @@ install_themes_and_icons() {
     
     # 为 libadwaita 安装，默认是普通暗色主题
     cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
+    # cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid
     # 使用自定义背景
     sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
     # 卸载因上面使用自定义背景而安装的 imagemagick
