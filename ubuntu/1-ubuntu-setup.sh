@@ -409,6 +409,8 @@ install_themes_and_icons() {
     cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
     # 使用自定义背景
     sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
+    # 卸载因上面使用自定义背景而安装的 imagemagick
+    sudo apt autoremove --purge -y imagemagick
     # 卸载主题
     # ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
     # 设置系统 GTK 主题
