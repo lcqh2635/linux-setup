@@ -103,7 +103,7 @@ sudo sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.
 sudo sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources
 # 使用 HTTPS 可以有效避免国内运营商的缓存劫持。可以运行以下命令替换：
 sudo sed -i 's/http:/https:/g' /etc/apt/sources.list.d/ubuntu.sources
-
+# cat /etc/apt/sources.list.d/ubuntu.sources
 # ------------------------------------------------------------------------------
 
 
