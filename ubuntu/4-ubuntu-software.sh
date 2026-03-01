@@ -64,6 +64,31 @@ sudo snap refresh --list
 # 安装 snap 软件包
 sudo snap install --classic intellij-idea webstorm rustrover goland pycharm datagrip clion android-studio
 
+
+# https://support.mozilla.org/zh-CN/kb/install-firefox-linux?redirectslug=linux-firefox&redirectlocale=zh-CN
+# 创建一个保存 APT 库密钥的目录：
+sudo install -d -m 0755 /etc/apt/keyrings 
+# 导入 Mozilla APT 密钥环：
+wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+# 接下来，将 Mozilla APT 库添加到 sources.list 中，对于 Debian Trixie 及更新版本
+cat <<EOF | sudo tee /etc/apt/sources.list.d/mozilla.sources
+Types: deb
+URIs: https://packages.mozilla.org/apt
+Suites: mozilla
+Components: main
+Signed-By: /etc/apt/keyrings/packages.mozilla.org.asc
+EOF
+# 配置 APT 优先使用 Mozilla 库中的包
+echo '
+Package: *
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+' | sudo tee /etc/apt/preferences.d/mozilla 
+# 更新软件列表并安装 firefox（或 firefox-esr、-beta、-nightly、-devedition 之一）
+sudo apt-get update && sudo apt-get install firefox
+
+
+
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
 # https://ghproxylist.com/
@@ -97,12 +122,6 @@ install_vpn() {
         install_themes_and_icons
     fi
 }
-
-# https://wiki.debian.org/JetBrains
-curl -s https://s3.eu-central-1.amazonaws.com/jetbrains-ppa/0xA6E8698A.pub.asc | gpg --dearmor | sudo tee /usr/share/keyrings/jetbrains-ppa-archive-keyring.gpg > /dev/null
-echo "deb [signed-by=/usr/share/keyrings/jetbrains-ppa-archive-keyring.gpg] http://jetbrains-ppa.s3-website.eu-central-1.amazonaws.com any main" | sudo tee /etc/apt/sources.list.d/jetbrains-ppa.list > /dev/null
-sudo apt update
-sudo apt install pycharm-community
 
 # JetBrains 的 API 返回的 JSON 中包含 多个架构的下载链接，你的 grep 命令会匹配 所有 包含 jetbrains-toolbox-*.tar.gz 的链接，
 # 而 head -1 恰好取到了第一个（可能是 arm64）
