@@ -385,7 +385,7 @@ install_themes_and_icons() {
     sed -i 's/0\.95/1/g' ~/下载/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/light.css
     sed -i 's/0\.95/1/g' ~/下载/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/dark.css
 
-    cd ~/下载/WhiteSur-wallpapers && sudo ./install-gnome-backgrounds.sh
+    cd ~/下载/WhiteSur-wallpapers && ./install-wallpapers.sh && sudo ./install-gnome-backgrounds.sh
     gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/Ventura/Ventura-timed.xml'
     
     cd ~/下载/WhiteSur-cursors && ./install.sh
@@ -406,7 +406,9 @@ install_themes_and_icons() {
     fi
     
     # 为 libadwaita 安装，默认是普通暗色主题
-    cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid && sudo ./tweaks.sh -g
+    cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
+    # 使用自定义背景
+    sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
     # 卸载主题
     # ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
     # 设置系统 GTK 主题
