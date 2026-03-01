@@ -67,8 +67,9 @@ sudo snap install --classic intellij-idea webstorm rustrover goland pycharm data
 sudo apt autoremove --purge -y firefox
 # https://support.mozilla.org/zh-CN/kb/install-firefox-linux?redirectslug=linux-firefox&redirectlocale=zh-CN
 # 创建一个保存 APT 库密钥的目录：
-sudo install -d -m 0755 /etc/apt/keyrings 
+sudo install -d -m 0755 /etc/apt/keyrings
 # 导入 Mozilla APT 密钥环：
+# ls /etc/apt/keyrings && cat /etc/apt/keyrings/packages.mozilla.org.asc
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
 # 接下来，将 Mozilla APT 库添加到 sources.list 中，对于 Debian Trixie 及更新版本
 cat <<EOF | sudo tee /etc/apt/sources.list.d/mozilla.sources
@@ -78,12 +79,14 @@ Suites: mozilla
 Components: main
 Signed-By: /etc/apt/keyrings/packages.mozilla.org.asc
 EOF
+# nautilus admin:/etc/apt/preferences.d
+# sudo rm /etc/apt/preferences.d/mozilla
 # 配置 APT 优先使用 Mozilla 库中的包
 echo '
 Package: *
 Pin: origin packages.mozilla.org
 Pin-Priority: 1000
-' | sudo tee /etc/apt/preferences.d/mozilla 
+' | sudo tee /etc/apt/preferences.d/mozilla
 # 更新软件列表并安装 firefox（或 firefox-esr、-beta、-nightly、-devedition 之一）
 sudo apt-get update && sudo apt-get install firefox
 
