@@ -92,7 +92,10 @@ Pin: origin packages.mozilla.org
 Pin-Priority: 1000
 ' | sudo tee /etc/apt/preferences.d/mozilla
 # 更新软件列表并安装 firefox（或 firefox-esr、-beta、-nightly、-devedition 之一）
-sudo apt-get update && sudo apt-get install --fix-missing -y firefox
+sudo apt-get update && sudo apt-get install --fix-missing -y firefox-l10n-zh-cn
+# sudo apt-get update && sudo apt-get install --fix-missing -y firefox-esr-l10n-zh-cn
+# apt list -a firefox-l10n-zh-cn
+# apt list -a firefox-esr-l10n-zh-cn
 
 
 # 在 Ubuntu 上搭建 Google Chrome APT 仓库
