@@ -428,6 +428,8 @@ install_themes_and_icons() {
         firefox & sleep 3 && pkill firefox
     fi
     
+    # firefox not yet initialized error
+    # https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1384
     # 为 libadwaita 安装，默认是普通暗色主题
     cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
     # cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid
