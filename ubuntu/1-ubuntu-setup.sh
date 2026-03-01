@@ -10,8 +10,9 @@
 
 # ------------------------------------------------------------------------------
 # Ubuntu 操作系统 ISO 阿里云和中科大加速下载网址：
-# https://mirrors.aliyun.com/ubuntu-cdimage/releases/
 # https://mirrors.ustc.edu.cn/ubuntu-cdimage/releases/
+# https://mirrors.aliyun.com/ubuntu-cdimage/releases/
+# https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cdimage/releases/
 # cd ~/下载 && git clone https://cdn.gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
 # cd ~/文档/linux-setup && git add . && git commit -m 'backup' && git push
 # 打开 “软件和更新” 将中的软件源设置为 “阿里云 aliyun” 提供的加速镜像，不要直接选 “直接位于中国的服务器” 这可能会导致一些异常
@@ -81,6 +82,28 @@ gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
 gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
 # 禁用系统自带的 Desktop Icons NG (DING) 扩展
 gnome-extensions disable ding@rastersoft.com
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
+# https://mirrors.ustc.edu.cn/help/ubuntu.html
+# https://developer.aliyun.com/mirror/ubuntu
+# https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
+# ls /etc/apt/sources.list.d && cat /etc/apt/sources.list.d/ubuntu.sources
+# 备份到同目录（添加 .bak 后缀）
+sudo cp /etc/apt/sources.list.d/ubuntu.sources{,.bak}
+# 检查 .bak 文件是否存在
+# ls -l /etc/apt/sources.list.d
+# 从同目录 .bak 文件恢复
+# sudo cp /etc/apt/sources.list.d/ubuntu.sources{.bak,}
+# 常规官方软件源替换
+sudo sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/ubuntu.sources
+# 安全更新源替换
+sudo sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources
+# 使用 HTTPS 可以有效避免国内运营商的缓存劫持。可以运行以下命令替换：
+sudo sed -i 's/http:/https:/g' /etc/apt/sources.list.d/ubuntu.sources
+
 # ------------------------------------------------------------------------------
 
 
