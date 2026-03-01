@@ -61,10 +61,11 @@ snap list intellij-idea
 sudo snap refresh
 # 查看哪些 Snap 有更新
 sudo snap refresh --list
-# 安装 snap 软件包
-sudo snap install --classic intellij-idea webstorm rustrover goland pycharm datagrip clion android-studio
 
+
+sudo apt update -y
 sudo apt autoremove --purge -y firefox
+# 在 Ubuntu 上搭建 Firefox APT 仓库
 # https://support.mozilla.org/zh-CN/kb/install-firefox-linux?redirectslug=linux-firefox&redirectlocale=zh-CN
 # 创建一个保存 APT 库密钥的目录：
 sudo install -d -m 0755 /etc/apt/keyrings
@@ -77,6 +78,7 @@ Types: deb
 URIs: https://packages.mozilla.org/apt
 Suites: mozilla
 Components: main
+Architectures: amd64
 Signed-By: /etc/apt/keyrings/packages.mozilla.org.asc
 EOF
 # nautilus admin:/etc/apt/preferences.d
@@ -90,6 +92,33 @@ Pin-Priority: 1000
 # 更新软件列表并安装 firefox（或 firefox-esr、-beta、-nightly、-devedition 之一）
 sudo apt-get update && sudo apt-get install firefox
 
+
+# 在 Ubuntu 上搭建 Google Chrome APT 仓库
+# https://linuxcapable.com/install-google-chrome-on-ubuntu-linux/
+# 更新 Ubuntu 包列表，刷新系统包索引，确保安装了所有前置条件的最新版本：
+sudo apt update -y
+# 安装必需的Chrome依赖，安装用于安全下载和GPG密钥管理所需的包：
+sudo apt install -y ca-certificates curl
+# 导入 Google Chrome 的 GPG 签名密钥
+# APT 需要 GPG 密钥来验证从外部仓库下载的包的真实性。下载谷歌的公用签名密钥，转换为二进制格式，并存储在系统密钥环目录中：
+curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
+# 添加 Google Chrome APT 仓库
+# 使用现代 DEB822 格式创建仓库配置文件，该格式比传统单行格式更清晰且易于维护：
+cat <<EOF | sudo tee /etc/apt/sources.list.d/google-chrome.sources
+Types: deb
+URIs: https://dl.google.com/linux/chrome/deb/
+Suites: stable
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/google-chrome.gpg
+EOF
+# 验证 Chrome 仓库配置，刷新你的包列表以包含新的仓库：
+sudo apt update
+# 通过检查包源来确认仓库正常工作：
+apt-cache policy google-chrome-stable
+# 在 Ubuntu 上安装 Google Chrome，仓库配置好后，用APT安装你喜欢的 Chrome 频道
+# 安装 Google Chrome Stable 稳定版经过谷歌质量保证团队的全面测试，是日常浏览的最安全选择：
+sudo apt install -y google-chrome-stable
 
 
 # VPN 相关软件和订阅来源
