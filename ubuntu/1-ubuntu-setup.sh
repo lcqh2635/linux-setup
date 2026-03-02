@@ -216,8 +216,6 @@ sudo flatpak install -y flathub io.github.kolunmi.Bazaar
 sudo flatpak install -y flathub com.github.tchx84.Flatseal
 # Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
 sudo flatpak install -y flathub io.github.flattool.Warehouse
-# 浏览并安装GNOME Shell扩展以定制你的桌面
-sudo flatpak install -y flathub com.mattjakeman.ExtensionManager
 # Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
 sudo flatpak install -y flathub org.gnome.Evolution
 # 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
@@ -252,12 +250,15 @@ sudo flatpak install -y flathub app.zen_browser.zen
 # apt list gnome-shell-extension*
 # apt list gnome-shell-ubuntu-extensions*
 sudo apt install -y \
+gnome-shell-extension-manager \
 gnome-shell-extension-user-theme \
 gnome-shell-extension-alphabetical-grid \
 gnome-shell-extension-auto-move-windows \
 gnome-shell-extension-drive-menu \
 gnome-shell-extension-light-style \
 gnome-shell-extension-workspace-indicator \
+gnome-shell-extension-gsconnect \
+gnome-shell-extension-gsconnect-browsers \
 gnome-shell-extension-prefs
 
 
