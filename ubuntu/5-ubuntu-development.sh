@@ -166,12 +166,13 @@ go env -w GOPATH=$HOME/.go
 sudo apt install -y nodejs npm
 # npm config get registry
 # 配置 npm 国内中科大 ustc 加速镜像源，地址为	https://mirrors.ustc.edu.cn/help/npm.html
-# 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件
+# 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
+# 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
 npm config set registry https://npmreg.proxy.ustclug.org/
 # 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
 # npm config set registry https://registry.npmmirror.com/
-# 安装 Bun 运行时环境
-sudo npm install -g bun
+# 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
+npm install -g bun
 echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
 # bun run config --help
 # bun --config
