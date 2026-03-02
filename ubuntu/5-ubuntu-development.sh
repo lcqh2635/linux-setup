@@ -247,6 +247,7 @@ sudo cp /etc/containers/registries.conf{,.bak}
 # ls -l /etc/containers
 # 从同目录 .bak 文件恢复
 # sudo cp /etc/containers/registries.conf{.bak,}
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | sudo tee -a /etc/containers/registries.conf
 # 定义未指定镜像仓库前缀时，默认搜索的镜像仓库列表
 # 例如执行 "podman pull nginx" 会自动从 "docker.io" 查找 "library/nginx"
