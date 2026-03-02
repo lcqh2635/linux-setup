@@ -165,22 +165,24 @@ go env -w GOPATH=$HOME/.go
 # https://ubuntu.com/toolchains
 sudo apt install -y nodejs npm
 # npm config get registry
-# 配置 npm 国内中科大 ustc 加速镜像源，地址为	https://mirrors.ustc.edu.cn/help/npm.html
 # 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
 # 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
-npm config set registry https://npmreg.proxy.ustclug.org/
 # 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
-# npm config set registry https://registry.npmmirror.com/
+npm config set registry https://registry.npmmirror.com/
+# 将目录所有权改为当前用户，否则如下命令将因为权限问题执行失败
+sudo chown -R $(whoami):$(whoami) /usr/local
 # 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
+# bun - 现代的 JavaScript 运行时和包管理器
 npm install -g bun
 echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
+# bun 自行升级	bun upgrade
 # bun run config --help
 # bun --config
 # 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
 cat << EOF | tee -a $HOME/.bunfig.toml
 [install]
 # 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为	https://developer.aliyun.com/mirror/NPM
-registry = "https://registry.npmmirror.com"
+registry = "https://registry.npmmirror.com/"
 EOF
 # which node
 # whereis node
@@ -188,6 +190,14 @@ EOF
 # 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
 # 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
 # 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
+
+# 推荐安装的全局工具包
+# vite - 下一代前端构建工具（通常项目局部安装，但全局也有用）
+npm install -g typescript vite eslint prettier
+# npm 列出所有全局安装的包
+# npm list -g --depth=0
+# 执行更新命令，更新所有可更新的全局包
+# npm update -g
 # ------------------------------------------------------------------------------
 
 
