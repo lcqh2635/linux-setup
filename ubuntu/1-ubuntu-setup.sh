@@ -20,6 +20,7 @@
 
 
 # ------------------------------------------------------------------------------
+# Gnome 官方网站 https://www.gnome.org/zh-CN/
 # Launchpad 主页：https://launchpad.net/
 # 包搜索：https://packages.ubuntu.com/
 # PPA 列表：https://launchpad.net/ubuntu/+ppas
@@ -272,6 +273,18 @@ cd ~/下载/extensions
     git clone https://gitlab.gnome.org/jrahmatzadeh/just-perfection.git
     cd just-perfection && ./scripts/build.sh -i
     cd ~/下载/extensions
+    # gdbus call 它是用来在命令行中“调用”其他程序功能的开关
+    # --session：连接会话总线（最常用）。用于与当前用户登录的桌面程序通信（如 GNOME Shell、通知、播放器）
+    # --dest (或 -d)：目标服务的名称（例如 org.gnome.Shell.Extensions、org.freedesktop.Notifications）
+    # --object-path (或 -o)：对象在 D-Bus 上的路径（例如 /org/gnome/Shell/Extensions、/org/freedesktop/Notifications）
+    # --method (或 -m)：要调用的具体方法，格式通常为 接口名。方法名
+    # --timeout：等待响应的超时时间（秒）
+    gdbus call --session \
+           --dest org.gnome.Shell.Extensions \
+           --object-path /org/gnome/Shell/Extensions \
+           --method org.gnome.Shell.Extensions.InstallRemoteExtension \
+           "just-perfection-desktop@just-perfection"
+           
     
     git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
     cd add-to-desktop && ./build.sh
@@ -430,6 +443,7 @@ install_themes_and_icons() {
     
     # firefox not yet initialized error
     # https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1384
+    # git clone https://cdn.gh-proxy.org/https://github.com/Sayanduary/WhiteSur-gtk-theme.git
     # 为 libadwaita 安装，默认是普通暗色主题
     cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
     # cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid

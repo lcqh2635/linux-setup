@@ -59,9 +59,6 @@ cat << EOF | tee -a $HOME/.m2/settings.xml
 
 </settings>
 EOF
-
-# 安装对应的代码编辑器
-sudo snap install --classic intellij-idea
 # ------------------------------------------------------------------------------
 
 
@@ -119,9 +116,6 @@ registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 [registries.ustc]
 index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
-
-# 安装对应的代码编辑器
-sudo snap install --classic rustrover android-studio
 # ------------------------------------------------------------------------------
 
 
@@ -155,9 +149,6 @@ mkdir -p $HOME/.go
 go env -w GOPATH=$HOME/.go
 # 查看当前环境
 # go env GOPATH
-
-# 安装对应的代码编辑器
-sudo snap install --classic goland
 # ------------------------------------------------------------------------------
 
 
@@ -183,9 +174,6 @@ EOF
 # 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
 # 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
 # 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
-
-# 安装对应的代码编辑器
-sudo snap install --classic webstorm
 # ------------------------------------------------------------------------------
 
 
@@ -233,7 +221,7 @@ sudo cp /etc/containers/registries.conf{,.bak}
 # ls -l /etc/containers
 # 从同目录 .bak 文件恢复
 # sudo cp /etc/containers/registries.conf{.bak,}
-cat << EOF | tee -a /etc/containers/registries.conf
+cat <<EOF | sudo tee -a /etc/containers/registries.conf
 # 定义未指定镜像仓库前缀时，默认搜索的镜像仓库列表
 # 例如执行 "podman pull nginx" 会自动从 "docker.io" 查找 "library/nginx"
 unqualified-search-registries = ["docker.io"]
@@ -261,8 +249,6 @@ EOF
 podman network create podman-net
 podman pull redis:latest
 podman pull postgres:latest
-sudo snap install --classic datagrip
-
 # Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
 # 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
 # IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择 Unix 套接字 ，然后下拉选择 rootless 版地址
