@@ -74,7 +74,7 @@ sudo install -d -m 0755 /etc/apt/keyrings
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
 # cat /etc/apt/sources.list.d/mozilla.sources
 # 接下来，将 Mozilla APT 库添加到 sources.list 中，对于 Debian Trixie 及更新版本
-cat <<EOF | sudo tee /etc/apt/sources.list.d/mozilla.sources
+cat << EOF | sudo tee /etc/apt/sources.list.d/mozilla.sources
 Types: deb
 URIs: https://packages.mozilla.org/apt
 Suites: mozilla
@@ -111,7 +111,7 @@ curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmo
 # cat /etc/apt/sources.list.d/google-chrome.sources
 # 添加 Google Chrome APT 仓库
 # 使用现代 DEB822 格式创建仓库配置文件，该格式比传统单行格式更清晰且易于维护：
-cat <<EOF | sudo tee /etc/apt/sources.list.d/google-chrome.sources
+cat << EOF | sudo tee /etc/apt/sources.list.d/google-chrome.sources
 Types: deb
 URIs: https://dl.google.com/linux/chrome/deb/
 Suites: stable

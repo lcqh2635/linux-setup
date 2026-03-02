@@ -198,6 +198,8 @@ gnome-software-plugin-fwupd
 # 设置 flatpak 加速镜像源
 sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
+# 恢复默认值：
+# sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
 # 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
 # xdg-data/themes 是 ~/.local/share/themes 的标准化路径别名（Flatpak 优先识别）
 # :ro 表示只读权限，避免应用误修改主题文件。

@@ -106,22 +106,22 @@ curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup
 mkdir -vp ${CARGO_HOME:-$HOME/.cargo}
 
 cat << EOF | tee -a ${CARGO_HOME:-$HOME/.cargo}/config.toml
-# 配置 Cargo 国内加速镜像源，可选：aliyun、ustc、tuna 此处默认选择 aliyun
+# 配置 Cargo 国内加速镜像源，可选：ustc、aliyun、tuna 此处默认选择 ustc
 # 使用稀疏协议（sparse）减少元数据下载量，大幅加速
 [source.crates-io]
-replace-with = 'aliyun'
-
-# aliyun 阿里云 crates.io 镜像	https://developer.aliyun.com/mirror/rustup 
-[source.aliyun]
-registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
-[registries.aliyun]
-index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+replace-with = 'ustc'
 
 # ustc 中科大 crates.io 镜像 	https://mirrors.ustc.edu.cn/help/crates.io-index.html
 [source.ustc]
 registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 [registries.ustc]
 index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+
+# aliyun 阿里云 crates.io 镜像	https://developer.aliyun.com/mirror/rustup 
+[source.aliyun]
+registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+[registries.aliyun]
+index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
 EOF
 # cat $HOME/.cargo/config.toml
 # ------------------------------------------------------------------------------
@@ -242,7 +242,7 @@ sudo cp /etc/containers/registries.conf{,.bak}
 # ls -l /etc/containers
 # 从同目录 .bak 文件恢复
 # sudo cp /etc/containers/registries.conf{.bak,}
-cat <<EOF | sudo tee -a /etc/containers/registries.conf
+cat << EOF | sudo tee -a /etc/containers/registries.conf
 # 定义未指定镜像仓库前缀时，默认搜索的镜像仓库列表
 # 例如执行 "podman pull nginx" 会自动从 "docker.io" 查找 "library/nginx"
 unqualified-search-registries = ["docker.io"]
