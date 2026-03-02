@@ -165,19 +165,11 @@ go env -w GOPATH=$HOME/.go
 # https://ubuntu.com/toolchains
 sudo apt install -y nodejs npm
 # npm config get registry
-# 配置 npm 国内中科大 ustc 加速镜像源
-npm config set registry https://npmreg.proxy.ustclug.org/
-# 配置 npm 国内阿里云 aliyun 加速镜像源
-# npm config set registry https://registry.npmmirror.com/
-# 编辑 ~/.npmrc，添加
-cat << EOF | tee -a ~/.npmrc
-[install]
 # 配置 npm 国内中科大 ustc 加速镜像源，地址为	https://mirrors.ustc.edu.cn/help/npm.html
-registry=https://npmreg.proxy.ustclug.org/
-
+# 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件
+npm config set registry https://npmreg.proxy.ustclug.org/
 # 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
-# registry=https://registry.npmmirror.com/
-EOF
+# npm config set registry https://registry.npmmirror.com/
 # 安装 Bun 运行时环境
 sudo npm install -g bun
 echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
