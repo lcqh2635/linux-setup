@@ -41,6 +41,7 @@ echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
 # -p (parents)：父目录模式。
 # 作用 ：如果指定的路径中父目录不存在，会自动递归创建。如果目录已经存在，不会报错，而是静默成功。
 mkdir -vp $HOME/.m2
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | tee -a $HOME/.m2/settings.xml
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -70,6 +71,7 @@ echo "🦀 安装 Rust..."
 # 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
 
 # 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | tee -a ~/.bash_profile
 # 配置中科大 ustc 的 Rust Toolchain 反向代理 	https://mirrors.ustc.edu.cn/help/rust-static.html
 # 指定 Rust 工具链和组件的下载地址（如 rustc,cargo,rust-std 等）
@@ -104,7 +106,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup
 #  ${MAVEN_HOME:-$HOME/.m2} 这是 Shell 参数扩展（Parameter Expansion） 语法，格式为 ${变量名:-默认值}
 # 作用：检查环境变量 MAVEN_HOME 是否已设置且非空。如果是：使用 MAVEN_HOME 的值作为目录路径。如果否（未设置或为空）：使用默认值 $HOME/.m2
 mkdir -vp ${CARGO_HOME:-$HOME/.cargo}
-
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | tee -a ${CARGO_HOME:-$HOME/.cargo}/config.toml
 # 配置 Cargo 国内加速镜像源，可选：ustc、aliyun、tuna 此处默认选择 ustc
 # 使用稀疏协议（sparse）减少元数据下载量，大幅加速
@@ -179,7 +181,7 @@ echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
 # bun run config --help
 # bun --config
 # 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
-cat << EOF | tee -a $HOME/.bunfig.toml
+cat << EOF | tee $HOME/.bunfig.toml
 [install]
 # 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为	https://developer.aliyun.com/mirror/NPM
 registry = "https://registry.npmmirror.com/"
