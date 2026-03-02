@@ -65,25 +65,26 @@ EOF
 # ------------------------------------------------------------------------------
 # 第七步：安装 Rust
 echo "🦀 安装 Rust..."
-# Rust Web 常用的框架 Axum 目前排名性能总榜 7，需要使用 pg 数据库，数据来自性能测试网站	https://www.techempower.com/benchmarks 
-# 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
+# Rust Web 常用的框架 Axum 目前排名性能总榜 7，需要使用 pg 数据库，数据来自性能测试网站	https://www.techempower.com/benchmarks
 # 配置 crates.io 国内中科大 ustc 加速镜像源	 https://mirrors.ustc.edu.cn/help/crates.io-index.html
+# 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
 
-# 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新。
-# 配置 Rust Toolchain 反向代理 	https://developer.aliyun.com/mirror/rustup
-# 指定 rustup 自身更新元数据的地址（即 rustup 如何检查自身版本、下载新版本）
-echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup' >> ~/.bash_profile
+# 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新
+# 配置中科大 ustc 的 Rust Toolchain 反向代理 	https://mirrors.ustc.edu.cn/help/rust-static.html
+# 配置阿里云 aliyun 的 Rust Toolchain 反向代理 	https://developer.aliyun.com/mirror/rustup
 # 指定 Rust 工具链和组件的下载地址（如 rustc,cargo,rust-std 等）
-echo 'export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup' >> ~/.bash_profile
+echo 'export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static' >> ~/.bash_profile
+# 指定 rustup 自身更新元数据的地址（即 rustup 如何检查自身版本、下载新版本）
+echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup' >> ~/.bash_profile
 source ~/.bash_profile
 # cat ~/.bash_profile
 
 # 用 shell 执行从标准输入来的脚本，并把 -y 作为参数传给那个脚本，告诉它：自动安装，不要问我！
 # 自动确认所有提示，使用默认设置安装（相当于 yes）
-# 使用阿里云安装脚本
-curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
 # 使用官方安装脚本
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# 使用阿里云安装脚本
+# curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
 # 激活 Rust 环境
 . "$HOME/.cargo/env"
 
