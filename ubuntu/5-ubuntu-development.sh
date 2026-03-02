@@ -70,21 +70,27 @@ echo "🦀 安装 Rust..."
 # 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
 
 # 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新
+cat << EOF | tee -a ~/.bash_profile
 # 配置中科大 ustc 的 Rust Toolchain 反向代理 	https://mirrors.ustc.edu.cn/help/rust-static.html
-# 配置阿里云 aliyun 的 Rust Toolchain 反向代理 	https://developer.aliyun.com/mirror/rustup
 # 指定 Rust 工具链和组件的下载地址（如 rustc,cargo,rust-std 等）
-echo 'export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static' >> ~/.bash_profile
+export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
 # 指定 rustup 自身更新元数据的地址（即 rustup 如何检查自身版本、下载新版本）
-echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup' >> ~/.bash_profile
+export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
+
+# 配置阿里云 aliyun 的 Rust Toolchain 反向代理 	https://developer.aliyun.com/mirror/rustup
+# export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup
+# export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup
+EOF
+
 source ~/.bash_profile
 # cat ~/.bash_profile
 
 # 用 shell 执行从标准输入来的脚本，并把 -y 作为参数传给那个脚本，告诉它：自动安装，不要问我！
 # 自动确认所有提示，使用默认设置安装（相当于 yes）
 # 使用官方安装脚本
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # 使用阿里云安装脚本
-# curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
+curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
 # 激活 Rust 环境
 . "$HOME/.cargo/env"
 
@@ -117,6 +123,7 @@ registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 [registries.ustc]
 index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
+# cat $HOME/.cargo/config.toml
 # ------------------------------------------------------------------------------
 
 
@@ -157,8 +164,21 @@ go env -w GOPATH=$HOME/.go
 # 通过 apt 安装 (推荐)
 # https://ubuntu.com/toolchains
 sudo apt install -y nodejs npm
-# 最新地址 淘宝 NPM 镜像站喊你切换新域名啦!
-npm config set registry https://registry.npmmirror.com
+# npm config get registry
+# 配置 npm 国内中科大 ustc 加速镜像源
+npm config set registry https://npmreg.proxy.ustclug.org/
+# 配置 npm 国内阿里云 aliyun 加速镜像源
+# npm config set registry https://registry.npmmirror.com/
+# 编辑 ~/.npmrc，添加
+cat << EOF | tee -a ~/.npmrc
+[install]
+# 配置 npm 国内中科大 ustc 加速镜像源，地址为	https://mirrors.ustc.edu.cn/help/npm.html
+registry=https://npmreg.proxy.ustclug.org/
+
+# 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
+# registry=https://registry.npmmirror.com/
+EOF
+# 安装 Bun 运行时环境
 sudo npm install -g bun
 echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
 # bun run config --help
