@@ -52,17 +52,6 @@ readonly COLOR_BOLD="\033[1m"
 COLOR_ENABLED=true
 
 
-snap install --help
-# 列出所有已安装的 Snap
-snap list
-snap find intellij-idea
-snap list intellij-idea
-# 更新所有 Snap 包
-sudo snap refresh
-# 查看哪些 Snap 有更新
-sudo snap refresh --list
-
-
 sudo apt update -y
 sudo apt autoremove --purge -y firefox && sudo snap remove firefox
 # 在 Ubuntu 上搭建 Firefox APT 仓库
