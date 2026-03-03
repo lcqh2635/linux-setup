@@ -97,6 +97,9 @@ sudo apt-get update && sudo apt-get install --fix-missing -y firefox-l10n-zh-cn
 # apt list -a firefox-l10n-zh-cn
 # apt list -a firefox-esr-l10n-zh-cn
 
+# ls /etc/apt/preferences.d
+# sudo rm /etc/apt/keyrings/packages.mozilla.org.asc && sudo rm /etc/apt/sources.list.d/mozilla.sources && sudo rm /etc/apt/preferences.d/mozilla
+
 
 # 在 Ubuntu 上搭建 Google Chrome APT 仓库
 # https://linuxcapable.com/install-google-chrome-on-ubuntu-linux/
@@ -107,7 +110,7 @@ sudo apt install -y ca-certificates curl
 # ls /usr/share/keyrings
 # 导入 Google Chrome 的 GPG 签名密钥
 # APT 需要 GPG 密钥来验证从外部仓库下载的包的真实性。下载谷歌的公用签名密钥，转换为二进制格式，并存储在系统密钥环目录中：
-curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
+curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor --yes -o /usr/share/keyrings/google-chrome.gpg
 # cat /etc/apt/sources.list.d/google-chrome.sources
 # 添加 Google Chrome APT 仓库
 # 使用现代 DEB822 格式创建仓库配置文件，该格式比传统单行格式更清晰且易于维护：
@@ -127,6 +130,10 @@ apt-cache policy google-chrome-stable
 # 安装 Google Chrome Stable 稳定版经过谷歌质量保证团队的全面测试，是日常浏览的最安全选择：
 sudo apt install -y google-chrome-stable
 # sudo apt autoremove --purge -y google-chrome-stable
+
+# ls /etc/apt/keyrings
+# ls /etc/apt/sources.list.d
+# sudo rm /usr/share/keyrings/google-chrome.gpg && sudo rm /etc/apt/sources.list.d/google-chrome.sources
 
 
 # VPN 相关软件和订阅来源

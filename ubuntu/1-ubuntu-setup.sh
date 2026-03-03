@@ -143,10 +143,11 @@ sudo pro enable esm-apps esm-infra livepatch
 # 因此，通过 APT 查询它的依赖关系，就能知道它会安装什么
 # 包含：gcc, g++, make, libc6-dev, dpkg-dev 等
 # 使用 APT 包管理器查询依赖关系 apt-cache depends build-essential
+# iproute2 是 现代 Linux 网络配置和管理工具集，由 Stephen Hemminger 开发，旨在替代过时的 net-tools
 sudo apt install -y \
 git fastfetch wl-clipboard \
 build-essential cmake \
-curl wget file net-tools \
+curl wget file iproute2 \
 libxdo-dev libssl-dev \
 libwebkit2gtk-4.1-dev \
 libayatana-appindicator3-dev \

@@ -47,7 +47,6 @@ EOF
 # gsettings list-recursively org.gnome.desktop.wm.preferences
 # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
 
-
 # 设置新窗口居中显示
 gsettings set org.gnome.mutter center-new-windows true
 # 显示星期几
@@ -59,6 +58,8 @@ gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
 # 设置夜灯温度（色温，范围 1000~10000，默认约 2700 色温严重偏黄，越小越黄）
 gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
 
+
+set_font() {
 # apt list *fonts*
 # Noto Fonts（思源黑体/宋体 的谷歌版本）
 # Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
@@ -87,6 +88,7 @@ gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC B
 gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
 # 微调：full（较好）或 slight
 gsettings set org.gnome.desktop.interface font-hinting 'slight'
+}
 
 
 reset_font() {
@@ -98,7 +100,7 @@ gsettings reset org.gnome.desktop.interface font-antialiasing
 gsettings reset org.gnome.desktop.interface font-hinting
 }
 
-reset_theme() {
+uninstall_gtk_theme() {
 ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
 }
 
