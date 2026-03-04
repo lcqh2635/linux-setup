@@ -142,7 +142,7 @@ Signed-By: /etc/apt/keyrings/cursor.gpg
 EOF
 # 更新并安装
 sudo apt update
-
+# sudo apt autoremove --purge -y cursor
 
 
 # VPN 相关软件和订阅来源
