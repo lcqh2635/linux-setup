@@ -129,6 +129,7 @@ sudo apt install -y google-chrome-stable
 
 # 在 Ubuntu 上搭建 JetBrains APT 仓库
 # https://wiki.debian.org/JetBrains
+# https://github.com/JonasGroeger/jetbrains-ppa
 curl -fsSL https://s3.eu-central-1.amazonaws.com/jetbrains-ppa/0xA6E8698A.pub.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/jetbrains-ppa-archive-keyring.gpg
 cat << EOF | sudo tee /etc/apt/sources.list.d/jetbrains-ppa.sources
 Types: deb
@@ -139,7 +140,7 @@ Architectures: amd64
 Signed-By: /etc/apt/keyrings/jetbrains-ppa-archive-keyring.gpg
 EOF
 sudo apt update
-sudo apt install pycharm-community
+# sudo apt install -y intellij-idea rustrover webstorm pycharm goland datagrip
 
 
 # VPN 相关软件和订阅来源
