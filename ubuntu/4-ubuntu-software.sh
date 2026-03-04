@@ -142,7 +142,6 @@ Signed-By: /etc/apt/keyrings/cursor.gpg
 EOF
 # 更新并安装
 sudo apt update
-sudo apt install cursor
 
 
 
