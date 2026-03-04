@@ -126,24 +126,6 @@ sudo apt install -y google-chrome-stable
 # ls /etc/apt/sources.list.d
 # sudo rm /usr/share/keyrings/google-chrome.gpg && sudo rm /etc/apt/sources.list.d/google-chrome.sources
 
-# 在 Ubuntu 上搭建 Cursor APT 仓库
-# https://cursor.com/cn/docs/downloads
-# 添加 Cursor 的 GPG 密钥
-curl -fsSL https://downloads.cursor.com/keys/anysphere.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/cursor.gpg
-# 添加 Cursor 软件源
-# 使用现代 DEB822 格式创建仓库配置文件，该格式比传统单行格式更清晰且易于维护：
-cat << EOF | sudo tee /etc/apt/sources.list.d/cursor.sources
-Types: deb
-URIs: https://downloads.cursor.com/aptrepo
-Suites: stable
-Components: main
-Architectures: amd64
-Signed-By: /etc/apt/keyrings/cursor.gpg
-EOF
-# 更新并安装
-sudo apt update
-# sudo apt autoremove --purge -y cursor
-
 
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
