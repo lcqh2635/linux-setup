@@ -364,6 +364,11 @@ cd ~/下载/extensions
     # gsettings list-schemas | grep 'org.gnome.shell.extensions'
 # ------------------------------------------------------------------------------
 
+# 然后你需要登出再登录，安装程序才会生效。或者，你也可以尝试以下其中一种：
+# 如果你正在运行Wayland会话，请执行以下命令
+dbus-run-session -- gnome-shell --wayland
+
+
 sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean -y
 
 
