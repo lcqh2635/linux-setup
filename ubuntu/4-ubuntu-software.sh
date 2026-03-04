@@ -96,7 +96,7 @@ sudo apt-get update && sudo apt-get install --fix-missing -y firefox-l10n-zh-cn
 # 更新 Ubuntu 包列表，刷新系统包索引，确保安装了所有前置条件的最新版本：
 sudo apt update -y
 # 安装必需的Chrome依赖，安装用于安全下载和GPG密钥管理所需的包：
-sudo apt install -y ca-certificates curl
+sudo apt install -y curl apt-transport-https ca-certificates
 # ls /usr/share/keyrings
 # 导入 Google Chrome 的 GPG 签名密钥
 # --yes 自动确认覆盖，--dearmor 转换格式，-o 指定输出路径
@@ -124,7 +124,7 @@ sudo apt install -y google-chrome-stable
 
 # ls /etc/apt/keyrings
 # ls /etc/apt/sources.list.d
-# sudo rm /usr/share/keyrings/google-chrome.gpg && sudo rm /etc/apt/sources.list.d/google-chrome.sources
+# sudo rm /etc/apt/keyrings/google-chrome.gpg && sudo rm /etc/apt/sources.list.d/google-chrome.sources
 
 
 # 在 Ubuntu 上搭建 JetBrains APT 仓库
@@ -176,8 +176,6 @@ install_vpn() {
         install_themes_and_icons
     fi
 }
-
-https://api2.cursor.sh/updates/download/golden/linux-x64-deb/cursor/2.6
 
 
 flatpak -h
