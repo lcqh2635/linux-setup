@@ -59,6 +59,7 @@ sudo apt autoremove --purge -y firefox && sudo snap remove firefox
 # 创建一个保存 APT 库密钥的目录：
 sudo install -d -m 0755 /etc/apt/keyrings
 # 导入 Mozilla APT 密钥环：
+# > /dev/null 的作用是 丢弃标准输出（Standard Output），即“静音”命令的正常输出结果
 # ls /etc/apt/keyrings && cat /etc/apt/keyrings/packages.mozilla.org.asc
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
 # cat /etc/apt/sources.list.d/mozilla.sources
@@ -98,8 +99,9 @@ sudo apt update -y
 sudo apt install -y ca-certificates curl
 # ls /usr/share/keyrings
 # 导入 Google Chrome 的 GPG 签名密钥
+# --yes 自动确认覆盖，--dearmor 转换格式，-o 指定输出路径
 # APT 需要 GPG 密钥来验证从外部仓库下载的包的真实性。下载谷歌的公用签名密钥，转换为二进制格式，并存储在系统密钥环目录中：
-curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor --yes -o /usr/share/keyrings/google-chrome.gpg
+curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor --yes -o /etc/apt/keyrings/google-chrome.gpg
 # cat /etc/apt/sources.list.d/google-chrome.sources
 # 添加 Google Chrome APT 仓库
 # 使用现代 DEB822 格式创建仓库配置文件，该格式比传统单行格式更清晰且易于维护：
@@ -109,7 +111,7 @@ URIs: https://dl.google.com/linux/chrome/deb/
 Suites: stable
 Components: main
 Architectures: amd64
-Signed-By: /usr/share/keyrings/google-chrome.gpg
+Signed-By: /etc/apt/keyrings/google-chrome.gpg
 EOF
 # 验证 Chrome 仓库配置，刷新你的包列表以包含新的仓库：
 sudo apt update
@@ -123,6 +125,25 @@ sudo apt install -y google-chrome-stable
 # ls /etc/apt/keyrings
 # ls /etc/apt/sources.list.d
 # sudo rm /usr/share/keyrings/google-chrome.gpg && sudo rm /etc/apt/sources.list.d/google-chrome.sources
+
+# 在 Ubuntu 上搭建 Cursor APT 仓库
+# https://cursor.com/cn/docs/downloads
+# 添加 Cursor 的 GPG 密钥
+curl -fsSL https://downloads.cursor.com/keys/anysphere.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/cursor.gpg
+# 添加 Cursor 软件源
+# 使用现代 DEB822 格式创建仓库配置文件，该格式比传统单行格式更清晰且易于维护：
+cat << EOF | sudo tee /etc/apt/sources.list.d/cursor.sources
+Types: deb
+URIs: https://downloads.cursor.com/aptrepo
+Suites: stable
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/keyrings/cursor.gpg
+EOF
+# 更新并安装
+sudo apt update
+sudo apt install cursor
+
 
 
 # VPN 相关软件和订阅来源
@@ -158,6 +179,8 @@ install_vpn() {
         install_themes_and_icons
     fi
 }
+
+https://api2.cursor.sh/updates/download/golden/linux-x64-deb/cursor/2.6
 
 
 flatpak -h
