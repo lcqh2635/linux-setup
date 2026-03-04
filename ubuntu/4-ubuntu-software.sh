@@ -127,6 +127,21 @@ sudo apt install -y google-chrome-stable
 # sudo rm /usr/share/keyrings/google-chrome.gpg && sudo rm /etc/apt/sources.list.d/google-chrome.sources
 
 
+# 在 Ubuntu 上搭建 JetBrains APT 仓库
+# https://wiki.debian.org/JetBrains
+curl -fsSL https://s3.eu-central-1.amazonaws.com/jetbrains-ppa/0xA6E8698A.pub.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/jetbrains-ppa-archive-keyring.gpg
+cat << EOF | sudo tee /etc/apt/sources.list.d/jetbrains-ppa.sources
+Types: deb
+URIs: http://jetbrains-ppa.s3-website.eu-central-1.amazonaws.com
+Suites: any
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/keyrings/jetbrains-ppa-archive-keyring.gpg
+EOF
+sudo apt update
+sudo apt install pycharm-community
+
+
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
 # https://ghproxylist.com/
