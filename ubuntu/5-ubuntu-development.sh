@@ -61,6 +61,7 @@ cat << EOF | tee -a $HOME/.m2/settings.xml
 
 </settings>
 EOF
+# IDEA 配置 “Maven 主路径” 为 /usr/share/maven 直接复制到输入框即可
 # ------------------------------------------------------------------------------
 
 
