@@ -71,6 +71,7 @@ mkdir -vp $HOME/编程/{Java,Rust,Cpp,Python,TypeScript,Database}
 # https://dev.java/
 
 # https://github.com/rust-lang/rust
+# https://gitcn.org/topics/rust
 # https://gitcn.org/trending?lang=Rust
 # https://rust-lang.org/zh-CN/
 
@@ -165,6 +166,44 @@ registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
 index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
 EOF
 # cat $HOME/.cargo/config.toml
+
+# https://crates.io/
+# https://crates.io/crates/tauri
+# https://crates.io/crates/tokio
+# https://crates.io/crates/hyper
+# https://crates.io/crates/axum
+# https://crates.io/crates/axum-valid
+# https://crates.io/crates/axum-extra
+# https://crates.io/crates/axum-test
+# https://crates.io/crates/axum-login
+# https://crates.io/crates/tower
+# https://crates.io/crates/tower-http
+# https://crates.io/crates/leptos
+# https://crates.io/crates/sqlx
+# https://crates.io/crates/sea-orm
+# https://crates.io/crates/redis
+# https://crates.io/crates/fred
+# https://crates.io/crates/serde
+# https://crates.io/crates/serde_json
+# https://crates.io/crates/validator
+# https://crates.io/crates/jsonwebtoken
+# https://crates.io/crates/chrono
+# https://crates.io/crates/dotenvy
+# https://crates.io/crates/tokio-cron-scheduler
+# https://crates.io/crates/lettre
+# https://crates.io/crates/captcha
+# https://crates.io/crates/thiserror
+# https://crates.io/crates/anyhow
+# https://crates.io/crates/axum-anyhow
+# https://crates.io/crates/image
+# https://crates.io/crates/aws-sdk-s3
+# https://crates.io/crates/object_store
+# https://crates.io/crates/utoipa
+# https://crates.io/crates/utoipa-gen
+# https://crates.io/crates/bcrypt
+# https://crates.io/crates/tracing
+# https://crates.io/crates/tracing-subscriber
+# https://crates.io/crates/console-subscriber
 # ------------------------------------------------------------------------------
 
 
@@ -315,6 +354,7 @@ EOF
 # 创建网络
 podman network create podman-net
 podman pull redis:latest
+# https://pgtune.leopard.in.ua/
 podman pull postgres:latest
 # Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
 # 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
