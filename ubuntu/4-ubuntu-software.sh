@@ -52,6 +52,7 @@ readonly COLOR_BOLD="\033[1m"
 COLOR_ENABLED=true
 
 
+install_ppa() {
 sudo apt update -y
 sudo apt autoremove --purge -y firefox && sudo snap remove firefox
 # 在 Ubuntu 上搭建 Firefox APT 仓库
@@ -141,6 +142,7 @@ Signed-By: /etc/apt/keyrings/jetbrains-ppa-archive-keyring.gpg
 EOF
 sudo apt update
 # sudo apt install -y intellij-idea rustrover webstorm pycharm goland datagrip
+}
 
 
 # VPN 相关软件和订阅来源
