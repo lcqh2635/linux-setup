@@ -62,7 +62,42 @@ cat << EOF | tee -a $HOME/.m2/settings.xml
 EOF
 # 甚至可以使用大括号展开来创建有规律的目录
 mkdir -vp $HOME/编程/{Java,Rust,Cpp,Python,TypeScript,Database}
+# https://gitcn.org/
+# https://gitcn.org/topics
+# https://gitcn.org/top
+
+# https://github.com/openjdk/jdk
+# https://github.com/topics/java
+# https://dev.java/
+
+# https://github.com/rust-lang/rust
+# https://gitcn.org/trending?lang=Rust
+# https://rust-lang.org/zh-CN/
+
+# https://github.com/topics/c
+# https://github.com/topics/python
 mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis}
+# https://github.com/sqlite/sqlite
+# https://www.sqlite.net.cn/
+
+# https://github.com/mysql/mysql-server
+# https://www.mysql.com/cn/
+
+# https://github.com/MariaDB/server
+# https://mariadb.org.cn/
+
+# https://github.com/postgres/postgres
+# https://postgresql.ac.cn/
+
+# https://github.com/pingcap/tidb
+# https://docs.pingcap.com/zh/
+
+# https://github.com/oceanbase/oceanbase
+# https://www.oceanbase.com/product/opensource
+
+# https://github.com/redis/redis
+# https://www.redis.net.cn/
+
 # IDEA 配置 “Maven 主路径” 为 /usr/share/maven 直接复制到输入框即可
 # ------------------------------------------------------------------------------
 
