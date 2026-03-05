@@ -184,7 +184,7 @@ libadwaita-1-examples
 # 全部多媒体创作与处理工具，面向专业音频/视频制作、图形设计等场景。不推荐普通用户安装
 # sudo apt install -y multimedia-all
 # 安装额外的多媒体插件，使您能够播放各种视频和音频类型
-# sudo apt install -y ubuntu-restricted-extras
+sudo apt install -y ubuntu-restricted-extras
 # 查询软件包的详细元数据信息，包括版本、描述、依赖关系、大小、来源等
 # apt info ubuntu-restricted-extras
 # ------------------------------------------------------------------------------
