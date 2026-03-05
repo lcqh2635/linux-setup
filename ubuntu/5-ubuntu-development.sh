@@ -41,7 +41,7 @@ echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
 # -p (parents)：父目录模式。
 # 作用 ：如果指定的路径中父目录不存在，会自动递归创建。如果目录已经存在，不会报错，而是静默成功
 # 甚至可以使用大括号展开来创建有规律的目录
-mkdir -vp $HOME/.m2 $HOME/编程/{Java,Rust,Python,TypeScript}
+mkdir -vp $HOME/.m2 $HOME/编程/{Java,Rust,Python,TypeScript,Database}
 # tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | tee -a $HOME/.m2/settings.xml
 <?xml version="1.0" encoding="UTF-8"?>
