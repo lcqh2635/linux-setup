@@ -178,15 +178,20 @@ EOF
 # https://crates.io/crates/axum-login
 # https://crates.io/crates/tower
 # https://crates.io/crates/tower-http
+# https://crates.io/crates/tower-sessions
 # https://crates.io/crates/leptos
+# https://crates.io/crates/reqwest
+# https://crates.io/crates/tonic
 # https://crates.io/crates/sqlx
 # https://crates.io/crates/sea-orm
 # https://crates.io/crates/redis
 # https://crates.io/crates/fred
+# https://crates.io/crates/rand
 # https://crates.io/crates/serde
 # https://crates.io/crates/serde_json
 # https://crates.io/crates/validator
 # https://crates.io/crates/jsonwebtoken
+# https://crates.io/crates/uuid
 # https://crates.io/crates/chrono
 # https://crates.io/crates/dotenvy
 # https://crates.io/crates/tokio-cron-scheduler
@@ -200,10 +205,15 @@ EOF
 # https://crates.io/crates/object_store
 # https://crates.io/crates/utoipa
 # https://crates.io/crates/utoipa-gen
+# https://crates.io/crates/base64
 # https://crates.io/crates/bcrypt
 # https://crates.io/crates/tracing
 # https://crates.io/crates/tracing-subscriber
 # https://crates.io/crates/console-subscriber
+# https://crates.io/crates/opentelemetry
+# https://crates.io/crates/opentelemetry-otlp
+# https://crates.io/crates/tracing-opentelemetry
+# https://crates.io/crates/axum-tracing-opentelemetry
 # ------------------------------------------------------------------------------
 
 
