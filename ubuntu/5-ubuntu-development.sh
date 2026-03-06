@@ -284,7 +284,12 @@ npm config set registry https://registry.npmmirror.com/
 sudo chown -R $(whoami):$(whoami) /usr/local
 # 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
 # bun - 现代的 JavaScript 运行时和包管理器
+# https://www.npmjs.com/package/bun
 npm install -g bun
+# Claude Code 是一款存在于终端中的代理编码工具，理解你的代码库，并通过自然语言命令帮助你执行例行任务、
+# 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
+# https://www.npmjs.com/package/@anthropic-ai/claude-code
+npm install -g @anthropic-ai/claude-code
 echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
 # bun 自行升级	bun upgrade
 # bun run config --help
