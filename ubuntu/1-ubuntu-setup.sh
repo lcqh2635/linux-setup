@@ -87,6 +87,8 @@ gnome-extensions disable ding@rastersoft.com
 
 
 # ------------------------------------------------------------------------------
+# 安装必需的Chrome依赖，安装用于安全下载和GPG密钥管理所需的包：
+sudo apt install -y curl apt-transport-https ca-certificates
 # 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
 # https://mirrors.ustc.edu.cn/help/ubuntu.html
 # https://developer.aliyun.com/mirror/ubuntu
