@@ -187,7 +187,6 @@ EOF
 # https://crates.io/crates/sea-orm
 # https://crates.io/crates/redis
 # https://crates.io/crates/fred
-# https://crates.io/crates/rand
 # https://crates.io/crates/serde
 # https://crates.io/crates/serde_json
 # https://crates.io/crates/validator
@@ -195,12 +194,14 @@ EOF
 # https://crates.io/crates/uuid
 # https://crates.io/crates/chrono
 # https://crates.io/crates/dotenvy
+# https://crates.io/crates/config
 # https://crates.io/crates/tokio-cron-scheduler
 # https://crates.io/crates/lettre
 # https://crates.io/crates/captcha
 # https://crates.io/crates/thiserror
 # https://crates.io/crates/anyhow
 # https://crates.io/crates/axum-anyhow
+# https://crates.io/crates/rand
 # https://crates.io/crates/image
 # https://crates.io/crates/aws-sdk-s3
 # https://crates.io/crates/object_store
@@ -222,9 +223,12 @@ EOF
 # https://crates.io/crates/metrics-exporter-prometheus
 # https://crates.io/crates/prometheus
 # https://crates.io/crates/metrics-prometheus
+# https://crates.io/crates/lapin
 # https://crates.io/crates/rdkafka
 # https://crates.io/crates/rocketmq-rust
 # https://crates.io/crates/rocketmq-client-rust
+# https://crates.io/crates/rust_decimal
+# https://crates.io/crates/sysinfo
 # ------------------------------------------------------------------------------
 
 
