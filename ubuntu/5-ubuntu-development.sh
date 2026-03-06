@@ -179,6 +179,7 @@ EOF
 # https://crates.io/crates/tower
 # https://crates.io/crates/tower-http
 # https://crates.io/crates/tower-sessions
+# https://crates.io/crates/tower_governor
 # https://crates.io/crates/leptos
 # https://crates.io/crates/reqwest
 # https://crates.io/crates/tonic
@@ -207,6 +208,7 @@ EOF
 # https://crates.io/crates/utoipa-gen
 # https://crates.io/crates/base64
 # https://crates.io/crates/bcrypt
+# https://crates.io/crates/oauth2
 # https://crates.io/crates/tracing
 # https://crates.io/crates/tracing-subscriber
 # https://crates.io/crates/console-subscriber
@@ -214,6 +216,15 @@ EOF
 # https://crates.io/crates/opentelemetry-otlp
 # https://crates.io/crates/tracing-opentelemetry
 # https://crates.io/crates/axum-tracing-opentelemetry
+# https://crates.io/crates/rnacos
+# https://crates.io/crates/nacos-sdk
+# https://crates.io/crates/metrics
+# https://crates.io/crates/metrics-exporter-prometheus
+# https://crates.io/crates/prometheus
+# https://crates.io/crates/metrics-prometheus
+# https://crates.io/crates/rdkafka
+# https://crates.io/crates/rocketmq-rust
+# https://crates.io/crates/rocketmq-client-rust
 # ------------------------------------------------------------------------------
 
 
