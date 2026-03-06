@@ -186,6 +186,9 @@ EOF
 # https://crates.io/crates/sqlx
 # https://crates.io/crates/sea-orm
 # https://crates.io/crates/redis
+# https://crates.io/crates/deadpool
+# https://crates.io/crates/deadpool-redis
+# https://crates.io/crates/deadpool-postgres
 # https://crates.io/crates/fred
 # https://crates.io/crates/serde
 # https://crates.io/crates/serde_json
@@ -229,6 +232,8 @@ EOF
 # https://crates.io/crates/rocketmq-client-rust
 # https://crates.io/crates/rust_decimal
 # https://crates.io/crates/sysinfo
+# https://crates.io/crates/clap
+# https://crates.io/crates/regex
 # ------------------------------------------------------------------------------
 
 
