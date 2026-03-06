@@ -176,6 +176,7 @@ EOF
 # https://crates.io/crates/axum-extra
 # https://crates.io/crates/axum-test
 # https://crates.io/crates/axum-login
+# https://crates.io/crates/axum-anyhow
 # https://crates.io/crates/tower
 # https://crates.io/crates/tower-http
 # https://crates.io/crates/tower-sessions
