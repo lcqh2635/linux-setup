@@ -237,6 +237,8 @@ EOF
 # https://crates.io/crates/regex
 # ------------------------------------------------------------------------------
 
+sudo apt install -y zig
+echo "🐍 你刚安装的 zig 版本号为：$(zig version)"
 
 # ------------------------------------------------------------------------------
 # 第六步：安装 Go 语言
@@ -311,6 +313,7 @@ EOF
 # 推荐安装的全局工具包
 # https://docs.deno.org.cn/
 npm install -g deno
+# deno init --npm vite my-vue-app --template vue-ts
 # vite - 下一代前端构建工具（通常项目局部安装，但全局也有用）
 npm install -g typescript vite eslint prettier
 # npm 列出所有全局安装的包
