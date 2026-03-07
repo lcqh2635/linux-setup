@@ -286,6 +286,7 @@ sudo chown -R $(whoami):$(whoami) /usr/local
 # bun - 现代的 JavaScript 运行时和包管理器
 # https://www.npmjs.com/package/bun
 npm install -g bun
+# bun create vite my-vue-app --template vue-ts
 # Claude Code 是一款存在于终端中的代理编码工具，理解你的代码库，并通过自然语言命令帮助你执行例行任务、
 # 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
 # https://www.npmjs.com/package/@anthropic-ai/claude-code
@@ -308,6 +309,8 @@ EOF
 # 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
 
 # 推荐安装的全局工具包
+# https://docs.deno.org.cn/
+npm install -g deno
 # vite - 下一代前端构建工具（通常项目局部安装，但全局也有用）
 npm install -g typescript vite eslint prettier
 # npm 列出所有全局安装的包
