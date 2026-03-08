@@ -277,10 +277,6 @@ git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
 cd hidetopbar && make && gnome-extensions install -f hidetopbar.zip
 cd ~/下载/extensions
     
-git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
-zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
-cd ~/下载/extensions
-    
 git clone https://gh-proxy.com/https://github.com/aunetx/blur-my-shell.git
 cd blur-my-shell && make install
 cd ~/下载/extensions
@@ -289,15 +285,28 @@ git clone https://gitlab.gnome.org/jrahmatzadeh/just-perfection.git
 cd just-perfection && ./scripts/build.sh -i
 cd ~/下载/extensions
 
+git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
+cd rounded-window-corners && just install
+cd ~/下载/extensions
+
+git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
+cd gnome-rounded-corners && make
+gnome-extensions install -f Rounded_Corners@lennart-k.zip
+cd ~/下载/extensions
+
+git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
+zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
+cd ~/下载/extensions
+
 git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
 cd add-to-desktop && ./build.sh
 gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
 cd ~/下载/extensions
-    
+
 git clone https://gh-proxy.com/https://github.com/maniacx/Bluetooth-Battery-Meter.git
 cd Bluetooth-Battery-Meter && ./install.sh
 cd ~/下载/extensions
-    
+
 git clone https://gh-proxy.com/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
 cd gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
 cd ~/下载/extensions
@@ -306,25 +315,16 @@ git clone https://gh-proxy.com/https://github.com/hermes83/compiz-alike-magic-la
 cd compiz-alike-magic-lamp-effect && ./zip.sh
 gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
 cd ~/下载/extensions
-    
+
 git clone https://gitlab.com/smedius/desktop-icons-ng.git
 cd desktop-icons-ng && ./scripts/local_install.sh
 cd ~/下载/extensions
-    
+
 git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
 cd nightthemeswitcher-gnome-shell-extension
 meson setup builddir --prefix=~/.local && meson install -C builddir
 cd ~/下载/extensions
-    
-git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
-cd gnome-rounded-corners && make
-gnome-extensions install -f Rounded_Corners@lennart-k.zip
-cd ~/下载/extensions
-    
-git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
-cd rounded-window-corners && just install
-cd ~/下载/extensions
-    
+
 git clone https://gh-proxy.com/https://github.com/icedman/search-light.git
 cd search-light && make
 cd ~/下载/extensions
