@@ -301,6 +301,8 @@ npm install -g bun
 # 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
 # https://www.npmjs.com/package/@anthropic-ai/claude-code
 npm install -g @anthropic-ai/claude-code
+# https://openclaw.cc/
+npm install -g openclaw
 echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
 # bun 自行升级	bun upgrade
 # bun run config --help

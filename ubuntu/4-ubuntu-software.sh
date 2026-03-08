@@ -248,6 +248,9 @@ sudo flatpak install -y flathub io.github.swordpuffin.rewaita
 sudo flatpak install -y flathub io.github.debasish_patra_1987.linuxthemestore
 # Wardrobe 是一个用于下载社区制作的 Gnome Shell、Gtk3/4、图标和光标主题以及壁纸的工具
 sudo flatpak install -y flathub io.github.swordpuffin.wardrobe
+# Karere 将 WhatsApp 带入你的 Linux 桌面，拥有原生的界面和体验。它与您的环境无缝集成，提供简洁、现代的界面，
+# 尊重您系统的主题和工作流程。通过封装WhatsApp Web，它确保你能使用所有最新功能，同时增加强大的桌面专用功能
+sudo flatpak install -y flathub io.github.tobagin.karere
 
 
 # Shortwave 是一个互联网广播播放器，提供访问超过5万个电台的电台数据库
