@@ -285,13 +285,13 @@ git clone https://gitlab.gnome.org/jrahmatzadeh/just-perfection.git
 cd just-perfection && ./scripts/build.sh -i
 cd ~/下载/extensions
 
-git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
-cd rounded-window-corners && just install
-cd ~/下载/extensions
-
 git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
 cd gnome-rounded-corners && make
 gnome-extensions install -f Rounded_Corners@lennart-k.zip
+cd ~/下载/extensions
+
+git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
+cd rounded-window-corners && just install
 cd ~/下载/extensions
 
 git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
