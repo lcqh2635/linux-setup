@@ -155,16 +155,9 @@ install_vpn() {
     cd ~/下载
     # 安装 WhiteSur 壁纸
     echo "准备开始安装WhiteSur系列主题..."
-    wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge_2.4.6_amd64.deb"
-    
-    # https://hiddify-vpn.org/
-    bash <(curl https://i.hiddify.com/release)
-    sudo apt install -y v2ray
-    wget "https://gh-proxy.org/https://github.com/hiddify/hiddify-app/releases/download/v4.0.4/Hiddify-Debian-x64.deb"
-    
-    wget "https://gh-proxy.org/https://github.com/chen08209/FlClash/releases/download/v0.8.92/FlClash-0.8.92-linux-amd64.deb"
     
     # https://v2rayn.co/
+    # https://github.com/2dust/v2rayN/releases
     # 使用教程	https://v2rayn.co/v2rayn-tutorial/
     # 1、点击顶部菜单栏的 “订阅分组”，选择 “订阅分组设置”，在弹出的窗口中点击 "添加"，
     # 2、添加订阅节点完成后回到主界面，点击 “订阅分组” -> “更新全部订阅 (不通过代理)” 操作完成后，你应该能看到列表中出现了一排节点
@@ -174,13 +167,19 @@ install_vpn() {
     		# 系统代理：将其设置为 自动配置系统代理。此时底部图标会变为红色
     		# 路由：将其设置为 绕过大陆。这可以确保访问百度、淘宝等国内网站时不走代理，访问 YouTube、Google 时才加速
     # 4、测试网络。打开浏览器，尝试访问 Google。如果能正常打开，恭喜，配置已成功
-    
-    # 高级设置说明：
+    # 5、v2rayN 高级设置说明：
     # TUN 模式，在软件底部可以找到 TUN 模式开关
     	# 作用：接管整机流量。对于一些不遵循系统代理的浏览器插件、游戏或特定软件非常有用
     	# 建议：普通网页浏览不需要开启，仅在某些软件无法正常代理时开启
     # 核心选择：v2rayN 支持切换 Xray-core、sing-box 等核心。目前大部分订阅链接都支持 Xray，保持默认即可
     wget "https://gh-proxy.org/https://github.com/2dust/v2rayN/releases/download/7.18.0/v2rayN-linux-64.deb"
+    # https://github.com/clash-verge-rev/clash-verge-rev/releases
+    wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge_2.4.6_amd64.deb"
+    # https://hiddify-vpn.org/
+    bash <(curl https://i.hiddify.com/release)
+    sudo apt install -y v2ray
+    wget "https://gh-proxy.org/https://github.com/hiddify/hiddify-app/releases/download/v4.0.4/Hiddify-Debian-x64.deb"
+    wget "https://gh-proxy.org/https://github.com/chen08209/FlClash/releases/download/v0.8.92/FlClash-0.8.92-linux-amd64.deb"
     
     sudo apt install -y ./Clash.Verge_2.4.6_amd64.deb
     sudo apt install -y ./Hiddify-Debian-x64.deb
