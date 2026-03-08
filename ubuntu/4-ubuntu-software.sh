@@ -156,7 +156,11 @@ install_vpn() {
     # 安装 WhiteSur 壁纸
     echo "准备开始安装WhiteSur系列主题..."
     wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge_2.4.6_amd64.deb"
+    
+    # https://hiddify-vpn.org/
+    sudo apt install -y v2ray
     wget "https://gh-proxy.org/https://github.com/hiddify/hiddify-app/releases/download/v4.0.4/Hiddify-Debian-x64.deb"
+    
     wget "https://gh-proxy.org/https://github.com/chen08209/FlClash/releases/download/v0.8.92/FlClash-0.8.92-linux-amd64.deb"
     wget "https://gh-proxy.org/https://github.com/2dust/v2rayN/releases/download/7.18.0/v2rayN-linux-64.deb"
     
@@ -251,6 +255,9 @@ sudo flatpak install -y flathub io.github.swordpuffin.wardrobe
 # Karere 将 WhatsApp 带入你的 Linux 桌面，拥有原生的界面和体验。它与您的环境无缝集成，提供简洁、现代的界面，
 # 尊重您系统的主题和工作流程。通过封装WhatsApp Web，它确保你能使用所有最新功能，同时增加强大的桌面专用功能
 sudo flatpak install -y flathub io.github.tobagin.karere
+# 和美是一款动漫直播应用，允许你创建合集并根据自定义规则观看。该应用旨在帮助你从不同平台流媒体内容，
+# 内置“直播弹幕”功能，提供在线评论，提升观看体验。请注意，应用内所有内容均仅提供中文版本，为你提供了一个流畅且可定制的享受喜爱动漫的方式
+sudo flatpak install -y flathub io.github.Predidit.Kazumi
 
 
 # Shortwave 是一个互联网广播播放器，提供访问超过5万个电台的电台数据库
