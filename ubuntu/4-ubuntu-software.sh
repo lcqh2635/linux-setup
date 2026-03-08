@@ -158,10 +158,14 @@ install_vpn() {
     wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge_2.4.6_amd64.deb"
     
     # https://hiddify-vpn.org/
+    bash <(curl https://i.hiddify.com/release)
     sudo apt install -y v2ray
     wget "https://gh-proxy.org/https://github.com/hiddify/hiddify-app/releases/download/v4.0.4/Hiddify-Debian-x64.deb"
     
     wget "https://gh-proxy.org/https://github.com/chen08209/FlClash/releases/download/v0.8.92/FlClash-0.8.92-linux-amd64.deb"
+    
+    # https://v2rayn.co/
+    # 使用教程	https://v2rayn.co/v2rayn-tutorial/
     wget "https://gh-proxy.org/https://github.com/2dust/v2rayN/releases/download/7.18.0/v2rayN-linux-64.deb"
     
     sudo apt install -y ./Clash.Verge_2.4.6_amd64.deb
