@@ -247,10 +247,6 @@ sudo flatpak install -y flathub app.zen_browser.zen
 # gnome-extensions list --system
 # 查看所有系统级扩展的文件目录
 # nautilus admin:/usr/share/gnome-shell/extensions
-# 列出所有用户级扩展
-# gnome-extensions list --user
-# 查看所有用户级扩展的文件目录
-# nautilus ~/.local/share/gnome-shell/extensions
 # apt list gnome-shell-extension*
 # apt list gnome-shell-ubuntu-extensions*
 sudo apt install -y \
@@ -266,91 +262,83 @@ gnome-shell-extension-gsconnect-browsers \
 gnome-shell-extension-prefs
 
 
+# 列出所有用户级扩展
+# gnome-extensions list --user
+# 查看所有用户级扩展的文件目录
+# nautilus ~/.local/share/gnome-shell/extensions
 sudo apt-get install -y gettext meson just
 mkdir -p ~/下载/extensions && cd ~/下载/extensions
-        
+
+git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
+cd disable-unredirect && make install
+cd ~/下载/extensions
+    
+git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
+cd hidetopbar && make && gnome-extensions install -f hidetopbar.zip
+cd ~/下载/extensions
+    
 git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
 zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
 cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/aunetx/blur-my-shell.git
-    cd blur-my-shell && make install
-    cd ~/下载/extensions
+git clone https://gh-proxy.com/https://github.com/aunetx/blur-my-shell.git
+cd blur-my-shell && make install
+cd ~/下载/extensions
     
-    git clone https://gitlab.gnome.org/jrahmatzadeh/just-perfection.git
-    cd just-perfection && ./scripts/build.sh -i
-    cd ~/下载/extensions
-    # gdbus call 它是用来在命令行中“调用”其他程序功能的开关
-    # --session：连接会话总线（最常用）。用于与当前用户登录的桌面程序通信（如 GNOME Shell、通知、播放器）
-    # --dest (或 -d)：目标服务的名称（例如 org.gnome.Shell.Extensions、org.freedesktop.Notifications）
-    # --object-path (或 -o)：对象在 D-Bus 上的路径（例如 /org/gnome/Shell/Extensions、/org/freedesktop/Notifications）
-    # --method (或 -m)：要调用的具体方法，格式通常为 接口名。方法名
-    # --timeout：等待响应的超时时间（秒）
-    gdbus call --session \
-           --dest org.gnome.Shell.Extensions \
-           --object-path /org/gnome/Shell/Extensions \
-           --method org.gnome.Shell.Extensions.InstallRemoteExtension \
-           "just-perfection-desktop@just-perfection"
-           
+git clone https://gitlab.gnome.org/jrahmatzadeh/just-perfection.git
+cd just-perfection && ./scripts/build.sh -i
+cd ~/下载/extensions
+
+git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
+cd add-to-desktop && ./build.sh
+gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
+cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
-    cd add-to-desktop && ./build.sh
-    gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
-    cd ~/下载/extensions
+git clone https://gh-proxy.com/https://github.com/maniacx/Bluetooth-Battery-Meter.git
+cd Bluetooth-Battery-Meter && ./install.sh
+cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/maniacx/Bluetooth-Battery-Meter.git
-    cd Bluetooth-Battery-Meter && ./install.sh
-    cd ~/下载/extensions
+git clone https://gh-proxy.com/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
+cd gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
+cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
-    cd gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
-    cd ~/下载/extensions
+git clone https://gh-proxy.com/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
+cd compiz-alike-magic-lamp-effect && ./zip.sh
+gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
+cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-    cd compiz-alike-magic-lamp-effect && ./zip.sh
-    gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
-    cd ~/下载/extensions
+git clone https://gitlab.com/smedius/desktop-icons-ng.git
+cd desktop-icons-ng && ./scripts/local_install.sh
+cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
-    cd disable-unredirect && make install
-    cd ~/下载/extensions
+git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
+cd nightthemeswitcher-gnome-shell-extension
+meson setup builddir --prefix=~/.local && meson install -C builddir
+cd ~/下载/extensions
     
-    git clone https://gitlab.com/smedius/desktop-icons-ng.git
-    cd desktop-icons-ng && ./scripts/local_install.sh
-    cd ~/下载/extensions
+git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
+cd gnome-rounded-corners && make
+gnome-extensions install -f Rounded_Corners@lennart-k.zip
+cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
-    cd hidetopbar && make && gnome-extensions install -f hidetopbar.zip
-    cd ~/下载/extensions
+git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
+cd rounded-window-corners && just install
+cd ~/下载/extensions
     
-    git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
-    cd nightthemeswitcher-gnome-shell-extension
-    meson setup builddir --prefix=~/.local && meson install -C builddir
-    cd ~/下载/extensions
+git clone https://gh-proxy.com/https://github.com/icedman/search-light.git
+cd search-light && make
+cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
-    cd gnome-rounded-corners && make
-    gnome-extensions install -f Rounded_Corners@lennart-k.zip
-    cd ~/下载/extensions
+git clone https://gh-proxy.com/https://github.com/amivaleo/Show-Desktop-Button.git
+mv Show-Desktop-Button show-desktop-button@amivaleo
+zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo
+gnome-extensions install -f show-desktop-button@amivaleo.zip
+cd ~/下载/extensions
     
-    git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
-    cd rounded-window-corners && just install
-    cd ~/下载/extensions
-    
-    git clone https://gh-proxy.com/https://github.com/icedman/search-light.git
-    cd search-light && make
-    cd ~/下载/extensions
-    
-    git clone https://gh-proxy.com/https://github.com/amivaleo/Show-Desktop-Button.git
-    mv Show-Desktop-Button show-desktop-button@amivaleo
-    zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo
-    gnome-extensions install -f show-desktop-button@amivaleo.zip
-    cd ~/下载/extensions
-    
-    git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
-    cd status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh
-    gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    cd ~/下载/extensions
+git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
+cd status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh
+gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+cd ~/下载/extensions
     
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
     for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
