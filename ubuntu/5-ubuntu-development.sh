@@ -13,6 +13,10 @@
 # cd ~/下载 && git clone https://cdn.gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
 # cd ~/文档/linux-setup && git add . && git commit -m 'backup' && git push
 
+
+# https://lcqh2635.github.io/
+
+
 # ------------------------------------------------------------------------------
 # 1. 安全与规范设置 (Best Practices)
 # ------------------------------------------------------------------------------
@@ -168,6 +172,7 @@ EOF
 # cat $HOME/.cargo/config.toml
 
 # https://crates.io/
+# https://crates.io/crates/leptos
 # https://crates.io/crates/tauri
 # https://crates.io/crates/tokio
 # https://crates.io/crates/hyper
@@ -181,7 +186,6 @@ EOF
 # https://crates.io/crates/tower-http
 # https://crates.io/crates/tower-sessions
 # https://crates.io/crates/tower_governor
-# https://crates.io/crates/leptos
 # https://crates.io/crates/reqwest
 # https://crates.io/crates/tonic
 # https://crates.io/crates/sqlx
@@ -237,6 +241,10 @@ EOF
 # https://crates.io/crates/regex
 # ------------------------------------------------------------------------------
 
+# https://course.ziglang.cc/
+# https://github.com/ziglang/zig
+# https://github.com/zigtools/zls
+# https://zigtools.org/zls/install/
 sudo apt install -y zig
 echo "🐍 你刚安装的 zig 版本号为：$(zig version)"
 
