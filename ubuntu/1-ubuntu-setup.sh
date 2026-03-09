@@ -235,10 +235,8 @@ sudo flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
 sudo flatpak install -y flathub io.github.vikdevelop.SaveDesktop
 # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
 sudo flatpak install -y flathub com.google.Chrome
-# Brave 致力于通过为用户提供更安全、更快速、更好的浏览体验来修复网络，同时通过一个基于注意力的奖励生态系统，扩大对内容创作者的支持
-sudo flatpak install -y flathub com.brave.Browser
-# Zen 是浏览网页的最佳方式。设计精美，注重隐私，功能丰富。我们关心的是你的体验，而不是你的数据
-sudo flatpak install -y flathub app.zen_browser.zen
+sudo flatpak install -y flathub com.qq.QQ
+sudo flatpak install -y flathub com.tencent.WeChat
 # ------------------------------------------------------------------------------
 
 
