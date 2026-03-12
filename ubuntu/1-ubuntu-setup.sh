@@ -274,7 +274,7 @@ cd ~/下载/extensions
 git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
 cd hidetopbar && make && gnome-extensions install -f hidetopbar.zip
 cd ~/下载/extensions
-    
+
 git clone https://gh-proxy.com/https://github.com/aunetx/blur-my-shell.git
 cd blur-my-shell && make install
 cd ~/下载/extensions
@@ -351,12 +351,6 @@ cd ~/下载/extensions
     glib-compile-schemas ~/.local/share/glib-2.0/schemas/
     # gsettings list-schemas | grep 'org.gnome.shell.extensions'
 # ------------------------------------------------------------------------------
-
-# 然后你需要登出再登录，安装程序才会生效。或者，你也可以尝试以下其中一种：
-# 如果你正在运行Wayland会话，请执行以下命令
-dbus-run-session -- gnome-shell --wayland
-
-
 sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean -y
 
 
