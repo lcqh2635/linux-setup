@@ -333,9 +333,6 @@ npm install -g typescript vite eslint prettier
 # ------------------------------------------------------------------------------
 
 
-# https://3.jetbra.in/
-# https://github.com/jonssonyan/3.jetbra.in
-# https://account.jetbrains.com/licenses
 # JetBrains 的 API 返回的 JSON 中包含 多个架构的下载链接，你的 grep 命令会匹配 所有 包含 jetbrains-toolbox-*.tar.gz 的链接，
 # 而 head -1 恰好取到了第一个（可能是 arm64）
 # 关键：| grep -v 'arm64' 会过滤掉包含 "arm64" 的链接
@@ -356,6 +353,12 @@ chmod +x jetbrains-toolbox
 ./jetbrains-toolbox
 
 
+# https://3.jetbra.in/
+# https://github.com/jonssonyan/3.jetbra.in
+# https://account.jetbrains.com/licenses
+cd ~/下载
+wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
+unzip jetbra-*.zip && mv jetbra ~/.jetbra
 
 
 # ------------------------------------------------------------------------------

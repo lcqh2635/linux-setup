@@ -144,6 +144,10 @@ sudo apt update
 # sudo apt install -y intellij-idea rustrover webstorm pycharm goland datagrip
 }
 
+cd ~/下载
+wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
+unzip jetbra.zip
+mv jetbra ~/.jetbra
 
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
