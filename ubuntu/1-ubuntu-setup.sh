@@ -83,8 +83,6 @@ gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
 gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
 # 禁用系统自带的 Desktop Icons NG (DING) 扩展
 gnome-extensions disable ding@rastersoft.com
-# 禁用系统自带的 Ubuntu Dock 扩展，改用 Dash to Dock
-gnome-extensions disable ubuntu-dock@ubuntu.com
 # ------------------------------------------------------------------------------
 
 
