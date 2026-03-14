@@ -104,6 +104,9 @@ uninstall_gtk_theme() {
 ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
 }
 
+
+# https://www.gnome-look.org/u/vinceliuice
+# https://www.gnome-look.org/u/eliverlara
 # 安装字体、图标、主题
 install_themes_and_icons() {
     print_info "正在安装并配置系统字体..."
