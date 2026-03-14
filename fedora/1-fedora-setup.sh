@@ -19,13 +19,8 @@
 
 
 # ------------------------------------------------------------------------------
-# Gnome 官方网站 https://www.gnome.org/zh-CN/
-# Launchpad 主页：https://launchpad.net/
-# 包搜索：https://packages.ubuntu.com/
-# PPA 列表：https://launchpad.net/ubuntu/+ppas
-# 特定 PPA：https://launchpad.net/~gnome-shell-extensions/+archive/ubuntu/ppa
-# Launchpad 主页：https://launchpad.net/~gnome-shell-extensions/+archive/ubuntu/ppa
-# Extensions 包列表：https://launchpad.net/~gnome-shell-extensions/+archive/ubuntu/ppa/+packages
+# Gnome 官方网站	https://www.gnome.org/zh-CN/
+# Fedora 主页：		https://docs.fedoraproject.org/zh_CN/docs/
 # ------------------------------------------------------------------------------
 
 
@@ -80,8 +75,6 @@ gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'D
 gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
 gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
 gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
-# 禁用系统自带的 Desktop Icons NG (DING) 扩展
-gnome-extensions disable ding@rastersoft.com
 # ------------------------------------------------------------------------------
 
 
@@ -158,6 +151,7 @@ sudo dnf config-manager setopt google-chrome.enabled=1
 # 最后，安装  Google Chrome 浏览器：
 # sudo dnf install -y google-chrome-stable
 # ------------------------------------------------------------------------------
+
 
 # 从 fedora-cisco-openh264 存储库安装
 sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-origin
@@ -322,6 +316,286 @@ npm install -g typescript vite eslint prettier
 # ------------------------------------------------------------------------------
 
 
+# ------------------------------------------------------------------------------
+# 通过 apt 安装 (推荐)
+# https://ubuntu.com/toolchains
+sudo apt install -y default-jdk maven
+echo "🐍 你刚安装的 java 版本号为：$(java --version)"
+echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
+# whereis maven
+# nautilus admin:/usr/share/maven
+# 配置 maven 阿里云 aliyun 加速镜像	https://maven.aliyun.com/mvn/guide
+# -v (verbose)：详细模式。
+# 作用：每创建一个目录，都会在终端打印一条提示信息。让用户知道命令到底执行了什么
+# -p (parents)：父目录模式。
+# 作用 ：如果指定的路径中父目录不存在，会自动递归创建。如果目录已经存在，不会报错，而是静默成功
+mkdir -vp $HOME/.m2
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
+cat << EOF | tee -a $HOME/.m2/settings.xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+
+  <mirrors>
+    <mirror>
+      <id>aliyunmaven</id>
+      <mirrorOf>*</mirrorOf>
+      <name>阿里云公共仓库</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+  </mirrors>
+
+</settings>
+EOF
+# 甚至可以使用大括号展开来创建有规律的目录
+mkdir -vp $HOME/编程/{Java,Rust,Cpp,Python,TypeScript,Database}
+# https://gitcn.org/
+# https://gitcn.org/topics
+# https://gitcn.org/top
+
+# https://github.com/openjdk/jdk
+# https://github.com/topics/java
+# https://dev.java/
+
+# https://github.com/rust-lang/rust
+# https://gitcn.org/topics/rust
+# https://gitcn.org/trending?lang=Rust
+# https://rust-lang.org/zh-CN/
+
+# https://github.com/topics/c
+# https://github.com/topics/python
+mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis}
+# https://github.com/sqlite/sqlite
+# https://www.sqlite.net.cn/
+
+# https://github.com/mysql/mysql-server
+# https://www.mysql.com/cn/
+
+# https://github.com/MariaDB/server
+# https://mariadb.org.cn/
+
+# https://github.com/postgres/postgres
+# https://postgresql.ac.cn/
+
+# https://github.com/pingcap/tidb
+# https://docs.pingcap.com/zh/
+
+# https://github.com/oceanbase/oceanbase
+# https://www.oceanbase.com/product/opensource
+
+# https://github.com/redis/redis
+# https://www.redis.net.cn/
+
+# IDEA 配置 “Maven 主路径” 为 /usr/share/maven 直接复制到输入框即可
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# 第七步：安装 Rust
+echo "🦀 安装 Rust..."
+# Rust Web 常用的框架 Axum 目前排名性能总榜 7，需要使用 pg 数据库，数据来自性能测试网站	https://www.techempower.com/benchmarks
+# 配置 crates.io 国内中科大 ustc 加速镜像源	 https://mirrors.ustc.edu.cn/help/crates.io-index.html
+# 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
+
+# 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
+cat << EOF | tee -a ~/.bash_profile
+# 配置中科大 ustc 的 Rust Toolchain 反向代理 	https://mirrors.ustc.edu.cn/help/rust-static.html
+# 指定 Rust 工具链和组件的下载地址（如 rustc,cargo,rust-std 等）
+export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
+# 指定 rustup 自身更新元数据的地址（即 rustup 如何检查自身版本、下载新版本）
+export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
+
+# 配置阿里云 aliyun 的 Rust Toolchain 反向代理 	https://developer.aliyun.com/mirror/rustup
+# export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup
+# export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup
+EOF
+
+source ~/.bash_profile
+# cat ~/.bash_profile
+
+# 用 shell 执行从标准输入来的脚本，并把 -y 作为参数传给那个脚本，告诉它：自动安装，不要问我！
+# 自动确认所有提示，使用默认设置安装（相当于 yes）
+# 使用官方安装脚本
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# 使用阿里云安装脚本
+curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
+# 激活 Rust 环境
+. "$HOME/.cargo/env"
+
+# rustup update
+# 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
+
+# -v (verbose)：详细模式。
+# 作用：每创建一个目录，都会在终端打印一条提示信息。让用户知道命令到底执行了什么
+# -p (parents)：父目录模式。
+# 作用 ：如果指定的路径中父目录不存在，会自动递归创建。如果目录已经存在，不会报错，而是静默成功。
+#  ${MAVEN_HOME:-$HOME/.m2} 这是 Shell 参数扩展（Parameter Expansion） 语法，格式为 ${变量名:-默认值}
+# 作用：检查环境变量 MAVEN_HOME 是否已设置且非空。如果是：使用 MAVEN_HOME 的值作为目录路径。如果否（未设置或为空）：使用默认值 $HOME/.m2
+mkdir -vp ${CARGO_HOME:-$HOME/.cargo}
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
+cat << EOF | tee -a ${CARGO_HOME:-$HOME/.cargo}/config.toml
+# 配置 Cargo 国内加速镜像源，可选：ustc、aliyun、tuna 此处默认选择 ustc
+# 使用稀疏协议（sparse）减少元数据下载量，大幅加速
+[source.crates-io]
+replace-with = 'ustc'
+
+# ustc 中科大 crates.io 镜像 	https://mirrors.ustc.edu.cn/help/crates.io-index.html
+[source.ustc]
+registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+[registries.ustc]
+index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+
+# aliyun 阿里云 crates.io 镜像	https://developer.aliyun.com/mirror/rustup 
+[source.aliyun]
+registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+[registries.aliyun]
+index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+EOF
+# cat $HOME/.cargo/config.toml
+
+# https://crates.io/
+# https://crates.io/crates/leptos
+# https://crates.io/crates/tauri
+# https://crates.io/crates/tokio
+# https://crates.io/crates/hyper
+# https://crates.io/crates/axum
+# https://crates.io/crates/axum-valid
+# https://crates.io/crates/axum-extra
+# https://crates.io/crates/axum-test
+# https://crates.io/crates/axum-login
+# https://crates.io/crates/axum-anyhow
+# https://crates.io/crates/tower
+# https://crates.io/crates/tower-http
+# https://crates.io/crates/tower-sessions
+# https://crates.io/crates/tower_governor
+# https://crates.io/crates/reqwest
+# https://crates.io/crates/tonic
+# https://crates.io/crates/sqlx
+# https://crates.io/crates/sea-orm
+# https://crates.io/crates/redis
+# https://crates.io/crates/deadpool
+# https://crates.io/crates/deadpool-redis
+# https://crates.io/crates/deadpool-postgres
+# https://crates.io/crates/fred
+# https://crates.io/crates/serde
+# https://crates.io/crates/serde_json
+# https://crates.io/crates/validator
+# https://crates.io/crates/jsonwebtoken
+# https://crates.io/crates/uuid
+# https://crates.io/crates/chrono
+# https://crates.io/crates/dotenvy
+# https://crates.io/crates/config
+# https://crates.io/crates/tokio-cron-scheduler
+# https://crates.io/crates/lettre
+# https://crates.io/crates/captcha
+# https://crates.io/crates/thiserror
+# https://crates.io/crates/anyhow
+# https://crates.io/crates/axum-anyhow
+# https://crates.io/crates/rand
+# https://crates.io/crates/image
+# https://crates.io/crates/aws-sdk-s3
+# https://crates.io/crates/object_store
+# https://crates.io/crates/utoipa
+# https://crates.io/crates/utoipa-gen
+# https://crates.io/crates/base64
+# https://crates.io/crates/bcrypt
+# https://crates.io/crates/oauth2
+# https://crates.io/crates/tracing
+# https://crates.io/crates/tracing-subscriber
+# https://crates.io/crates/console-subscriber
+# https://crates.io/crates/opentelemetry
+# https://crates.io/crates/opentelemetry-otlp
+# https://crates.io/crates/tracing-opentelemetry
+# https://crates.io/crates/axum-tracing-opentelemetry
+# https://crates.io/crates/rnacos
+# https://crates.io/crates/nacos-sdk
+# https://crates.io/crates/metrics
+# https://crates.io/crates/metrics-exporter-prometheus
+# https://crates.io/crates/prometheus
+# https://crates.io/crates/metrics-prometheus
+# https://crates.io/crates/lapin
+# https://crates.io/crates/rdkafka
+# https://crates.io/crates/rocketmq-rust
+# https://crates.io/crates/rocketmq-client-rust
+# https://crates.io/crates/rust_decimal
+# https://crates.io/crates/sysinfo
+# https://crates.io/crates/clap
+# https://crates.io/crates/regex
+# ------------------------------------------------------------------------------
+
+# https://course.ziglang.cc/
+# https://github.com/ziglang/zig
+# https://github.com/zigtools/zls
+# https://zigtools.org/zls/install/
+sudo apt install -y zig
+echo "🐍 你刚安装的 zig 版本号为：$(zig version)"
+
+# ------------------------------------------------------------------------------
+# 第六步：安装 Go 语言
+echo "🐹 安装 Go 语言..."
+# Go 国内加速镜像	https://learnku.com/go/wikis/38122
+# golang 中文学习文档	https://golang.halfiisland.com/
+# golang 官方网站	https://golang.google.cn/
+# golang 公共软件包仓库	https://pkg.go.dev/
+sudo apt install -y golang-go
+echo "🐍 你刚安装的 golang 版本号为：$(go version)"
+# Go 1.13+：默认启用，无需额外配置。但使用  go env GO111MODULE 显示为空
+# 并不代表 Go Modules 未开启，而是表示你没有显式配置该变量，Go 将使用内部默认值
+# 设置为 auto（推荐，Go 1.13+ 默认逻辑）
+# go env -w GO111MODULE=auto
+# 或者强制开启 Go Modules 功能
+go env -w GO111MODULE=on
+# 1. 设置模块代理（加速下载）
+# 阿里云Go Module代理仓库服务	https://developer.aliyun.com/mirror/goproxy
+go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
+# 2. 设置校验和数据库（避免超时）
+go env -w GOSUMDB=sum.golang.google.cn
+# 查看配置是否成功
+# go env GO111MODULE
+# go env GOPROXY
+# go env GOSUMDB
+
+# 设置 GOPATH 为 ~/go
+mkdir -p $HOME/.go
+go env -w GOPATH=$HOME/.go
+# 查看当前环境
+# go env GOPATH
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# JetBrains 的 API 返回的 JSON 中包含 多个架构的下载链接，你的 grep 命令会匹配 所有 包含 jetbrains-toolbox-*.tar.gz 的链接，
+# 而 head -1 恰好取到了第一个（可能是 arm64）
+# 关键：| grep -v 'arm64' 会过滤掉包含 "arm64" 的链接
+wget -O jetbrains-toolbox.tar.gz "$(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release' | grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | grep -v 'arm64' | head -1)"
+# 1. 创建一个专门放软件的目录 (例如在 home 目录下创建一个 apps 文件夹)
+mkdir -p ~/.apps
+# 2. 进入下载目录 (假设你的安装包在这里)
+cd ~/下载
+# 3. 解压到刚才创建的目录
+# 注意：将 jetbrains-toolbox-*.tar.gz 替换为你实际下载的文件名，可以用 Tab 键自动补全
+tar -xvf jetbrains-toolbox-*.tar.gz -C ~/.apps
+
+# 1. 进入解压后的文件夹
+cd ~/.apps/jetbrains-toolbox-*/bin
+# 2. 赋予执行权限 (防止提示权限不足)
+chmod +x jetbrains-toolbox
+# 3. 启动程序
+./jetbrains-toolbox
+
+
+# https://3.jetbra.in/
+# https://github.com/jonssonyan/3.jetbra.in
+# https://account.jetbrains.com/licenses
+cd ~/下载
+wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
+unzip jetbra-*.zip && mv jetbra ~/.jetbra
+# 自动配置  jetbrains 代码编辑器 vmoptions
+~/.jetbra/scripts/install.sh
+# ------------------------------------------------------------------------------
 
 
 # Synaptic 是 Debian/Ubuntu 等 Linux 发行版中一款经典的图形化软件包管理工具，新立得软件包管理器
