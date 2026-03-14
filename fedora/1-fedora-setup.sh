@@ -237,6 +237,7 @@ git config --global user.email '2320391937@qq.com'
 # 配置 Gitee 密钥	https://gitee.com/profile/sshkeys
 # 配置 Github 密钥	https://github.com/settings/keys
 # cd ~/文档 && git clone git@github.com:lcqh2635/linux-setup.git
+# cd ~/下载 && git clone https://gitee.com/lcqh2635/init-fedora.git
 # cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
 
 # 安装基础的 flatpak 应用软件
@@ -661,6 +662,37 @@ gnome-shell-extension-workspace-indicator \
 gnome-shell-extension-gsconnect \
 gnome-shell-extension-gsconnect-browsers \
 gnome-shell-extension-prefs
+
+
+    # User Themes - 允许使用自定义主题
+    sudo dnf install -y gnome-shell-extension-user-theme
+    # Dash to Dock - 可停靠的 Dash：将应用启动器变为可停靠的侧边栏（经典 Dock）
+    sudo dnf install -y gnome-shell-extension-dash-to-dock
+    # ls /usr/share/gnome-shell/extensions
+    # nautilus /usr/share/gnome-shell/extensions/blur-my-shell@aunetx
+    # Blur My Shell - 毛玻璃效果：为顶部栏、Dash、应用菜单等添加背景模糊
+    sudo dnf install -y gnome-shell-extension-blur-my-shell
+    # Just Perfection - 精细控制 GNOME Shell 各组件的显示/隐藏（高度可定制）
+    # No Overview 的更现代的替代方案：使用 Just Perfection 扩展，
+    # 可选择性禁用 Overview 的某些元素（如工作区缩略图），而不完全破坏导航逻辑。
+    sudo dnf install -y gnome-shell-extension-just-perfection
+    # Removable Drive Menu 在顶部栏添加一个磁盘/挂载设备的快捷菜单，方便弹出 USB、挂载分区等
+    sudo dnf install -y gnome-shell-extension-drive-menu
+    # AppIndicator - 系统托盘图标支持：显示传统应用的托盘图标（如 Telegram、网易云音乐等）
+    sudo dnf install -y gnome-shell-extension-appindicator
+    # Caffeine - 防休眠开关：临时禁用自动锁屏/休眠，适合演示或视频播放
+    sudo dnf install -y gnome-shell-extension-caffeine
+    # Auto Move Windows - 自动将指定应用窗口分配到指定工作区（如终端→工作区2，浏览器→工作区1）
+    sudo dnf install -y gnome-shell-extension-auto-move-windows
+    # Forge - 窗口平铺
+    sudo dnf install -y gnome-shell-extension-forge
+    # Workspace Indicator - 在顶部栏显示当前工作区编号或名称
+    sudo dnf install -y gnome-shell-extension-workspace-indicator
+    # No Overview
+    sudo dnf install -y gnome-shell-extension-no-overview
+    # GSConnect
+    sudo dnf install -y gnome-shell-extension-gsconnect
+    sudo dnf install -y gnome-shell-extension-light-style
 
 
 # 列出所有用户级扩展
