@@ -121,6 +121,8 @@ sudo sed -e 's|^metalink=|#metalink=|g' \
 # 修改完成后，清除并重建缓存：
 sudo dnf clean all
 sudo dnf makecache
+# 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
+sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 # 还原上述 RPM Fusion 修改
 # 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
 # for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
@@ -149,21 +151,17 @@ sudo flatpak override --filesystem=$HOME/.icons:ro
 
 # 在 Fedora 上，我们默认使用 openh264 库，因此您需要显式启用存储库
 sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
-
-# 更新系统并升级所有已安装的包
-echo "开始更新系统并升级所有已安装的包..."
-sudo dnf update -y && sudo dnf upgrade -y
-echo "系统更新、升级完成..."
 # ------------------------------------------------------------------------------
 
 # 从 fedora-cisco-openh264 存储库安装
 sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-origin
 # 之后，您需要打开 Firefox，转到菜单 → 附加组件 → 插件 并启用 OpenH264 插件。
-# 您可以在此页面 https://mozilla.github.io/webrtc-landing/pc_test.html 上对您的 H.264 是否在 RTC 中工作进行简单测试（检查需要 H.264 视频）。
+# 您可以在此页面 https://mozilla.github.io/webrtc-landing/pc_test.html 上对您的 H.264 是否在 RTC 中工作进行简单测试（检查需要 H.264 视频）
 # 安装多媒体编解码器
 echo "安装多媒体编解码器..."
 # 作为 Fedora 用户和系统管理员，您可以使用这些步骤来安装额外的多媒体插件，使您能够播放各种视频和音频类型。 
-# 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件 https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-plugins-for-playing-movies-and-music/
+# 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-plugins-for-playing-movies-and-music/
 sudo dnf group install -y multimedia
 
 
@@ -202,20 +200,19 @@ sudo dnf install -y libva-utils vulkan-tools
 # 安装常用应用
 echo "安装常用应用程序..."
 sudo dnf install -y \
-    git wl-clipboard \
-    wget curl \
+    git wget curl \
     unzip p7zip \
     fastfetch \
     flatpak \
     timeshift \
-    evolution vlc obs-studio \
-    gnome-tweaks \
-    gnome-extensions-app \
-    libreoffice-langpack-zh-Hans \
-    vagrant VirtualBox virtualbox-guest-additions
+    wl-clipboard \
+    evolution obs-studio \
+    gnome-tweaks gnome-browser-connector \
+    gnome-extensions-app
 # evolution配置qq邮箱授权码： embwnsuwkdjrebge
 
-# 安装 Tauri 2 运行环境依赖包 https://tauri.app/zh-cn/start/prerequisites/#linux
+# Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
+# https://tauri.app/zh-cn/start/prerequisites/#linux
 sudo dnf check-update
 sudo dnf install -y webkit2gtk4.1-devel \
   openssl-devel \
@@ -223,25 +220,24 @@ sudo dnf install -y webkit2gtk4.1-devel \
   wget \
   file \
   libappindicator-gtk3-devel \
-  librsvg2-devel
+  librsvg2-devel \
+  libxdo-devel
 sudo dnf group install -y "c-development"
 # dnf install -y @c-development
 # Development Tools  是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。
 # 它旨在为开发者提供一个基础的开发环境，而无需手动安装每个工具。
 # sudo dnf group list		# 查看可用的软件包组
 sudo dnf install -y @development-tools
-
-
-# 配置 Git
-# git config --global user.name "龙茶清欢"
-# git config --global user.email "2320391937@qq.com"
+# 配置 Git 访问的 SSH 密钥
+git config --global user.name 'lcqh2635' 
+git config --global user.email '2320391937@qq.com'
 # ssh-keygen -t rsa -b 4096 -C "2320391937@qq.com"
-# 需要安装 wl-clipboard 工具
+# 将上面生成的 SSH 密钥复制到剪切板，需要安装 wl-clipboard 工具
 # cat ~/.ssh/id_rsa.pub | wl-copy
 # 配置 Gitee 密钥	https://gitee.com/profile/sshkeys
 # 配置 Github 密钥	https://github.com/settings/keys
-# git add . && git commit -m 'backup' && git push
-
+# cd ~/文档 && git clone git@github.com:lcqh2635/linux-setup.git
+# cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
 
 # 安装基础的 flatpak 应用软件
 # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
@@ -270,57 +266,57 @@ sudo flatpak install -y flathub com.tencent.WeChat
 
 
 # ------------------------------------------------------------------------------
-# apt list --installed | grep program_name
-# 一些软件源配置可被改进为现代化的配置方法。请运行“apt modernize-sources”来进行此操作
-sudo apt modernize-sources -y
-# 🏆 最佳实践，完美组合
-# 更新 APT 包列表、升级 APT 包、 删除无用依赖、清理无效缓存
-sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean -y
-# 更新 Flatpak 应用、更新 Snap 应用
-# sudo flatpak update -y && sudo snap refresh
-# 查看可以升级的软件包	apt list --upgradable
-
-# # 在 apt 命令中，添加 -y 或 --yes 参数即可实现自动确认（自动回答 "Yes"）
-# 简单结论：推荐使用第二种（或者分两步走），因为它能更彻底地清理空间
-# 动作：仅卸载主包，并删除其配置文件（purge 的作用）不会自动卸载它安装时带来的依赖包（例如解码器、字体等）
-# sudo apt purge -y ubuntu-restricted-extras
-# 动作：卸载主包 + 删除配置文件 + 自动清理不再需要的依赖包
-# sudo apt autoremove --purge -y ubuntu-restricted-extras
-# 和上面的效果等价
-# sudo apt purge -y ubuntu-restricted-extras && sudo apt autoremove -y
-# ------------------------------------------------------------------------------
-
-
-# ------------------------------------------------------------------------------
-# build-essential 本质上是一个“元包”，本身不包含内容，而是依赖一系列具体的软件包。
-# 因此，通过 APT 查询它的依赖关系，就能知道它会安装什么
-# 包含：gcc, g++, make, libc6-dev, dpkg-dev 等
-# 使用 APT 包管理器查询依赖关系 apt-cache depends build-essential
-# iproute2 是 现代 Linux 网络配置和管理工具集，由 Stephen Hemminger 开发，旨在替代过时的 net-tools
-sudo apt install -y \
-git fastfetch wl-clipboard \
-build-essential cmake \
-curl wget file iproute2 \
-libxdo-dev libssl-dev \
-libwebkit2gtk-4.1-dev \
-libayatana-appindicator3-dev \
-librsvg2-dev
-# 配置 Git 访问的 SSH 密钥
-git config --global user.name 'lcqh2635' 
-git config --global user.email '2320391937@qq.com'
-# ssh-keygen -t rsa -b 4096 -C "2320391937@qq.com"
-# 将上面生成的 SSH 密钥复制到剪切板，需要安装 wl-clipboard 工具
-# cat ~/.ssh/id_rsa.pub | wl-copy
-# 配置 Gitee 密钥	https://gitee.com/profile/sshkeys
-# 配置 Github 密钥	https://github.com/settings/keys
-# cd ~/文档 && git clone git@github.com:lcqh2635/linux-setup.git
-# cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
-
-# 安装前端工具，下面的 Gnome Shell 扩展安装需要使用到
 # https://ubuntu.com/toolchains
-sudo apt install -y nodejs npm
-# 最新地址 淘宝 NPM 镜像站喊你切换新域名啦!
-npm config set registry https://registry.npmmirror.com
+sudo dnf install -y nodejs
+# npm config get registry
+# 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
+# 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
+# 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
+npm config set registry https://registry.npmmirror.com/
+# 将目录所有权改为当前用户，否则如下命令将因为权限问题执行失败
+sudo chown -R $(whoami):$(whoami) /usr/local
+# 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
+# bun - 现代的 JavaScript 运行时和包管理器
+# https://www.npmjs.com/package/bun
+npm install -g bun
+# bun create vite my-vue-app --template vue-ts
+# Claude Code 是一款存在于终端中的代理编码工具，理解你的代码库，并通过自然语言命令帮助你执行例行任务、
+# 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
+# https://www.npmjs.com/package/@anthropic-ai/claude-code
+npm install -g @anthropic-ai/claude-code
+# https://openclaw.cc/
+npm install -g openclaw
+echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
+# bun 自行升级	bun upgrade
+# bun run config --help
+# bun --config
+# 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
+cat << EOF | tee $HOME/.bunfig.toml
+[install]
+# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为	https://developer.aliyun.com/mirror/NPM
+registry = "https://registry.npmmirror.com/"
+EOF
+# which node
+# whereis node
+# whereis bun
+# 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
+# 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
+# 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
+
+# 推荐安装的全局工具包
+# https://docs.deno.org.cn/
+npm install -g deno
+# deno init --npm vite my-vue-app --template vue-ts
+# vite - 下一代前端构建工具（通常项目局部安装，但全局也有用）
+npm install -g typescript vite eslint prettier
+# npm 列出所有全局安装的包
+# npm list -g --depth=0
+# 执行更新命令，更新所有可更新的全局包
+# npm update -g
+# ------------------------------------------------------------------------------
+
+
+
 
 # Synaptic 是 Debian/Ubuntu 等 Linux 发行版中一款经典的图形化软件包管理工具，新立得软件包管理器
 sudo apt install -y \
