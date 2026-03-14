@@ -149,8 +149,14 @@ sudo flatpak override --filesystem=xdg-data/icons:ro
 sudo flatpak override --filesystem=$HOME/.themes:ro
 sudo flatpak override --filesystem=$HOME/.icons:ro
 
-# 在 Fedora 上，我们默认使用 openh264 库，因此您需要显式启用存储库
-sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
+# Fedora 安装 Chromium 或 Google Chrome 浏览器
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
+# 安装第三方仓库
+sudo dnf install fedora-workstation-repositories
+# 启用 Google Chrome 仓库：
+sudo dnf config-manager setopt google-chrome.enabled=1
+# 最后，安装  Google Chrome 浏览器：
+# sudo dnf install -y google-chrome-stable
 # ------------------------------------------------------------------------------
 
 # 从 fedora-cisco-openh264 存储库安装
