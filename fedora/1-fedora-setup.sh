@@ -66,6 +66,8 @@ gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
 # 设置强调色为蓝色
 gsettings set org.gnome.desktop.interface accent-color 'blue'
 
+# 递归列出某个 Schema 的键值（例如 org.gnome.shell.extensions.dash-to-dock）
+# gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
 # 取消面板模式，改为类似 MacOS 系统的 Dock 栏模式
 gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
 # 配置 Ubuntu Dock (自定义Dock栏)
@@ -157,6 +159,7 @@ sudo dnf config-manager setopt google-chrome.enabled=1
 # sudo dnf remove -y google-chrome-stable
 # ------------------------------------------------------------------------------
 
+# 删除无用的应用
 sudo dnf remove -y mediawriter libreoffice-*
 
 
@@ -247,6 +250,17 @@ ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com"
 # cd ~/文档 && git clone git@github.com:lcqh2635/linux-setup.git
 # cd ~/下载 && git clone https://gitee.com/lcqh2635/init-fedora.git
 # cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
+
+# nautilus ~/.local/share/backgrounds/
+cd ~/下载
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-1.jpg"
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-2.jpg"
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-3.jpg"
+cp -v ~/下载/wallpaper-1.jpg ~/.local/share/backgrounds/
+cp -v ~/下载/wallpaper-2.jpg ~/.local/share/backgrounds/
+cp -v ~/下载/wallpaper-3.jpg ~/.local/share/backgrounds/
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-1.jpg"
+# gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-2.jpg"
 
 # 安装基础的 flatpak 应用软件
 # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
