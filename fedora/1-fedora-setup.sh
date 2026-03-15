@@ -318,9 +318,9 @@ npm install -g typescript vite eslint prettier
 
 
 # ------------------------------------------------------------------------------
-# 通过 apt 安装 (推荐)
+# 通过 dnf 安装 (推荐)
 # https://ubuntu.com/toolchains
-sudo apt install -y default-jdk maven
+sudo dnf install -y default-jdk maven
 echo "🐍 你刚安装的 java 版本号为：$(java --version)"
 echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
 # whereis maven
@@ -541,7 +541,7 @@ echo "🐹 安装 Go 语言..."
 # golang 中文学习文档	https://golang.halfiisland.com/
 # golang 官方网站	https://golang.google.cn/
 # golang 公共软件包仓库	https://pkg.go.dev/
-sudo apt install -y golang-go
+sudo dnf install -y golang
 echo "🐍 你刚安装的 golang 版本号为：$(go version)"
 # Go 1.13+：默认启用，无需额外配置。但使用  go env GO111MODULE 显示为空
 # 并不代表 Go Modules 未开启，而是表示你没有显式配置该变量，Go 将使用内部默认值
@@ -564,6 +564,65 @@ mkdir -p $HOME/.go
 go env -w GOPATH=$HOME/.go
 # 查看当前环境
 # go env GOPATH
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+sudo apt install -y podman podman-compose
+# 启用用户级 socket
+systemctl --user enable --now podman.socket
+# systemctl --user status podman
+# https://github.com/containers/podman/blob/cea9340242f3f6cf41f20fb0b6239aa3db5decd6/docs/tutorials/socket_activation.md
+# cat /usr/lib/systemd/user/podman.socket
+# ls $XDG_RUNTIME_DIR/podman/podman.sock
+# unix:///run/user/1000/podman/podman.sock
+# podman info
+
+# 配置国内加速镜像仓库
+# 主要用于 登录到容器镜像仓库（Registry），以便拉取（pull）私有镜像或推送（push）镜像到仓库
+# lcqh2635@gmail.com
+# podman login
+# cat /etc/containers/registries.conf
+# 备份到同目录（添加 .bak 后缀）
+sudo cp /etc/containers/registries.conf{,.bak}
+# 检查 .bak 文件是否存在
+# ls -l /etc/containers
+# 从同目录 .bak 文件恢复
+# sudo cp /etc/containers/registries.conf{.bak,}
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
+cat << EOF | sudo tee -a /etc/containers/registries.conf
+# 定义未指定镜像仓库前缀时，默认搜索的镜像仓库列表
+# 例如执行 "podman pull nginx" 会自动从 "docker.io" 查找 "library/nginx"
+unqualified-search-registries = ["docker.io"]
+
+# Podman 优先尝试从 registry.mirror 拉取镜像，如果加速器不可用/镜像不存在，则自动回退到 location 指定的官方地址
+# 官方仓库地址（最终回退地址）
+[[registry]]
+# 匹配的镜像仓库前缀（支持通配符 *）
+# 例如 "docker.io" 会匹配所有 "docker.io/xxx" 的镜像
+prefix = "docker.io"
+# 实际访问的仓库服务器地址
+# Docker Hub 的官方注册表地址
+location = "registry-1.docker.io"
+
+# 镜像加速器地址（优先使用的镜像源）
+# 添加该仓库的镜像加速器（Mirror）以阿里云镜像加速为示例
+[[registry.mirror]]
+# 镜像加速器地址（替换为你的阿里云镜像加速URL）
+location = "docker.1ms.run"
+# 是否允许不安全的 HTTP 连接（生产环境建议 false）
+insecure = false
+EOF
+
+# 创建网络
+podman network create podman-net
+podman pull redis:latest
+# https://pgtune.leopard.in.ua/
+podman pull postgres:latest
+# Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
+# 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
+# IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择 Unix 套接字 ，然后下拉选择 rootless 版地址
+sudo flatpak install -y flathub com.github.marhkb.Pods
 # ------------------------------------------------------------------------------
 
 
@@ -620,52 +679,15 @@ sudo apt install -y ubuntu-restricted-extras
 
 
 # ------------------------------------------------------------------------------
-# 安装并配置 flatpak
-sudo apt install -y \
-gnome-software flatpak \
-gnome-software-plugin-flatpak \
-gnome-software-plugin-snap \
-gnome-software-plugin-fwupd
-# 设置 flatpak 加速镜像源
-sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
-# 恢复默认值：
-# sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
-# 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
-# xdg-data/themes 是 ~/.local/share/themes 的标准化路径别名（Flatpak 优先识别）
-# :ro 表示只读权限，避免应用误修改主题文件。
-sudo flatpak override --filesystem=xdg-config/gtk-3.0:ro
-sudo flatpak override --filesystem=xdg-config/gtk-4.0:ro
-sudo flatpak override --filesystem=xdg-data/themes:ro
-sudo flatpak override --filesystem=xdg-data/icons:ro
-sudo flatpak override --filesystem=$HOME/.themes:ro
-sudo flatpak override --filesystem=$HOME/.icons:ro
-
-# ------------------------------------------------------------------------------
-
-
-# ------------------------------------------------------------------------------
 # 列出所有系统级扩展
 # gnome-extensions list --system
 # 查看所有系统级扩展的文件目录
 # nautilus admin:/usr/share/gnome-shell/extensions
 # apt list gnome-shell-extension*
 # apt list gnome-shell-ubuntu-extensions*
-sudo apt install -y \
-gnome-shell-extension-manager \
-gnome-shell-extension-user-theme \
-gnome-shell-extension-alphabetical-grid \
-gnome-shell-extension-auto-move-windows \
-gnome-shell-extension-drive-menu \
-gnome-shell-extension-light-style \
-gnome-shell-extension-workspace-indicator \
-gnome-shell-extension-gsconnect \
-gnome-shell-extension-gsconnect-browsers \
-gnome-shell-extension-prefs
 
-
-    # User Themes - 允许使用自定义主题
-    sudo dnf install -y gnome-shell-extension-user-theme
+# User Themes - 允许使用自定义主题
+sudo dnf install -y gnome-shell-extension-user-theme
     # Dash to Dock - 可停靠的 Dash：将应用启动器变为可停靠的侧边栏（经典 Dock）
     sudo dnf install -y gnome-shell-extension-dash-to-dock
     # ls /usr/share/gnome-shell/extensions
