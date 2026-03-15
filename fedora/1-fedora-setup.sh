@@ -211,6 +211,7 @@ sudo dnf install -y \
     timeshift \
     wl-clipboard \
     evolution obs-studio \
+    libadwaita-demo \
     gnome-tweaks gnome-system-monitor \
     gnome-browser-connector gnome-extensions-app
 # evolution配置qq邮箱授权码： embwnsuwkdjrebge
@@ -662,26 +663,6 @@ unzip jetbra-*.zip && mv jetbra ~/.jetbra
 # ------------------------------------------------------------------------------
 
 
-# Synaptic 是 Debian/Ubuntu 等 Linux 发行版中一款经典的图形化软件包管理工具，新立得软件包管理器
-sudo apt install -y \
-gnome-tweaks gnome-browser-connector \
-gnome-system-monitor synaptic \
-timeshift software-properties-gtk \
-libadwaita-1-examples
-
-# 模拟安装，查看依赖列表
-# apt install --dry-run multimedia-all
-# 或查看推荐依赖
-# apt-cache depends multimedia-all
-# 全部多媒体创作与处理工具，面向专业音频/视频制作、图形设计等场景。不推荐普通用户安装
-# sudo apt install -y multimedia-all
-# 安装额外的多媒体插件，使您能够播放各种视频和音频类型
-sudo apt install -y ubuntu-restricted-extras
-# 查询软件包的详细元数据信息，包括版本、描述、依赖关系、大小、来源等
-# apt info ubuntu-restricted-extras
-# ------------------------------------------------------------------------------
-
-
 # ------------------------------------------------------------------------------
 # 列出所有系统级扩展
 # gnome-extensions list --system
@@ -815,6 +796,7 @@ cd ~/下载/extensions
 sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean -y
 
 
+# ------------------------------------------------------------------------------
 # apt list *fonts*
 # Noto Fonts（思源黑体/宋体 的谷歌版本）
 # Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
