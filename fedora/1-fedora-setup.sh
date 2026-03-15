@@ -834,6 +834,9 @@ cd ~/下载/extensions
 sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 
 
+# 安装 Ubuntu 的声音主题
+sudo dnf install -y yaru-sound-theme
+gsettings set org.gnome.desktop.sound theme-name 'Yaru'
 # ------------------------------------------------------------------------------
 # dnf list *fonts*
 # Noto Fonts（思源黑体/宋体 的谷歌版本）
