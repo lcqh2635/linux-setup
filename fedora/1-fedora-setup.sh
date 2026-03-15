@@ -945,10 +945,6 @@ gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
 gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
-gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
-gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
-gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(153,193,241)'
-gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 1
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
 
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
@@ -957,8 +953,4 @@ gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
 gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
-gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 2
-gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 3
-gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(26,95,180)'
-gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 2
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
