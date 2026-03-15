@@ -162,7 +162,7 @@ sudo dnf config-manager setopt google-chrome.enabled=1
 # 删除无用的应用
 sudo dnf remove -y mediawriter libreoffice-*
 
-
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
 # 从 fedora-cisco-openh264 存储库安装
 sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-origin
 # 之后，您需要打开 Firefox，转到菜单 → 附加组件 → 插件 并启用 OpenH264 插件。
@@ -175,7 +175,7 @@ echo "安装多媒体编解码器..."
 sudo dnf group install -y multimedia
 
 
-# 安装fedora的多媒体组，以下内容参考 https://rpmfusion.org/Howto/Multimedia
+# 安装fedora的多媒体组，以下内容参考	https://rpmfusion.org/Howto/Multimedia
 # Fedora 上的多媒体
 # 切换到完整的 ffmpeg，使用 swap 命令为替换操作
 # FFmpeg-Free 是 Fedora 默认提供的一个受限版本，仅包含开源且无专利限制的编解码器。
@@ -371,8 +371,8 @@ npm install -g typescript vite eslint prettier
 
 # ------------------------------------------------------------------------------
 # 通过 dnf 安装 (推荐)
-# https://ubuntu.com/toolchains
-sudo dnf install -y default-jdk maven
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-java/
+sudo dnf install -y java-25-openjdk maven
 echo "🐍 你刚安装的 java 版本号为：$(java --version)"
 echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
 # whereis maven
@@ -743,7 +743,7 @@ gnome-shell-extension-light-style
 # gnome-extensions list --user
 # 查看所有用户级扩展的文件目录
 # nautilus ~/.local/share/gnome-shell/extensions
-sudo apt-get install -y gettext meson just
+sudo dnf install -y gettext meson just
 mkdir -p ~/下载/extensions && cd ~/下载/extensions
 
 git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
@@ -830,11 +830,12 @@ cd ~/下载/extensions
     glib-compile-schemas ~/.local/share/glib-2.0/schemas/
     # gsettings list-schemas | grep 'org.gnome.shell.extensions'
 # ------------------------------------------------------------------------------
-sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && sudo apt autoclean -y
+# 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
+sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 
 
 # ------------------------------------------------------------------------------
-# apt list *fonts*
+# dnf list *fonts*
 # Noto Fonts（思源黑体/宋体 的谷歌版本）
 # Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
 # Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
@@ -847,9 +848,12 @@ sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove --purge -y && s
 # fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
 # Noto Sans CJK SC （思源黑体——简体中文）
 # Noto Serif CJK SC （思源宋体——简体中文）
-# 安装：sudo apt install -y fonts-noto-cjk fonts-jetbrains-mono
-
-sudo apt install -y fonts-noto-cjk fonts-jetbrains-mono
+sudo dnf install -y \
+google-noto-sans-cjk-fonts \
+google-noto-serif-cjk-fonts \
+adobe-source-han-sans-cn-fonts \
+adobe-source-han-serif-cn-fonts \
+jetbrains-mono-fonts
 # 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
 gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
 # 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
