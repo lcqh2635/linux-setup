@@ -211,8 +211,8 @@ sudo dnf install -y \
     timeshift \
     wl-clipboard \
     evolution obs-studio \
-    gnome-tweaks gnome-browser-connector \
-    gnome-extensions-app
+    gnome-tweaks gnome-system-monitor \
+    gnome-browser-connector gnome-extensions-app
 # evolution配置qq邮箱授权码： embwnsuwkdjrebge
 
 # Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
@@ -535,7 +535,7 @@ EOF
 # https://github.com/ziglang/zig
 # https://github.com/zigtools/zls
 # https://zigtools.org/zls/install/
-sudo apt install -y zig
+sudo dnf install -y zig
 echo "🐍 你刚安装的 zig 版本号为：$(zig version)"
 
 # ------------------------------------------------------------------------------
@@ -572,7 +572,7 @@ go env -w GOPATH=$HOME/.go
 
 
 # ------------------------------------------------------------------------------
-sudo apt install -y podman podman-compose
+sudo dnf install -y podman podman-compose
 # 启用用户级 socket
 systemctl --user enable --now podman.socket
 # systemctl --user status podman
