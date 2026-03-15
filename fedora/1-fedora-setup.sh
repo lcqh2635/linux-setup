@@ -253,14 +253,14 @@ ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com"
 
 # nautilus ~/.local/share/backgrounds/
 cd ~/下载
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-1.jpg"
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-2.jpg"
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-3.jpg"
-cp -v ~/下载/wallpaper-1.jpg ~/.local/share/backgrounds/
-cp -v ~/下载/wallpaper-2.jpg ~/.local/share/backgrounds/
-cp -v ~/下载/wallpaper-3.jpg ~/.local/share/backgrounds/
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-1.jpg"
-# gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-2.jpg"
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
+cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
+cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
+cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
+# gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
 
 # 安装基础的 flatpak 应用软件
 # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
@@ -938,3 +938,27 @@ install_themes_and_icons() {
     print_success "WhiteSur GTK 图标启用并配置完成！"
     print_success "主题和图标安装完成！"
 }
+
+gsettings set org.gnome.desktop.interface color-scheme 'default'
+gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
+gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
+gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
+gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
+gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
+gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
+gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(153,193,241)'
+gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 1
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
+
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
+gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
+gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
+gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
+gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 2
+gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 3
+gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(26,95,180)'
+gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 2
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
