@@ -901,13 +901,9 @@ install_themes_and_icons() {
     sed -i 's/0\.95/1/g' ~/下载/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/dark.css
 
     cd ~/下载/WhiteSur-wallpapers && ./install-wallpapers.sh && sudo ./install-gnome-backgrounds.sh
-    gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/Ventura/Ventura-timed.xml'
-    
+    # gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/Ventura/Ventura-timed.xml'
     cd ~/下载/WhiteSur-cursors && ./install.sh
-    gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
-    
     cd ~/下载/WhiteSur-icon-theme && ./install.sh
-    gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
     
     # 在执行 ./tweaks.sh -f flat 安装 Firefox 主题时，Firefox 不能正在运行
     if pgrep firefox > /dev/null; then
@@ -928,22 +924,13 @@ install_themes_and_icons() {
     # cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid
     # 使用自定义背景
     sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
-    # 卸载因上面使用自定义背景而安装的 imagemagick
-    sudo apt autoremove --purge -y imagemagick
     # 卸载主题
     # ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
-    # 设置系统 GTK 主题
-    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
-    gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
-    gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
-    
+
     # 如果文件都在当前目录
     cd ~/下载 && rm -rf WhiteSur-*
     # 最简洁的方式
     # cd ~/下载 && rm -rf WhiteSur-{cursors,icon-theme,gtk-theme}
-
-    print_success "WhiteSur GTK 图标启用并配置完成！"
-    print_success "主题和图标安装完成！"
 }
 
 gsettings set org.gnome.desktop.interface color-scheme 'default'
