@@ -59,18 +59,6 @@ gnome-shell-extension-prefs
 # 查看所有用户级扩展的文件目录
 # nautilus ~/.local/share/gnome-shell/extensions
 
-# 启用系统级 GNOME Shell扩展
-gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-gnome-extensions enable auto-move-windows@gnome-shell-extensions.gcampax.github.com
-gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
-gnome-extensions enable light-style@gnome-shell-extensions.gcampax.github.com
-gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
-gnome-extensions enable AlphabeticalAppGrid@stuarthayhurst
-
-
-
-
-
 # Add to Desktop
 # Applications Overview Tooltip
 # App menu is back
@@ -167,94 +155,26 @@ update_system() {
 
 # 配置 GNOME 扩展
 configure_gnome_extensions() {
+
+    # 列出所有系统级扩展
+    # gnome-extensions list --system
+    # 查看所有系统级扩展的文件目录
+    # nautilus admin:/usr/share/gnome-shell/extensions
+    # dnf list gnome-shell-extension*
+    # ------------------------------------------------------------------------------
     print_info "正在启用并配置 GNOME 扩展..."
     # 启用系统 GNOME 扩展
+    gnome-extensions enable dash-to-dock@micxgx.gmail.com
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable blur-my-shell@aunetx
+    gnome-extensions enable just-perfection-desktop@just-perfection
     gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
     gnome-extensions enable auto-move-windows@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable blur-my-shell@aunetx
     gnome-extensions enable caffeine@patapon.info
-    gnome-extensions enable dash-to-dock@micxgx.gmail.com
-    gnome-extensions enable just-perfection-desktop@just-perfection
     gnome-extensions enable no-overview@fthx
     gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
     gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
-
-
-    sudo apt-get install -y gettext
-    mkdir -p ~/下载/extensions && cd ~/下载/extensions
-    
-    git clone https://gh-proxy.com/https://github.com/aunetx/blur-my-shell.git
-    cd ~/下载/extensions/blur-my-shell && make install
-    
-    git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
-    cd ~/下载/extensions/disable-unredirect && make install
-    
-    git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
-    cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
-    
-    git clone https://gitlab.gnome.org/jrahmatzadeh/just-perfection.git
-    cd ~/下载/extensions/just-perfection && ./scripts/build.sh -i
-    
-    git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
-    cd ~/下载/extensions/gnome-rounded-corners && make
-    gnome-extensions install -f Rounded_Corners@lennart-k.zip
-    
-    git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
-    cd ~/下载/extensions/rounded-window-corners && just install
-    
-    git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
-    cd ~/下载/extensions/add-to-desktop && ./build.sh
-    gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
-    
-    git clone https://gh-proxy.com/https://github.com/maniacx/Bluetooth-Battery-Meter.git
-    cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh && cd ~/下载/extensions
-    
-    git clone https://gh-proxy.com/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
-    cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
-    
-    git clone https://gh-proxy.com/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-    cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh
-    gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
-    
-    git clone https://gitlab.com/smedius/desktop-icons-ng.git
-    cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
-    
-    git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
-    cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension
-    # 用户级别安装
-    meson setup builddir --prefix=~/.local && meson install -C builddir
-    
-    git clone https://gh-proxy.com/https://github.com/icedman/search-light.git
-    cd ~/下载/extensions/search-light && make
-    
-    git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
-    zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
-    
-    git clone https://gh-proxy.com/https://github.com/amivaleo/Show-Desktop-Button.git
-    cd ~/下载/extensions
-    mv Show-Desktop-Button show-desktop-button@amivaleo
-    zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo
-    gnome-extensions install -f show-desktop-button@amivaleo.zip
-    
-    git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
-    cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh
-    gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    
-    
-    # 解决用户 Gnome 扩展无法使用 gsettings 的问题
-    for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
-        EXT_ID=$(basename "$EXT_DIR")
-        echo "处理扩展: $EXT_ID"
-        if [ -d "$EXT_DIR/schemas" ]; then
-            glib-compile-schemas "$EXT_DIR/schemas"
-            mkdir -p ~/.local/share/glib-2.0/schemas/
-            cp "$EXT_DIR/schemas"/*.xml ~/.local/share/glib-2.0/schemas/
-        fi
-    done
-    glib-compile-schemas ~/.local/share/glib-2.0/schemas/
-    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
-    
+    gnome-extensions enable light-style@gnome-shell-extensions.gcampax.github.com
     
     # 配置 Blur My Shell (透明模糊效果)
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.panel
@@ -302,19 +222,22 @@ configure_gnome_extensions() {
     # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
     print_info "正在配置Dash to Dock..."
     # 配置 Dash to Dock (自定义Dock栏)
+    # 取消面板模式，改为类似 MacOS 系统的 Dock 栏模式
+    gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
     gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
+    # 智能隐藏 Dock 栏
+    gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
     gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
     gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
     gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
     gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
     gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+    # 收缩 Dash
     gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
-    gsettings set org.gnome.shell.extensions.dash-to-dock custom-background-color true
-    gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(153,193,241)'
     gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
-    gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 0.3
+    gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
     # 恢复默认设置
     # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
     # 默认主题色/强调色，蓝色
@@ -358,10 +281,20 @@ configure_gnome_extensions() {
     # gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
     # 预设工作区名称
     gsettings set org.gnome.desktop.wm.preferences workspace-names "['休闲区', '工作区']"
+    # ------------------------------------------------------------------------------
     
+    
+    # 列出所有用户级扩展
+    # gnome-extensions list --user
+    # 查看所有用户级扩展的文件目录
     # nautilus ~/.local/share/gnome-shell/extensions
-    # 用户 GNOME 扩展 gnome-extensions list
+    # ------------------------------------------------------------------------------
+    # 用户 GNOME 扩展
+    gnome-extensions enable Rounded_Corners@lennart-k
+    gnome-extensions enable rounded-window-corners@fxgn
+    gnome-extensions enable hidetopbar@mathieu.bidon.ca
     gnome-extensions enable add-to-desktop@tommimon.github.com
+    gnome-extensions enable gtk4-ding@smedius.gitlab.com
     gnome-extensions enable appmenu-is-back@fthx
     gnome-extensions enable Bluetooth-Battery-Meter@maniacx.github.com
     gnome-extensions enable clipboard-indicator@tudmotu.com
@@ -369,30 +302,36 @@ configure_gnome_extensions() {
     gnome-extensions enable CoverflowAltTab@palatis.blogspot.com
     gnome-extensions enable ddterm@amezin.github.com
     gnome-extensions enable disable-unredirect@exeos
-    gnome-extensions enable gtk4-ding@smedius.gitlab.com
-    gnome-extensions enable hidetopbar@mathieu.bidon.ca
     gnome-extensions enable ibus-tweaker@tuberry.github.com
     gnome-extensions enable logomenu@aryan_k
     gnome-extensions enable nightthemeswitcher@romainvigier.fr
     gnome-extensions enable quick-settings-tweaks@qwreey
-    gnome-extensions enable Rounded_Corners@lennart-k
-    gnome-extensions enable rounded-window-corners@fxgn
     gnome-extensions enable search-light@icedman.github.com
     gnome-extensions enable show-desktop-button@amivaleo
     gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
     gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
+    gnome-extensions enable AlphabeticalAppGrid@stuarthayhurst
     
-    # 解决用户 Gnome 扩展无法使用 gsettings 的问题
-    for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
-        EXT_ID=$(basename "$EXT_DIR")
-        echo "处理扩展: $EXT_ID"
-        if [ -d "$EXT_DIR/schemas" ]; then
-            glib-compile-schemas "$EXT_DIR/schemas"
-            mkdir -p ~/.local/share/glib-2.0/schemas/
-            cp "$EXT_DIR/schemas"/*.xml ~/.local/share/glib-2.0/schemas/
-        fi
-    done
-    glib-compile-schemas ~/.local/share/glib-2.0/schemas/
+    print_info "正在配置Hide Top Bar..."
+    # 配置 Hide Top Bar
+    # 递归列出某个 Schema 的键值
+    # gsettings list-recursively org.gnome.shell.extensions.hidetopbar
+    # 设置鼠标触发灵敏度（true/false）
+    gsettings set org.gnome.shell.extensions.hidetopbar mouse-sensitive true
+    gsettings set org.gnome.shell.extensions.hidetopbar animation-time-autohide 0.5
+    gsettings set org.gnome.shell.extensions.hidetopbar animation-time-overview 0.5
+    # 窗口被激活时不要总是显示 panel
+    gsettings set org.gnome.shell.extensions.hidetopbar enable-active-window false
+    # 恢复默认设置
+    # gsettings reset-recursively org.gnome.shell.extensions.hidetopbar
+    
+    print_info "正在配置Gtk4 Desktop Icons NG..."
+    # Gtk4 Desktop Icons NG
+    # gsettings list-recursively org.gnome.shell.extensions.gtk4-ding
+    gsettings set org.gnome.shell.extensions.gtk4-ding show-home false
+    gsettings set org.gnome.shell.extensions.gtk4-ding show-trash false
+    gsettings set org.gnome.shell.extensions.gtk4-ding show-volumes false
+    # gsettings reset-recursively org.gnome.shell.extensions.gtk4-ding
     
     print_info "正在配置Clipboard Indicator..."
     # Clipboard Indicator
@@ -434,27 +373,6 @@ configure_gnome_extensions() {
     gsettings set com.github.amezin.ddterm hide-window-on-esc true
     # gsettings reset-recursively com.github.amezin.ddterm
     
-    print_info "正在配置Gtk4 Desktop Icons NG..."
-    # Gtk4 Desktop Icons NG
-    # gsettings list-recursively org.gnome.shell.extensions.gtk4-ding
-    gsettings set org.gnome.shell.extensions.gtk4-ding show-home false
-    gsettings set org.gnome.shell.extensions.gtk4-ding show-trash false
-    gsettings set org.gnome.shell.extensions.gtk4-ding show-volumes false
-    # gsettings reset-recursively org.gnome.shell.extensions.gtk4-ding
-    
-    print_info "正在配置Hide Top Bar..."
-    # 配置 Hide Top Bar
-    # 递归列出某个 Schema 的键值
-    # gsettings list-recursively org.gnome.shell.extensions.hidetopbar
-    # 设置鼠标触发灵敏度（true/false）
-    gsettings set org.gnome.shell.extensions.hidetopbar mouse-sensitive true
-    gsettings set org.gnome.shell.extensions.hidetopbar animation-time-autohide 0.5
-    gsettings set org.gnome.shell.extensions.hidetopbar animation-time-overview 0.5
-    # 窗口被激活时不要总是显示 panel
-    gsettings set org.gnome.shell.extensions.hidetopbar enable-active-window false
-    # 恢复默认设置
-    # gsettings reset-recursively org.gnome.shell.extensions.hidetopbar
-    
     print_info "正在配置Ibus Tweaker..."
     # 配置 Ibus Tweaker
     # gsettings list-recursively org.gnome.shell.extensions.ibus-tweaker
@@ -490,21 +408,6 @@ configure_gnome_extensions() {
     # 启用或禁用 覆盖式菜单样式（即快捷设置面板以独立浮层形式弹出，而非传统的下拉样式）。
     gsettings set org.gnome.shell.extensions.quick-settings-tweaks overlay-menu-enabled true
     # gsettings reset-recursively org.gnome.shell.extensions.quick-settings-tweaks
-
-    print_info "正在配置Rounded Window Corners Reborn..."
-    # 配置 Rounded Window Corners Reborn
-    # gsettings list-recursively org.gnome.shell.extensions.rounded-window-corners-reborn
-    # 跳过Libadwaita/Libhandy应用（避免与GTK4应用冲突）
-    gsettings set org.gnome.shell.extensions.rounded-window-corners-reborn skip-libadwaita-app true
-    gsettings set org.gnome.shell.extensions.rounded-window-corners-reborn skip-libhandy-app true
-    gsettings set org.gnome.shell.extensions.rounded-window-corners-reborn tweak-kitty-terminal true
-    gsettings set org.gnome.shell.extensions.rounded-window-corners-reborn enable-preferences-entry true
-    # 全局圆角设置（核心参数）
-    # gsettings get org.gnome.shell.extensions.rounded-window-corners-reborn global-rounded-corner-settings
-    gsettings set org.gnome.shell.extensions.rounded-window-corners-reborn global-rounded-corner-settings "{'padding': <{'left': uint32 1, 'right': 1, 'top': 1, 'bottom': 1}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <1.0>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}"
-    # 解决 jetbrains 软件的边框问题
-    gsettings set org.gnome.shell.extensions.rounded-window-corners-reborn custom-rounded-corner-settings "{'jetbrains-idea': <{'padding': <{'left': uint32 2, 'right': 2, 'top': 2, 'bottom': 2}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <0.2>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}>, 'jetbrains-goland': <{'padding': <{'left': uint32 2, 'right': 2, 'top': 2, 'bottom': 2}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <0.2>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}>, 'jetbrains-webstorm': <{'padding': <{'left': uint32 2, 'right': 2, 'top': 2, 'bottom': 2}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <0.2>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}>, 'jetbrains-rustrover': <{'padding': <{'left': uint32 2, 'right': 2, 'top': 2, 'bottom': 2}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <0.2>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}>, 'jetbrains-datagrip': <{'padding': <{'left': uint32 2, 'right': 2, 'top': 2, 'bottom': 2}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <0.2>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}>, 'jetbrains-pycharm': <{'padding': <{'left': uint32 2, 'right': 2, 'top': 2, 'bottom': 2}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <0.2>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}>, 'jetbrains-studio': <{'padding': <{'left': uint32 2, 'right': 2, 'top': 2, 'bottom': 2}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <0.2>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}>, 'jetbrains-clion': <{'padding': <{'left': uint32 2, 'right': 2, 'top': 2, 'bottom': 2}>, 'keepRoundedCorners': <{'maximized': true, 'fullscreen': true}>, 'borderRadius': <uint32 12>, 'smoothing': <0.2>, 'borderColor': <(1.0, 1.0, 1.0, 0.0)>, 'enabled': <true>}>}"
-    # gsettings reset-recursively org.gnome.shell.extensions.rounded-window-corners-reborn
 
     print_info "正在配置Search Light..."
     # gsettings list-recursively org.gnome.shell.extensions.search-light
@@ -544,26 +447,5 @@ configure_gnome_extensions() {
     # gsettings reset-recursively org.gnome.shell.extensions.top-bar-organizer
     
     print_success "GNOME 扩展启用并配置完成！"
+    # ------------------------------------------------------------------------------
 }
-
-    # 用户 GNOME 扩展 gnome-extensions list
-    gnome-extensions enable add-to-desktop@tommimon.github.com
-    gnome-extensions enable appmenu-is-back@fthx
-    gnome-extensions enable Bluetooth-Battery-Meter@maniacx.github.com
-    gnome-extensions enable clipboard-indicator@tudmotu.com
-    gnome-extensions enable compiz-alike-magic-lamp-effect@hermes83.github.com
-    gnome-extensions enable CoverflowAltTab@palatis.blogspot.com
-    gnome-extensions enable ddterm@amezin.github.com
-    gnome-extensions enable disable-unredirect@exeos
-    gnome-extensions enable gtk4-ding@smedius.gitlab.com
-    gnome-extensions enable hidetopbar@mathieu.bidon.ca
-    gnome-extensions enable ibus-tweaker@tuberry.github.com
-    gnome-extensions enable logomenu@aryan_k
-    gnome-extensions enable nightthemeswitcher@romainvigier.fr
-    gnome-extensions enable quick-settings-tweaks@qwreey
-    gnome-extensions enable Rounded_Corners@lennart-k
-    gnome-extensions enable rounded-window-corners@fxgn
-    gnome-extensions enable search-light@icedman.github.com
-    gnome-extensions enable show-desktop-button@amivaleo
-    gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
-    gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz

@@ -77,6 +77,7 @@ gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
 gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
 gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
 gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
 gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
 gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
 gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
