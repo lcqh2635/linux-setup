@@ -154,7 +154,10 @@ sudo dnf install fedora-workstation-repositories
 sudo dnf config-manager setopt google-chrome.enabled=1
 # 最后，安装  Google Chrome 浏览器：
 # sudo dnf install -y google-chrome-stable
+# sudo dnf remove -y google-chrome-stable
 # ------------------------------------------------------------------------------
+
+sudo dnf remove -y mediawriter libreoffice-*
 
 
 # 从 fedora-cisco-openh264 存储库安装
@@ -208,9 +211,7 @@ sudo dnf install -y \
     unzip p7zip \
     fastfetch \
     flatpak \
-    timeshift \
     wl-clipboard \
-    evolution obs-studio \
     libadwaita-demo \
     gnome-tweaks gnome-system-monitor \
     gnome-browser-connector gnome-extensions-app
@@ -235,7 +236,9 @@ sudo dnf group install -y "c-development"
 sudo dnf install -y @development-tools
 # 配置 Git 访问的 SSH 密钥
 git config --global user.name 'lcqh2635' 
-git config --global user.email '2320391937@qq.com'
+git config --global user.email 'lcqh2635@gmail.com'
+ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com"
+# git config --global user.email '2320391937@qq.com'
 # ssh-keygen -t rsa -b 4096 -C "2320391937@qq.com"
 # 将上面生成的 SSH 密钥复制到剪切板，需要安装 wl-clipboard 工具
 # cat ~/.ssh/id_rsa.pub | wl-copy
@@ -258,17 +261,47 @@ sudo flatpak install -y flathub org.gnome.Evolution
 sudo flatpak install -y flathub org.gnome.Firmware
 # 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
 sudo flatpak install -y flathub io.github.realmazharhussain.GdmSettings
-# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了！Impression 是热衷于发行的用户和普通电脑用户都非常有用的工具
+# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
 sudo flatpak install -y flathub io.gitlab.adhami3310.Impression
 # 用干净、无干扰的标记删除编辑器专注于你的写作
 sudo flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
-# Save Desktop 可帮助您轻松备份、还原和同步整个桌面环境。它保存和导入您的主题，图标，字体，壁纸，扩展，桌面文件夹，Flatpak应用程序及其数据，
-# 以及其他桌面设置-所有在一个存档。选择要包含的内容，并通过自动定期保存和同步来保持设备之间的设置一致
-sudo flatpak install -y flathub io.github.vikdevelop.SaveDesktop
+# 浏览并安装GNOME Shell扩展以定制你的桌面
+sudo flatpak install -y flathub com.mattjakeman.ExtensionManager
 # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
 sudo flatpak install -y flathub com.google.Chrome
 sudo flatpak install -y flathub com.qq.QQ
 sudo flatpak install -y flathub com.tencent.WeChat
+
+# VPN 相关软件和订阅来源
+# https://gh-proxy.com/
+# https://ghproxylist.com/
+# https://www.freeclashnode.com/
+
+install_vpn() {
+    # 进入到下载目录
+    cd ~/下载
+    
+    # https://v2rayn.co/
+    # https://github.com/2dust/v2rayN/releases
+    # 使用教程	https://v2rayn.co/v2rayn-tutorial/
+    # 1、点击顶部菜单栏的 “订阅分组”，选择 “订阅分组设置”，在弹出的窗口中点击 "添加"，
+    # 2、添加订阅节点完成后回到主界面，点击 “订阅分组” -> “更新全部订阅 (不通过代理)” 操作完成后，你应该能看到列表中出现了一排节点
+    # 3、开启代理与模式选择。这是最关键的一步，决定了电脑是否已经处于代理加速状态
+    	# 3.1、选择节点。 在节点列表中，点击上方的 “网络测速图标” 进行 “一键多线程测试延迟和速度”，选择网速最好的节点并将其设为活动，当节点的别名变色或显示“活动”状态时，表示已选中
+    	# 3.2、设置系统代理。在软件界面的最底部图标栏，找到以下三项关键设置：
+    		# 系统代理：将其设置为 自动配置系统代理。此时底部图标会变为红色
+    		# 路由：将其设置为 绕过大陆。这可以确保访问百度、淘宝等国内网站时不走代理，访问 YouTube、Google 时才加速
+    # 4、测试网络。打开浏览器，尝试访问 Google。如果能正常打开，恭喜，配置已成功
+    # 5、v2rayN 高级设置说明：
+    # TUN 模式，在软件底部可以找到 TUN 模式开关
+    	# 作用：接管整机流量。对于一些不遵循系统代理的浏览器插件、游戏或特定软件非常有用
+    	# 建议：普通网页浏览不需要开启，仅在某些软件无法正常代理时开启
+    # 核心选择：v2rayN 支持切换 Xray-core、sing-box 等核心。目前大部分订阅链接都支持 Xray，保持默认即可
+    wget "https://gh-proxy.org/https://github.com/2dust/v2rayN/releases/download/7.18.0/v2rayN-linux-rhel-64.rpm"
+    sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
+    wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge-2.4.6-1.x86_64.rpm"
+    sudo dnf install -y ./Clash.Verge-2.4.6-1.x86_64.rpm
+}
 
 
 # ------------------------------------------------------------------------------
@@ -668,38 +701,28 @@ unzip jetbra-*.zip && mv jetbra ~/.jetbra
 # gnome-extensions list --system
 # 查看所有系统级扩展的文件目录
 # nautilus admin:/usr/share/gnome-shell/extensions
-# apt list gnome-shell-extension*
-# apt list gnome-shell-ubuntu-extensions*
+# dnf list gnome-shell-extension*
 
-# User Themes - 允许使用自定义主题
-sudo dnf install -y gnome-shell-extension-user-theme
-    # Dash to Dock - 可停靠的 Dash：将应用启动器变为可停靠的侧边栏（经典 Dock）
-    sudo dnf install -y gnome-shell-extension-dash-to-dock
-    # ls /usr/share/gnome-shell/extensions
-    # nautilus /usr/share/gnome-shell/extensions/blur-my-shell@aunetx
-    # Blur My Shell - 毛玻璃效果：为顶部栏、Dash、应用菜单等添加背景模糊
-    sudo dnf install -y gnome-shell-extension-blur-my-shell
-    # Just Perfection - 精细控制 GNOME Shell 各组件的显示/隐藏（高度可定制）
-    # No Overview 的更现代的替代方案：使用 Just Perfection 扩展，
-    # 可选择性禁用 Overview 的某些元素（如工作区缩略图），而不完全破坏导航逻辑。
-    sudo dnf install -y gnome-shell-extension-just-perfection
-    # Removable Drive Menu 在顶部栏添加一个磁盘/挂载设备的快捷菜单，方便弹出 USB、挂载分区等
-    sudo dnf install -y gnome-shell-extension-drive-menu
-    # AppIndicator - 系统托盘图标支持：显示传统应用的托盘图标（如 Telegram、网易云音乐等）
-    sudo dnf install -y gnome-shell-extension-appindicator
-    # Caffeine - 防休眠开关：临时禁用自动锁屏/休眠，适合演示或视频播放
-    sudo dnf install -y gnome-shell-extension-caffeine
-    # Auto Move Windows - 自动将指定应用窗口分配到指定工作区（如终端→工作区2，浏览器→工作区1）
-    sudo dnf install -y gnome-shell-extension-auto-move-windows
-    # Forge - 窗口平铺
-    sudo dnf install -y gnome-shell-extension-forge
-    # Workspace Indicator - 在顶部栏显示当前工作区编号或名称
-    sudo dnf install -y gnome-shell-extension-workspace-indicator
-    # No Overview
-    sudo dnf install -y gnome-shell-extension-no-overview
-    # GSConnect
-    sudo dnf install -y gnome-shell-extension-gsconnect
-    sudo dnf install -y gnome-shell-extension-light-style
+sudo dnf remove -y \
+gnome-shell-extension-apps-menu \
+gnome-shell-extension-places-menu \
+gnome-shell-extension-window-list \
+gnome-shell-extension-launch-new-instance
+
+sudo dnf install -y \
+gnome-shell-extension-user-theme \
+gnome-shell-extension-dash-to-dock \
+gnome-shell-extension-blur-my-shell \
+gnome-shell-extension-just-perfection \
+gnome-shell-extension-drive-menu \
+gnome-shell-extension-appindicator \
+gnome-shell-extension-auto-move-windows \
+gnome-shell-extension-workspace-indicator \
+gnome-shell-extension-caffeine \
+gnome-shell-extension-gsconnect \
+gnome-shell-extension-forge \
+gnome-shell-extension-no-overview \
+gnome-shell-extension-light-style
 
 
 # 列出所有用户级扩展
@@ -845,10 +868,10 @@ install_themes_and_icons() {
     print_info "正在安装并配置系统字体..."
     echo "正在安装WhiteSur主题..."
     cd ~/下载
-    git clone https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
-    git clone https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
-    git clone https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
-    git clone https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
+    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
+    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
+    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
+    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
     # 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
     # grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
     # sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
@@ -901,9 +924,3 @@ install_themes_and_icons() {
     print_success "WhiteSur GTK 图标启用并配置完成！"
     print_success "主题和图标安装完成！"
 }
-
-
-
-
-
-
