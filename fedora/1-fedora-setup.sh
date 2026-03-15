@@ -19,8 +19,12 @@
 
 
 # ------------------------------------------------------------------------------
-# Gnome 官方网站	https://www.gnome.org/zh-CN/
-# Fedora 主页：		https://docs.fedoraproject.org/zh_CN/docs/
+# Gnome 官方网站：	https://www.gnome.org/zh-CN/
+# Fedora ISO 下载：	https://fedoraproject.org/zh-Hans/
+#			https://kojipkgs.fedoraproject.org/compose/
+# Fedora 使用文档：	https://docs.fedoraproject.org/zh_CN/docs/
+# Fedora 快速上手：	https://docs.fedoraproject.org/zh_Hans/quick-docs/
+# Fedora 用户社区：	https://discussion.fedoraproject.org/
 # ------------------------------------------------------------------------------
 
 
