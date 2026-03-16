@@ -225,15 +225,15 @@ configure_gnome_extensions() {
     # 设置自定义模糊效果
     # gsettings get org.gnome.shell.extensions.blur-my-shell pipelines
     # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell pipelines
-    gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline_overview': {'name': <'pipeline overview'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_24286504481826'>, 'params': <@a{sv} {}>}>]>}, 'pipeline_panel_rounded': {'name': <'pipeline panel rounded'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_000000000001'>, 'params': <{'radius': <30>, 'brightness': <1>, 'unscaled_radius': <100>}>}>, <{'type': <'corner'>, 'id': <'effect_000000000002'>, 'params': <{'radius': <24>, 'corners_bottom': <false>}>}>]>}, 'pipeline_dock_rounded': {'name': <'pipeline dock rounded'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_69102858487382'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_89248773469157'>, 'params': <{'radius': <24>, 'corners_bottom': <true>}>}>]>}}"
-    gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline_panel_rounded'
+    gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline-overview': {'name': <'pipeline overview'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_24286504481826'>, 'params': <@a{sv} {}>}>]>}, 'pipeline-panel-light': {'name': <'pipeline panel light'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_000000000001'>, 'params': <{'radius': <30>, 'brightness': <1>, 'unscaled_radius': <100>}>}>, <{'type': <'corner'>, 'id': <'effect_000000000002'>, 'params': <{'radius': <24>, 'corners_bottom': <false>}>}>, <{'type': <'color'>, 'id': <'effect_11444492989407'>, 'params': <{'color': <(1.0, 1.0, 1.0, 0.5)>}>}>, <{'type': <'noise'>, 'id': <'effect_02421618172361'>, 'params': <{'noise': <0.20000000000000001>, 'lightness': <2>}>}>]>}, 'pipeline-panel-dark': {'name': <'pipeline panel dark'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_34582829524533'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_01633318478434'>, 'params': <{'corners_bottom': <false>, 'radius': <24>}>}>, <{'type': <'color'>, 'id': <'effect_61396509891604'>, 'params': <{'color': <(0.0, 0.0, 0.0, 0.5)>}>}>, <{'type': <'noise'>, 'id': <'effect_16736138416410'>, 'params': <{'lightness': <2>, 'noise': <0.20000000000000001>}>}>]>}, 'pipeline-dock-light': {'name': <'pipeline dock light'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_69102858487382'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_89248773469157'>, 'params': <{'radius': <24>, 'corners_bottom': <true>}>}>, <{'type': <'color'>, 'id': <'effect_34422355468895'>, 'params': <{'color': <(1.0, 1.0, 1.0, 0.5)>}>}>, <{'type': <'noise'>, 'id': <'effect_48521965919475'>, 'params': <{'noise': <0.20000000000000001>, 'lightness': <2>}>}>]>}, 'pipeline-dock-dark': {'name': <'pipeline dock dark'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_63269999366132'>, 'params': <{'brightness': <1>, 'unscaled_radius': <100>}>}>, <{'type': <'corner'>, 'id': <'effect_88027249213595'>, 'params': <{'radius': <24>}>}>, <{'type': <'color'>, 'id': <'effect_67188885938383'>, 'params': <{'color': <(0.0, 0.0, 0.0, 0.5)>}>}>, <{'type': <'noise'>, 'id': <'effect_75924425574829'>, 'params': <{'lightness': <2>, 'noise': <0.20000000000000001>}>}>]>}}"
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview true
     gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
-    gsettings set org.gnome.shell.extensions.blur-my-shell.overview pipeline 'pipeline_overview'
+    gsettings set org.gnome.shell.extensions.blur-my-shell.overview pipeline 'pipeline-overview'
     gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
-    gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline_dock_rounded'
+    gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'
     gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 1
     # 模糊强度（50=中等模糊，过高会显脏）
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications sigma 50
@@ -451,3 +451,38 @@ configure_gnome_extensions() {
     print_success "GNOME 扩展启用并配置完成！"
     # ------------------------------------------------------------------------------
 }
+
+# gsettings get org.gnome.shell.extensions.blur-my-shell pipelines
+
+
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline_panel_light'
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview true
+    gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
+    gsettings set org.gnome.shell.extensions.blur-my-shell.overview pipeline 'pipeline_overview'
+    gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
+    gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline_dock_light'
+
+
+
+gsettings set org.gnome.desktop.interface color-scheme 'default'
+gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
+gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
+gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
+gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
+gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline_panel_light'
+gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline_dock_light'
+
+
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
+gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
+gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
+gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
+gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline_panel_dark'
+gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline_dock_dark'
