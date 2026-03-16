@@ -73,23 +73,6 @@ gsettings set org.gnome.mutter dynamic-workspaces false
 gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
 # 预设工作区名称
 gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
-
-# 递归列出某个 Schema 的键值（例如 org.gnome.shell.extensions.dash-to-dock）
-# gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
-# 取消面板模式，改为类似 MacOS 系统的 Dock 栏模式
-gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
-# 配置 Ubuntu Dock (自定义Dock栏)
-gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
-# 智能隐藏 Dock 栏
-gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
-gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
-gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
-gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
-gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
-gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
-gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
-gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
-gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
 # ------------------------------------------------------------------------------
 
 
