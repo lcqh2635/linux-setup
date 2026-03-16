@@ -262,12 +262,14 @@ configure_gnome_extensions() {
     # gsettings set org.gnome.shell.extensions.just-perfection activities-button false
     gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
     gsettings set org.gnome.shell.extensions.just-perfection world-clock false
-    gsettings set org.gnome.shell.extensions.just-perfection events-button false
     gsettings set org.gnome.shell.extensions.just-perfection weather false
+    gsettings set org.gnome.shell.extensions.just-perfection events-button false
     # 概览中工作区切换区缩略图，此处设置为隐藏
     gsettings set org.gnome.shell.extensions.just-perfection workspace false
+    gsettings set org.gnome.shell.extensions.just-perfection workspace-wrap-around true
     gsettings set org.gnome.shell.extensions.just-perfection window-demands-attention-focus true
     gsettings set org.gnome.shell.extensions.just-perfection startup-status 0
+    gsettings set org.gnome.shell.extensions.just-perfection accent-color-icon true
     gsettings set org.gnome.shell.extensions.just-perfection animation 7
     # gsettings reset-recursively org.gnome.shell.extensions.just-perfection
     
