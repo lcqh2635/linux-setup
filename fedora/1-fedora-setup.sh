@@ -941,6 +941,7 @@ gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
+sudo ~/下载/WhiteSur-gtk-theme/tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-light.jpg"
 
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
@@ -949,3 +950,4 @@ gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
+sudo ~/下载/WhiteSur-gtk-theme/tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
