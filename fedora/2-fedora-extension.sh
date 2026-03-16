@@ -176,6 +176,43 @@ configure_gnome_extensions() {
     gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
     gnome-extensions enable light-style@gnome-shell-extensions.gcampax.github.com
     
+    # 递归列出某个 Schema 的键值（例如 org.gnome.shell.extensions.dash-to-dock）
+    # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
+    print_info "正在配置Dash to Dock..."
+    # 配置 Dash to Dock (自定义Dock栏)
+    # 取消面板模式，改为类似 MacOS 系统的 Dock 栏模式
+    gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
+    gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
+    # 智能隐藏 Dock 栏
+    gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
+    gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
+    gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
+    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+    gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+    gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+    # 收缩 Dash
+    gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
+    gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
+    gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
+    # 恢复默认设置
+    # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
+    # 默认主题色/强调色，蓝色
+    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(153,193,241)'
+    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(26,95,180)'
+    # 绿色
+    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(143,240,164)'
+    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(38,162,105)'
+    # 紫色
+    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(220,138,221)'
+    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(97,53,131)'
+    # 将 panel 一同切换为紫色
+    # gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline_default': {'name': <'Default'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_96853877854398'>, 'params': <@a{sv} {}>}>]>}, 'pipeline_panel': {'name': <'blur panel'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_75271904090067'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'color'>, 'id': <'effect_36769853581304'>, 'params': <{'color': <(0.9, 0.4, 0.8, 0.3)>}>}>]>}, 'pipeline_dock': {'name': <'blur dock'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_05617311186362'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_78081442948590'>, 'params': <{'radius': <20>}>}>]>}}"
+    # 白色
+    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(255,255,255)'
+    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(154,153,150)'
+    
     # 配置 Blur My Shell (透明模糊效果)
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.panel
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.applications
@@ -217,43 +254,6 @@ configure_gnome_extensions() {
     # 应用毛玻璃效果的应用列表
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications whitelist "['org.gnome.Settings', 'org.gnome.Software', 'org.gnome.TextEditor', 'org.gnome.Ptyxis', 'org.gnome.SystemMonitor', 'org.gnome.tweaks', 'org.gnome.Extensions', 'com.mattjakeman.ExtensionManager']"
     gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false
-
-    # 递归列出某个 Schema 的键值（例如 org.gnome.shell.extensions.dash-to-dock）
-    # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
-    print_info "正在配置Dash to Dock..."
-    # 配置 Dash to Dock (自定义Dock栏)
-    # 取消面板模式，改为类似 MacOS 系统的 Dock 栏模式
-    gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
-    gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
-    # 智能隐藏 Dock 栏
-    gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
-    gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
-    gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
-    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
-    gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
-    gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
-    # 收缩 Dash
-    gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
-    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
-    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
-    gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
-    gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
-    # 恢复默认设置
-    # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
-    # 默认主题色/强调色，蓝色
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(153,193,241)'
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(26,95,180)'
-    # 绿色
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(143,240,164)'
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(38,162,105)'
-    # 紫色
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(220,138,221)'
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(97,53,131)'
-    # 将 panel 一同切换为紫色
-    # gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline_default': {'name': <'Default'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_96853877854398'>, 'params': <@a{sv} {}>}>]>}, 'pipeline_panel': {'name': <'blur panel'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_75271904090067'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'color'>, 'id': <'effect_36769853581304'>, 'params': <{'color': <(0.9, 0.4, 0.8, 0.3)>}>}>]>}, 'pipeline_dock': {'name': <'blur dock'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_05617311186362'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_78081442948590'>, 'params': <{'radius': <20>}>}>]>}}"
-    # 白色
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(255,255,255)'
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(154,153,150)'
 
     print_info "正在配置Just Perfection..."
     # Just Perfection（微调 GNOME Shell 的细节，隐藏冗余元素、调整动画速度等）

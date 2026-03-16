@@ -53,6 +53,8 @@ set -euo pipefail
 # nautilus ~/.local/share/gnome-shell/extensions
 
 # 调整和优化系统基础布局和显示
+# 设置窗口按钮位置 (右)
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 # 设置新窗口居中显示
 gsettings set org.gnome.mutter center-new-windows true
 # 显示星期几
@@ -65,6 +67,12 @@ gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 40
 gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
 # 设置强调色为蓝色
 gsettings set org.gnome.desktop.interface accent-color 'blue'
+# 禁用动态工作区
+gsettings set org.gnome.mutter dynamic-workspaces false
+# 设置工作区数量为3（奇数确保有中间位）
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
+# 预设工作区名称
+gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
 
 # 递归列出某个 Schema 的键值（例如 org.gnome.shell.extensions.dash-to-dock）
 # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
@@ -718,7 +726,6 @@ unzip jetbra-*.zip && mv jetbra ~/.jetbra
 # 查看所有系统级扩展的文件目录
 # nautilus admin:/usr/share/gnome-shell/extensions
 # dnf list gnome-shell-extension*
-
 sudo dnf remove -y \
 gnome-shell-extension-apps-menu \
 gnome-shell-extension-places-menu \
@@ -739,7 +746,6 @@ gnome-shell-extension-gsconnect \
 gnome-shell-extension-forge \
 gnome-shell-extension-no-overview \
 gnome-shell-extension-light-style
-
 
 # 列出所有用户级扩展
 # gnome-extensions list --user
