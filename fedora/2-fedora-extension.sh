@@ -199,7 +199,7 @@ configure_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
-    gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
+    # gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
     gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
     # 恢复默认设置
     # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
@@ -219,38 +219,31 @@ configure_gnome_extensions() {
     # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(154,153,150)'
     
     # 配置 Blur My Shell (透明模糊效果)
+    # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.panel
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.applications
-    # 恢复默认设置 gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell
     # 设置自定义模糊效果
     # gsettings get org.gnome.shell.extensions.blur-my-shell pipelines
-    gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline_default': {'name': <'Default'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_96853877854398'>, 'params': <@a{sv} {}>}>]>}, 'pipeline_panel': {'name': <'blur panel'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_75271904090067'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'color'>, 'id': <'effect_36769853581304'>, 'params': <{'color': <(0.4, 0.7, 0.9, 0.3)>}>}>]>}, 'pipeline_dock': {'name': <'blur dock'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_05617311186362'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_78081442948590'>, 'params': <{'radius': <20>}>}>]>}}"
-    gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline_panel'
+    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell pipelines
+    gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline_overview': {'name': <'pipeline overview'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_24286504481826'>, 'params': <@a{sv} {}>}>]>}, 'pipeline_panel_rounded': {'name': <'pipeline panel rounded'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_000000000001'>, 'params': <{'radius': <30>, 'brightness': <1>, 'unscaled_radius': <100>}>}>, <{'type': <'corner'>, 'id': <'effect_000000000002'>, 'params': <{'radius': <24>, 'corners_bottom': <false>}>}>]>}, 'pipeline_dock_rounded': {'name': <'pipeline dock rounded'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_69102858487382'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_89248773469157'>, 'params': <{'radius': <24>, 'corners_bottom': <true>}>}>]>}}"
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline_panel_rounded'
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
-    gsettings set org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview false
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview true
     gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
+    gsettings set org.gnome.shell.extensions.blur-my-shell.overview pipeline 'pipeline_overview'
     gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
-    gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline_dock'
+    gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline_dock_rounded'
     gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 1
-    # 启用应用程序窗口模糊
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications blur true
-    # 启用自定义设置（必须为true才能生效）
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications customize true
-    # 颜色叠加（RGBA，此处为透明黑色，增强暗色模式对比度）
-    # gsettings reset org.gnome.shell.extensions.blur-my-shell.applications color
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications color "(0.05, 0.05, 0.05, 0.1)"
-    # 噪点强度（0.3=轻微颗粒感，模拟真实磨砂玻璃）
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications noise-amount 0.3
-    # 噪点明度（0.1=低对比噪点，自然不刺眼）
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications noise-lightness 0.1
     # 模糊强度（50=中等模糊，过高会显脏）
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications sigma 50
     # 亮度微调（1.0=原始亮度，建议保持）
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications brightness 1.0
     # 基础透明度（220/255≈86%，平衡通透与朦胧感）
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications opacity 220
-    # 禁用动态透明度（避免窗口切换时效果闪烁）
+    # 启用应用程序窗口模糊
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications blur true
+    # 使聚焦窗口不透明
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
     # 禁用在Overview（超级键视图）中模糊（避免卡顿）
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications blur-on-overview false
@@ -259,6 +252,7 @@ configure_gnome_extensions() {
     # 应用毛玻璃效果的应用列表
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications whitelist "['org.gnome.Settings', 'org.gnome.Software', 'org.gnome.TextEditor', 'org.gnome.Ptyxis', 'org.gnome.SystemMonitor', 'org.gnome.tweaks', 'org.gnome.Extensions', 'com.mattjakeman.ExtensionManager']"
     gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false
+    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell
 
     print_info "正在配置Just Perfection..."
     # Just Perfection（微调 GNOME Shell 的细节，隐藏冗余元素、调整动画速度等）

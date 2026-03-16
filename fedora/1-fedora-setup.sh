@@ -745,14 +745,6 @@ git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
 cd hidetopbar && make && gnome-extensions install -f hidetopbar.zip
 cd ~/下载/extensions
 
-git clone https://gh-proxy.com/https://github.com/aunetx/blur-my-shell.git
-cd blur-my-shell && make install
-cd ~/下载/extensions
-    
-git clone https://gitlab.gnome.org/jrahmatzadeh/just-perfection.git
-cd just-perfection && ./scripts/build.sh -i
-cd ~/下载/extensions
-
 git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
 cd gnome-rounded-corners && make
 gnome-extensions install -f Rounded_Corners@lennart-k.zip
