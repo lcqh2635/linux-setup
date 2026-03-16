@@ -103,6 +103,7 @@ gnome-shell-extension-prefs
 # Weather O'Clock
 # Wifi QR Code
 # Custom Command Menu
+# Customize IBus
 
 # 应用默认配置
 apply_default_settings() {
@@ -366,6 +367,21 @@ configure_gnome_extensions() {
     # 恢复默认设置
     # gsettings reset-recursively org.gnome.shell.extensions.coverflowalttab
     
+    print_info "正在配置Night Theme Switcher..."
+    # 递归列出某个 Schema 的键值
+    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.color-scheme
+    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
+    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.time
+    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
+    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
+    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands enabled true
+    # 使用 WhiteSur-*-solid 不透明 GTK 主题版本
+    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
+    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunrise "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text false"
+    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
+    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunset "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true"
+    # gsettings reset-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
+    
     print_info "正在配置ddterm..."
     # ddterm，默认的切换快捷键 F12
     # gsettings list-recursively com.github.amezin.ddterm
@@ -395,16 +411,6 @@ configure_gnome_extensions() {
     # 在 Just Profect 中也同时将 activities 隐藏
     gsettings set org.gnome.shell.extensions.just-perfection activities-button false
     # gsettings reset-recursively org.gnome.shell.extensions.logo-menu
-    
-    print_info "正在配置Night Theme Switcher..."
-    # 递归列出某个 Schema 的键值
-    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
-    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
-    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
-    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands enabled true
-    # 使用 WhiteSur-*-solid 不透明 GTK 主题版本
-    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunrise "gsettings set org.gnome.desktop.interface color-scheme 'default'\ngsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1\ngsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2\ngsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(153,193,241)'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 1"
-    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunset "gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'\ngsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 2\ngsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 3\ngsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(26,95,180)'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 2"
 
     # Quick Settings Tweaks
     # 控制 GNOME 顶部面板快捷设置菜单（Quick Settings）的弹出样式和动画效果
@@ -479,10 +485,10 @@ gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
 gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
 gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'
 gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'
 gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text false
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
 
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
@@ -490,7 +496,7 @@ gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
 gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
 gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'
 gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'
 gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
