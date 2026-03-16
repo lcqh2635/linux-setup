@@ -156,6 +156,11 @@ update_system() {
 # 配置 GNOME 扩展
 configure_gnome_extensions() {
 
+    # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
+    # gsettings list-schemas
+    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
+    # gsettings list-recursively org.gnome.desktop.interface
+    # gsettings list-recursively org.gnome.desktop.wm.preferences
     # 列出所有系统级扩展
     # gnome-extensions list --system
     # 查看所有系统级扩展的文件目录
@@ -270,17 +275,16 @@ configure_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.just-perfection animation 7
     # gsettings reset-recursively org.gnome.shell.extensions.just-perfection
     
+    # Just Perfection（微调 GNOME Shell 的细节，隐藏冗余元素、调整动画速度等）
+    # gsettings list-recursively org.gnome.shell.extensions.auto-move-windows
+    gsettings set org.gnome.shell.extensions.auto-move-windows application-list ['jetbrains-toolbox.desktop:1', 'org.gnome.TextEditor.desktop:2', 'org.gnome.Papers.desktop:2', 'org.mozilla.firefox.desktop:3', 'com.google.Chrome.desktop:3']
+
+    # gsettings reset-recursively org.gnome.shell.extensions.auto-move-windows
+    
     # gsettings list-recursively org.gnome.shell.extensions.forge
     # 默认不启用窗口平铺模式
     # gsettings set org.gnome.shell.extensions.forge tiling-mode-enabled false
     # gnome-extensions enable forge@jmmaranan.com
-    
-    # 禁用动态工作区
-    # gsettings set org.gnome.mutter dynamic-workspaces false
-    # 设置工作区数量为3（奇数确保有中间位）
-    # gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
-    # 预设工作区名称
-    gsettings set org.gnome.desktop.wm.preferences workspace-names "['休闲区', '工作区']"
     # ------------------------------------------------------------------------------
     
     
