@@ -251,8 +251,9 @@ wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
 cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
 cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
 cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
+# gsettings list-recursively org.gnome.desktop.background
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
-# gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
+gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
 
 # 安装基础的 flatpak 应用软件
 # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
