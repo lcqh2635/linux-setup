@@ -275,11 +275,15 @@ configure_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.just-perfection animation 7
     # gsettings reset-recursively org.gnome.shell.extensions.just-perfection
     
-    # Just Perfection（微调 GNOME Shell 的细节，隐藏冗余元素、调整动画速度等）
+    # Auto Move Windows
     # gsettings list-recursively org.gnome.shell.extensions.auto-move-windows
-    gsettings set org.gnome.shell.extensions.auto-move-windows application-list ['jetbrains-toolbox.desktop:1', 'org.gnome.TextEditor.desktop:2', 'org.gnome.Papers.desktop:2', 'org.mozilla.firefox.desktop:3', 'com.google.Chrome.desktop:3']
-
+    gsettings set org.gnome.shell.extensions.auto-move-windows application-list "['jetbrains-toolbox.desktop:1', 'org.gnome.TextEditor.desktop:2', 'org.gnome.Papers.desktop:2', 'org.mozilla.firefox.desktop:3', 'com.google.Chrome.desktop:3']"
     # gsettings reset-recursively org.gnome.shell.extensions.auto-move-windows
+    
+    # Background Logo
+    # gsettings list-recursively org.fedorahosted.background-logo-extension
+    gsettings set org.fedorahosted.background-logo-extension logo-always-visible true
+    # gsettings reset-recursively org.fedorahosted.background-logo-extension
     
     # gsettings list-recursively org.gnome.shell.extensions.forge
     # 默认不启用窗口平铺模式
