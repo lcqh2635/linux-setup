@@ -799,6 +799,11 @@ git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-
 cd status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh
 gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
 cd ~/下载/extensions
+
+git clone https://gh-proxy.com/https://github.com/StorageB/custom-command-menu.git
+cd custom-command-menu && ./buildforupload.sh
+gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+cd ~/下载/extensions
     
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
     for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
