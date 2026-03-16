@@ -53,8 +53,8 @@ set -euo pipefail
 # nautilus ~/.local/share/gnome-shell/extensions
 
 # 调整和优化系统基础布局和显示
-# 设置窗口按钮位置 (右)
-gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+# 设置强调色为蓝色
+gsettings set org.gnome.desktop.interface accent-color 'blue'
 # 设置新窗口居中显示
 gsettings set org.gnome.mutter center-new-windows true
 # 显示星期几
@@ -65,8 +65,8 @@ gsettings set org.gnome.desktop.interface show-battery-percentage true
 gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
 # 开启夜灯
 gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
-# 设置强调色为蓝色
-gsettings set org.gnome.desktop.interface accent-color 'blue'
+# 设置窗口按钮位置 (右)
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 # 禁用动态工作区
 gsettings set org.gnome.mutter dynamic-workspaces false
 # 设置工作区数量为3（奇数确保有中间位）
