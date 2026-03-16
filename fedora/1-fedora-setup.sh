@@ -680,18 +680,18 @@ sudo flatpak install -y flathub com.github.marhkb.Pods
 
 
 # ------------------------------------------------------------------------------
+# 1. 进入下载目录 (假设你的安装包在这里)
+cd ~/下载
 # JetBrains 的 API 返回的 JSON 中包含 多个架构的下载链接，你的 grep 命令会匹配 所有 包含 jetbrains-toolbox-*.tar.gz 的链接，
 # 而 head -1 恰好取到了第一个（可能是 arm64）
 # 关键：| grep -v 'arm64' 会过滤掉包含 "arm64" 的链接
 wget -O jetbrains-toolbox.tar.gz "$(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release' | grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | grep -v 'arm64' | head -1)"
-# 1. 创建一个专门放软件的目录 (例如在 home 目录下创建一个 apps 文件夹)
+# 2. 创建一个专门放软件的目录 (例如在 home 目录下创建一个 apps 文件夹)
 mkdir -p ~/.apps
-# 2. 进入下载目录 (假设你的安装包在这里)
-cd ~/下载
 # 3. 解压到刚才创建的目录
-# 注意：将 jetbrains-toolbox-*.tar.gz 替换为你实际下载的文件名，可以用 Tab 键自动补全
-tar -xvf jetbrains-toolbox-*.tar.gz -C ~/.apps
-
+# 注意：将 jetbrains-toolbox*.tar.gz 替换为你实际下载的文件名，可以用 Tab 键自动补全
+tar -xvf jetbrains-toolbox*.tar.gz -C ~/.apps
+# nautilus ~/.apps
 # 1. 进入解压后的文件夹
 cd ~/.apps/jetbrains-toolbox-*/bin
 # 2. 赋予执行权限 (防止提示权限不足)
@@ -706,6 +706,7 @@ chmod +x jetbrains-toolbox
 cd ~/下载
 wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
 unzip jetbra-*.zip && mv jetbra ~/.jetbra
+# nautilus ~/.jetbra
 # 自动配置  jetbrains 代码编辑器 vmoptions
 ~/.jetbra/scripts/install.sh
 # ------------------------------------------------------------------------------
