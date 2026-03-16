@@ -214,8 +214,6 @@ configure_gnome_extensions() {
     # 紫色
     # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(220,138,221)'
     # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(97,53,131)'
-    # 将 panel 一同切换为紫色
-    # gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline_default': {'name': <'Default'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_96853877854398'>, 'params': <@a{sv} {}>}>]>}, 'pipeline_panel': {'name': <'blur panel'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_75271904090067'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'color'>, 'id': <'effect_36769853581304'>, 'params': <{'color': <(0.9, 0.4, 0.8, 0.3)>}>}>]>}, 'pipeline_dock': {'name': <'blur dock'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_05617311186362'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_78081442948590'>, 'params': <{'radius': <20>}>}>]>}}"
     # 白色
     # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(255,255,255)'
     # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(154,153,150)'
