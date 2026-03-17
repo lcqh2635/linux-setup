@@ -76,7 +76,7 @@ gnome-shell-extension-prefs
 # Coverflow Alt-Tab
 # ddterm
 # Dash to Dock
-# Debian Linux Update Indicator
+# Fedora Linux Update Indicator
 # Disable Unredirect
 # Do Not Disturb While Screen Sharing Or Recording
 # Extension List

@@ -120,6 +120,13 @@ sudo dnf remove -y mediawriter libreoffice-*
 # 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
 # for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/adding-or-removing-software-repositories-in-fedora/
+# 查看已启用的第三方仓库
+# dnf repolist --all
+# 禁用仓库（软移除，可随时恢复）
+sudo dnf config-manager --set-disabled <仓库ID>
+
+sudo dnf config-manager --save --set-disabled <仓库ID>
 # Fedora 安装 Chromium 或 Google Chrome 浏览器
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
 # 安装第三方仓库
@@ -162,6 +169,8 @@ sudo flatpak override --filesystem=$HOME/.icons:ro
 # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
 # 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
 
+# 浏览并安装GNOME Shell扩展以定制你的桌面
+flatpak install -y flathub com.mattjakeman.ExtensionManager
 # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
 flatpak install -y flathub io.github.kolunmi.Bazaar
 # Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
@@ -180,8 +189,6 @@ flatpak install -y flathub io.gitlab.adhami3310.Impression
 flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
 # 忘记忘记事情
 flatpak install -y flathub io.github.alainm23.planify
-# 浏览并安装GNOME Shell扩展以定制你的桌面
-flatpak install -y flathub com.mattjakeman.ExtensionManager
 # 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
 flatpak install -y flathub io.github.sitraorg.sitra
 # Refine 帮助发现 GNOME 中的高级和实验性功能
@@ -254,14 +261,10 @@ sudo dnf install -y libva-utils vulkan-tools
 # 安装常用应用
 echo "安装常用应用程序..."
 sudo dnf install -y \
-    git wget curl \
-    unzip p7zip \
-    fastfetch \
-    flatpak \
-    wl-clipboard \
-    libadwaita-demo \
-    gnome-tweaks gnome-system-monitor \
-    gnome-browser-connector gnome-extensions-app
+git wget curl unzip p7zip \
+fastfetch wl-clipboard \
+gnome-tweaks gnome-browser-connector \
+libadwaita-demo
 # evolution配置qq邮箱授权码： embwnsuwkdjrebge
 
 # Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
