@@ -117,7 +117,8 @@ for i in /etc/yum.repos.d/fedora*.bak; do sudo mv "$i" "${i%.bak}"; done
 # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
 # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
 # 使用下列命令（在 bash 或兼容 shell 中），可以同时启用其 free 和 nonfree 软件源
-sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.ustc.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 # 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
 # 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
 # 并将等号后面链接中的 http://download1.rpmfusion.org 替换为 https://mirrors.ustc.edu.cn/rpmfusion：
@@ -163,7 +164,7 @@ sudo dnf install -y dnf-plugins-core
 # Fedora 安装 Chromium 或 Google Chrome 浏览器
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
 # 安装第三方仓库
-sudo dnf install fedora-workstation-repositories
+sudo dnf install -y fedora-workstation-repositories
 # 启用 Google Chrome 仓库：
 sudo dnf config-manager setopt google-chrome.enabled=1
 # 最后，安装  Google Chrome 浏览器：
@@ -254,17 +255,29 @@ flatpak install -y flathub com.qq.QQ
 flatpak install -y flathub com.tencent.WeChat
 # OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
 
+
+# development-tools 是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
+# c-development 是简化C开发环境配置的包组，安装后即可获得编译、调试和构建C程序所需的核心工具。如果你需要开发C程序，安装它或对应的包组是第一步。例如：gcc、gcc-c++
+# rpm-development-tools	是专门用于 RPM 包开发 的工具集，适合软件打包、维护或发布 RPM 格式的软件。例如：rpm-build、rpmdevtools
+# dnf group install 			# 旨在为开发者提供一个基础的开发环境，而无需手动安装每个工具。
+# dnf group list			# 查看可用的软件包组
+# dnf group info development-tools	# 查看软件包组的信息
+# dnf group info c-development		# 查看软件包组的信息
+sudo dnf group install -y development-tools c-development rpm-development-tools
+# 安装虚拟化基础
+sudo dnf group install -y --with-optional virtualization
+# 安装多媒体编解码器 https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-plugins-for-playing-movies-and-music/
+# multimedia 包组提供了一套完整的音视频处理工具链，适合普通用户或开发者处理多媒体任务。例如：gstreamer1-plugin-*
+# 作为 Fedora 用户和系统管理员，您可以使用这些步骤来安装额外的多媒体插件，使您能够播放各种视频和音频类型。 
+# 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件
+sudo dnf group install -y multimedia
+
+
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
 # 从 fedora-cisco-openh264 存储库安装
 sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-origin
 # 之后，您需要打开 Firefox，转到菜单 → 附加组件 → 插件 并启用 OpenH264 插件。
 # 您可以在此页面 https://mozilla.github.io/webrtc-landing/pc_test.html 上对您的 H.264 是否在 RTC 中工作进行简单测试（检查需要 H.264 视频）
-# 安装多媒体编解码器
-echo "安装多媒体编解码器..."
-# 作为 Fedora 用户和系统管理员，您可以使用这些步骤来安装额外的多媒体插件，使您能够播放各种视频和音频类型。 
-# 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件
-# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-plugins-for-playing-movies-and-music/
-sudo dnf group install -y multimedia
 
 
 # 安装fedora的多媒体组，以下内容参考	https://rpmfusion.org/Howto/Multimedia
@@ -381,7 +394,6 @@ install_vpn() {
     wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge-2.4.6-1.x86_64.rpm"
     sudo dnf install -y ./Clash.Verge-2.4.6-1.x86_64.rpm
 }
-
 
 # ------------------------------------------------------------------------------
 # https://ubuntu.com/toolchains
