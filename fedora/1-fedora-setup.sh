@@ -121,12 +121,20 @@ sudo dnf remove -y mediawriter libreoffice-*
 # for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/adding-or-removing-software-repositories-in-fedora/
-# 查看已启用的第三方仓库
+# dnf config-manager --help
+# 查看所有仓库
 # dnf repolist --all
-# 禁用仓库（软移除，可随时恢复）
-sudo dnf config-manager --set-disabled <仓库ID>
+# 禁用仓库
+sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
+# 在 DNF 5 中，彻底移除第三方仓库的最标准方法依然是手动删除对应的 .repo 文件，下列会打印与每个 Yum 仓库关联的仓库 ID 列表
+# grep -E "^\[.*]" /etc/yum.repos.d/*
+# 删除仓库文件
+sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
+# 删除文件后，必须清理 DNF 缓存以生效
+sudo dnf clean all
+# 重建 DNF 缓存
+sudo dnf makecache
 
-sudo dnf config-manager --save --set-disabled <仓库ID>
 # Fedora 安装 Chromium 或 Google Chrome 浏览器
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
 # 安装第三方仓库
