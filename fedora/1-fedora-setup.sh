@@ -192,10 +192,6 @@ flatpak install -y flathub com.github.neithern.g4music
 flatpak install -y flathub it.mijorus.gearlever
 # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
 flatpak install -y flathub com.google.Chrome
-flatpak install -y flathub com.qq.QQ
-flatpak install -y flathub com.tencent.WeChat
-# Postman 是 API 开发者的完整工具链，全球有 500 万开发者和超过 10 万家公司每月访问 1.3 亿个 API
-flatpak install -y flathub com.getpostman.Postman
 # Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
 flatpak install -y flathub re.sonny.Playhouse
 # Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
