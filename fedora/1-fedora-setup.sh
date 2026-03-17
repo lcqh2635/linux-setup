@@ -135,6 +135,26 @@ sudo dnf clean all
 # 重建 DNF 缓存
 sudo dnf makecache
 
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
+sudo dnf install -y dnf-automatic
+# 默认情况下，dnf-automatic 会从 /etc/dnf/automatic.conf 文件中的配置中运行。这些配置只会下载，但不会应用任何包。
+# 要更改或添加任何配置，请以 root 用户身份（或使用sudo）从终端窗口打开 .conf 文件。
+# 修改 automatic.conf 以下载所有更新、应用并重启，可以是：
+cat << EOF | sudo tee /etc/dnf/automatic.conf
+[commands]
+apply_updates=True
+reboot=when-needed
+EOF
+# 配置完成后，执行以下命令以启用并启动系统D计时器
+systemctl enable --now dnf-automatic.timer
+# 检查DNF-自动状态：
+systemctl status dnf-automatic.timer
+
+sudo dnf install -y dnf-plugins-core
+sudo dnf install -y fedora-mirror-statistics
+sudo fedora-mirror-statistics --fastestmirror
+
+
 # Fedora 安装 Chromium 或 Google Chrome 浏览器
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
 # 安装第三方仓库
