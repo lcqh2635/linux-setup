@@ -136,15 +136,17 @@ sudo dnf config-manager setopt google-chrome.enabled=1
 # Fedora默认安装了Flatpak，只要配置Flatpak加速镜像即可
 echo "开始配置Flatpak加速镜像..."
 # flatpak remotes --show-details
+# 删除官方 Fedora Flatpaks 源
+sudo flatpak remote-delete fedora
 # 添加 Flathub 官方仓库
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 # 修改 Flathub 仓库地址为国内镜像
 # 2、中科大 Flatpak 镜像源（处于测试阶段） https://mirrors.ustc.edu.cn/help/flathub.html
 sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
+# 上海交通大学 Flatpak 软件源镜像
 # sudo flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
 sudo flatpak update --appstream
 # 恢复默认值：
-# sudo flatpak remote-modify fedora --url=https://dl.fedoraproject.org/flatpak/repo/
 # sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
 # 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
 # xdg-data/themes 是 ~/.local/share/themes 的标准化路径别名（Flatpak 优先识别）
