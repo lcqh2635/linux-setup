@@ -159,53 +159,55 @@ sudo flatpak override --filesystem=$HOME/.themes:ro
 sudo flatpak override --filesystem=$HOME/.icons:ro
 # ------------------------------------------------------------------------------
 
-# 安装基础的 flatpak 应用软件
+# 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
+# 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
+
 # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
-sudo flatpak install -y flathub io.github.kolunmi.Bazaar
+flatpak install -y flathub io.github.kolunmi.Bazaar
 # Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
-sudo flatpak install -y flathub com.github.tchx84.Flatseal
+flatpak install -y flathub com.github.tchx84.Flatseal
 # Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
-sudo flatpak install -y flathub io.github.flattool.Warehouse
+flatpak install -y flathub io.github.flattool.Warehouse
 # Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
-sudo flatpak install -y flathub org.gnome.Evolution
+flatpak install -y flathub org.gnome.Evolution
 # 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
-sudo flatpak install -y flathub org.gnome.Firmware
+flatpak install -y flathub org.gnome.Firmware
 # 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
-sudo flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+flatpak install -y flathub io.github.realmazharhussain.GdmSettings
 # 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
-sudo flatpak install -y flathub io.gitlab.adhami3310.Impression
+flatpak install -y flathub io.gitlab.adhami3310.Impression
 # 用干净、无干扰的标记删除编辑器专注于你的写作
-sudo flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
 # 忘记忘记事情
-sudo flatpak install -y flathub io.github.alainm23.planify
+flatpak install -y flathub io.github.alainm23.planify
 # 浏览并安装GNOME Shell扩展以定制你的桌面
-sudo flatpak install -y flathub com.mattjakeman.ExtensionManager
+flatpak install -y flathub com.mattjakeman.ExtensionManager
 # 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
-sudo flatpak install -y flathub io.github.sitraorg.sitra
+flatpak install -y flathub io.github.sitraorg.sitra
 # Refine 帮助发现 GNOME 中的高级和实验性功能
-sudo flatpak install -y flathub page.tesk.Refine
+flatpak install -y flathub page.tesk.Refine
 # 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
-sudo flatpak install -y flathub com.github.neithern.g4music
+flatpak install -y flathub com.github.neithern.g4music
 # 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
-sudo flatpak install -y flathub it.mijorus.gearlever
+flatpak install -y flathub it.mijorus.gearlever
 # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
-sudo flatpak install -y flathub com.google.Chrome
-sudo flatpak install -y flathub com.qq.QQ
-sudo flatpak install -y flathub com.tencent.WeChat
+flatpak install -y flathub com.google.Chrome
+flatpak install -y flathub com.qq.QQ
+flatpak install -y flathub com.tencent.WeChat
 # Postman 是 API 开发者的完整工具链，全球有 500 万开发者和超过 10 万家公司每月访问 1.3 亿个 API
-sudo flatpak install -y flathub com.getpostman.Postman
+flatpak install -y flathub com.getpostman.Postman
 # Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
-sudo flatpak install -y flathub re.sonny.Playhouse
+flatpak install -y flathub re.sonny.Playhouse
 # Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
-sudo flatpak install -y flathub re.sonny.Workbench
+flatpak install -y flathub re.sonny.Workbench
 # 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
-sudo flatpak install -y flathub me.iepure.devtoolbox
+flatpak install -y flathub me.iepure.devtoolbox
 # Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
-sudo flatpak install -y flathub io.github.mightycreak.Diffuse
+flatpak install -y flathub io.github.mightycreak.Diffuse
 # Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
-sudo flatpak install -y flathub com.usebottles.bottles
+flatpak install -y flathub com.usebottles.bottles
 # Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
-sudo flatpak install -y flathub org.gnome.Builder
+flatpak install -y flathub org.gnome.Builder
 # OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
@@ -697,7 +699,7 @@ podman pull postgres:latest
 # Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
 # 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
 # IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择 Unix 套接字 ，然后下拉选择 rootless 版地址
-sudo flatpak install -y flathub com.github.marhkb.Pods
+flatpak install -y flathub com.github.marhkb.Pods
 # ------------------------------------------------------------------------------
 
 
