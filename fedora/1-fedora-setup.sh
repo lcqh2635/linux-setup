@@ -77,6 +77,23 @@ gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码'
 
 
 # ------------------------------------------------------------------------------
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/adding-or-removing-software-repositories-in-fedora/
+# dnf config-manager --help
+# 查看所有仓库
+# dnf repolist --all
+# 禁用仓库
+sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
+# 在 DNF 5 中，彻底移除第三方仓库的最标准方法依然是手动删除对应的 .repo 文件，下列会打印与每个 Yum 仓库关联的仓库 ID 列表
+# grep -E "^\[.*]" /etc/yum.repos.d/*
+# 删除仓库文件
+sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
+# 删除文件后，必须清理 DNF 缓存以生效
+sudo dnf clean all
+# 重建 DNF 缓存
+sudo dnf makecache
+# 删除官方 Fedora Flatpaks 源
+sudo flatpak remote-delete fedora
+
 # Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
 # 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
 # https://mirrors.ustc.edu.cn/help/fedora.html
@@ -120,21 +137,6 @@ sudo dnf remove -y mediawriter libreoffice-*
 # 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
 # for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 
-# https://docs.fedoraproject.org/zh_Hans/quick-docs/adding-or-removing-software-repositories-in-fedora/
-# dnf config-manager --help
-# 查看所有仓库
-# dnf repolist --all
-# 禁用仓库
-sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
-# 在 DNF 5 中，彻底移除第三方仓库的最标准方法依然是手动删除对应的 .repo 文件，下列会打印与每个 Yum 仓库关联的仓库 ID 列表
-# grep -E "^\[.*]" /etc/yum.repos.d/*
-# 删除仓库文件
-sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
-# 删除文件后，必须清理 DNF 缓存以生效
-sudo dnf clean all
-# 重建 DNF 缓存
-sudo dnf makecache
-
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
 sudo dnf install -y dnf-automatic
 # 默认情况下，dnf-automatic 会从 /etc/dnf/automatic.conf 文件中的配置中运行。这些配置只会下载，但不会应用任何包。
@@ -171,8 +173,6 @@ sudo dnf config-manager setopt google-chrome.enabled=1
 # Fedora默认安装了Flatpak，只要配置Flatpak加速镜像即可
 echo "开始配置Flatpak加速镜像..."
 # flatpak remotes --show-details
-# 删除官方 Fedora Flatpaks 源
-sudo flatpak remote-delete fedora
 # 添加 Flathub 官方仓库
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 # 修改 Flathub 仓库地址为国内镜像
