@@ -109,9 +109,10 @@ sudo sed -e 's|^metalink=|#metalink=|g' \
          /etc/yum.repos.d/fedora-updates.repo
 # 更新本地缓存，即可使用所选择的软件源镜像
 sudo dnf makecache
-# 修改还原
-# sudo mv /etc/yum.repos.d/fedora.repo.bak /etc/yum.repos.d/fedora.repo
-# sudo mv /etc/yum.repos.d/fedora-updates.repo.bak /etc/yum.repos.d/fedora-updates.repo
+# 遍历 /etc/yum.repos.d/ 目录下所有以 fedora 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
+reset_fedora_mirror() {
+for i in /etc/yum.repos.d/fedora*.bak; do sudo mv "$i" "${i%.bak}"; done
+}
 
 # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
 # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
@@ -135,7 +136,9 @@ sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 sudo dnf remove -y mediawriter libreoffice-*
 # 还原上述 RPM Fusion 修改
 # 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
-# for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
+reset_rpmfusion_mirror() {
+for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
+}
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
 sudo dnf install -y dnf-automatic
