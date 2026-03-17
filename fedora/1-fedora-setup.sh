@@ -224,6 +224,7 @@ flatpak install -y flathub io.github.sitraorg.sitra
 flatpak install -y flathub page.tesk.Refine
 # 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
 flatpak install -y flathub com.github.neithern.g4music
+# 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
 # netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
 flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
 # 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
@@ -874,6 +875,7 @@ cd ~/下载/extensions
 
 git clone https://gh-proxy.com/https://github.com/tuberry/desktop-lyric.git && cd desktop-lyric
 meson setup build && meson install -C build
+cd ~/下载/extensions
 # 系统级别构建安装，默认 --prefix=/usr/local
 # meson setup build -Dtarget=system && meson install -C build
     

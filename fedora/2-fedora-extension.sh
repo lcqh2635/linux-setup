@@ -104,7 +104,6 @@ gnome-shell-extension-prefs
 # Wifi QR Code
 # Custom Command Menu
 # Customize IBus
-# Desktop Lyric
 
 # 应用默认配置
 apply_default_settings() {
