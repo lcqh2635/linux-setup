@@ -267,12 +267,10 @@ sudo dnf group install -y development-tools c-development rpm-development-tools
 # 安装虚拟化基础
 sudo dnf group install -y --with-optional virtualization
 # 安装多媒体编解码器 https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-plugins-for-playing-movies-and-music/
-# multimedia 包组提供了一套完整的音视频处理工具链，适合普通用户或开发者处理多媒体任务。例如：gstreamer1-plugin-*
+# multimedia 包组提供了一套完整的音视频处理工具链，适合普通用户或开发者处理多媒体任务。例如：gstreamer1-plugin-* 以包含 gstreamer1-plugin-openh264 等
 # 作为 Fedora 用户和系统管理员，您可以使用这些步骤来安装额外的多媒体插件，使您能够播放各种视频和音频类型。 
 # 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件
 sudo dnf group install -y multimedia
-
-
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
 # 从 fedora-cisco-openh264 存储库安装
 sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-origin
@@ -280,8 +278,7 @@ sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-o
 # 您可以在此页面 https://mozilla.github.io/webrtc-landing/pc_test.html 上对您的 H.264 是否在 RTC 中工作进行简单测试（检查需要 H.264 视频）
 
 
-# 安装fedora的多媒体组，以下内容参考	https://rpmfusion.org/Howto/Multimedia
-# Fedora 上的多媒体
+# 安装fedora的多媒体组，以下内容参考 https://rpmfusion.org/Howto/Multimedia
 # 切换到完整的 ffmpeg，使用 swap 命令为替换操作
 # FFmpeg-Free 是 Fedora 默认提供的一个受限版本，仅包含开源且无专利限制的编解码器。
 # FFmpeg 是一个功能强大的多媒体处理工具集，支持视频、音频的编码、解码、转码、流媒体传输等功能。
@@ -291,7 +288,6 @@ sudo dnf swap -y ffmpeg-free ffmpeg --allowerasing
 # 安装其他编解码器，这将允许使用 gstreamer 框架和其他多媒体软件的应用程序播放其他受限编解码器：
 # 以下命令将安装启用 gstreamer 的应用程序所需的补充多媒体包： 
 sudo dnf update -y @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
-
 # 硬件加速编解码器
 # 使用 AMD（mesa）的硬件编解码器
 # 使用 rpmfusion-free 部分这是从 Fedora 37 及更高版本开始需要的...主要关注 AMD 硬件，因为带有 nouveau 的 NVIDIA 硬件运行不佳 
@@ -313,14 +309,13 @@ sudo dnf install -y libva-utils vulkan-tools
 
 ## 5. 开发环境配置 =============================================
 # 安装常用应用
+# evolution配置qq邮箱授权码： embwnsuwkdjrebge
 echo "安装常用应用程序..."
 sudo dnf install -y \
 git wget curl unzip p7zip \
 fastfetch wl-clipboard \
 gnome-tweaks gnome-browser-connector \
 libadwaita-demo
-# evolution配置qq邮箱授权码： embwnsuwkdjrebge
-
 # Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
 # https://tauri.app/zh-cn/start/prerequisites/#linux
 sudo dnf check-update
@@ -332,12 +327,6 @@ sudo dnf install -y webkit2gtk4.1-devel \
   libappindicator-gtk3-devel \
   librsvg2-devel \
   libxdo-devel
-sudo dnf group install -y "c-development"
-# dnf install -y @c-development
-# Development Tools  是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。
-# 它旨在为开发者提供一个基础的开发环境，而无需手动安装每个工具。
-# sudo dnf group list		# 查看可用的软件包组
-sudo dnf install -y @development-tools
 # 配置 Git 访问的 SSH 密钥
 git config --global user.name 'lcqh2635' 
 git config --global user.email 'lcqh2635@gmail.com'
@@ -352,6 +341,7 @@ ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com"
 # cd ~/下载 && git clone https://gitee.com/lcqh2635/init-fedora.git
 # cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
 
+
 # nautilus ~/.local/share/backgrounds/
 cd ~/下载
 wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
@@ -364,15 +354,14 @@ cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
 
+
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
 # https://ghproxylist.com/
 # https://www.freeclashnode.com/
-
 install_vpn() {
     # 进入到下载目录
     cd ~/下载
-    
     # https://v2rayn.co/
     # https://github.com/2dust/v2rayN/releases
     # 使用教程	https://v2rayn.co/v2rayn-tutorial/
@@ -394,6 +383,7 @@ install_vpn() {
     wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge-2.4.6-1.x86_64.rpm"
     sudo dnf install -y ./Clash.Verge-2.4.6-1.x86_64.rpm
 }
+
 
 # ------------------------------------------------------------------------------
 # https://ubuntu.com/toolchains
@@ -517,7 +507,6 @@ mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis
 
 # https://github.com/redis/redis
 # https://www.redis.net.cn/
-
 # IDEA 配置 “Maven 主路径” 为 /usr/share/maven 直接复制到输入框即可
 # ------------------------------------------------------------------------------
 
@@ -528,7 +517,6 @@ echo "🦀 安装 Rust..."
 # Rust Web 常用的框架 Axum 目前排名性能总榜 7，需要使用 pg 数据库，数据来自性能测试网站	https://www.techempower.com/benchmarks
 # 配置 crates.io 国内中科大 ustc 加速镜像源	 https://mirrors.ustc.edu.cn/help/crates.io-index.html
 # 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
-
 # 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新
 # tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | tee -a ~/.bash_profile
@@ -656,12 +644,14 @@ EOF
 # https://crates.io/crates/regex
 # ------------------------------------------------------------------------------
 
+
 # https://course.ziglang.cc/
 # https://github.com/ziglang/zig
 # https://github.com/zigtools/zls
 # https://zigtools.org/zls/install/
 sudo dnf install -y zig
 echo "🐍 你刚安装的 zig 版本号为：$(zig version)"
+
 
 # ------------------------------------------------------------------------------
 # 第六步：安装 Go 语言
@@ -687,7 +677,6 @@ go env -w GOSUMDB=sum.golang.google.cn
 # go env GO111MODULE
 # go env GOPROXY
 # go env GOSUMDB
-
 # 设置 GOPATH 为 ~/go
 mkdir -p $HOME/.go
 go env -w GOPATH=$HOME/.go
@@ -706,7 +695,6 @@ systemctl --user enable --now podman.socket
 # ls $XDG_RUNTIME_DIR/podman/podman.sock
 # unix:///run/user/1000/podman/podman.sock
 # podman info
-
 # 配置国内加速镜像仓库
 # 主要用于 登录到容器镜像仓库（Registry），以便拉取（pull）私有镜像或推送（push）镜像到仓库
 # lcqh2635@gmail.com
@@ -742,7 +730,6 @@ location = "docker.1ms.run"
 # 是否允许不安全的 HTTP 连接（生产环境建议 false）
 insecure = false
 EOF
-
 # 创建网络
 podman network create podman-net
 podman pull redis:latest
@@ -752,13 +739,13 @@ podman pull postgres:latest
 # 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
 # IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择 Unix 套接字 ，然后下拉选择 rootless 版地址
 flatpak install -y flathub com.github.marhkb.Pods
-
 # 在 Fedora 上使用 Kubernetes 官方文档 https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes/
 # Fedora 40（及更新版本）安装 Kubernetes 建议 https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-non-versioned/#sect-fedora-40-recommendations
 # Kubelet 是节点上的 Kubernetes 运行时。对应 kubernetes 包
 # Kubeadm 初始化集群并将新节点加入集群。这个rpm是可选的，但由Kubernetes团队推荐。如果使用，请在每个节点上安装。
 # kubectl 命令行客户端。建议在任何配置为控制平面的节点上使用，因为它允许集群管理员从控制平面的SSH会话中对集群进行控制。在可以通过网络连接到集群的机器上安装。
-# kubernetes-systemd 用于 Kubernetes 控制平面和/或节点的 Systemd 服务。对于大多数安装，不需要这些服务，因为 kubeadm 会将这些组件作为静态 Pod 安装。如果使用，则需要在所有节点上安装。使用 systemctl 在所有节点上启用 kube-proxy。在控制平面节点上启用 kube-apiserver、kube-controller-manager 和 kube-scheduler。
+# kubernetes-systemd 用于 Kubernetes 控制平面和/或节点的 Systemd 服务。对于大多数安装，不需要这些服务，因为 kubeadm 会将这些组件作为静态 Pod 安装。如果使用，则需要在所有节点上安装。
+# 使用 systemctl 在所有节点上启用 kube-proxy。在控制平面节点上启用 kube-apiserver、kube-controller-manager 和 kube-scheduler。
 sudo dnf install -y kubernetes kubernetes-kubeadm kubernetes-client
 sudo systemctl enable --now kubelet
 # 查看 kubelet 服务状态
@@ -797,8 +784,6 @@ cd ~/.apps/jetbrains-toolbox-*/bin
 chmod +x jetbrains-toolbox
 # 3. 启动程序
 ./jetbrains-toolbox
-
-
 # https://3.jetbra.in/
 # https://github.com/jonssonyan/3.jetbra.in
 # https://account.jetbrains.com/licenses
