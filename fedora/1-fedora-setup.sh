@@ -128,6 +128,8 @@ sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flat
 # 修改 Flathub 仓库地址为国内镜像
 # 2、中科大 Flatpak 镜像源（处于测试阶段） https://mirrors.ustc.edu.cn/help/flathub.html
 sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
+sudo flatpak remote-modify fedora --url=https://mirrors.ustc.edu.cn/flathub
+sudo flatpak update --appstream
 # 恢复默认值：
 # sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
 # 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
