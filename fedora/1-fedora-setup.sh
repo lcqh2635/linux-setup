@@ -247,6 +247,8 @@ flatpak install -y flathub org.gnome.Builder
 flatpak install -y flathub de.haeckerfelix.Fragments
 # GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
 flatpak install -y flathub org.gnome.Epiphany
+flatpak install -y flathub com.qq.QQ
+flatpak install -y flathub com.tencent.WeChat
 # OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
@@ -735,6 +737,29 @@ podman pull postgres:latest
 # 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
 # IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择 Unix 套接字 ，然后下拉选择 rootless 版地址
 flatpak install -y flathub com.github.marhkb.Pods
+
+# 在 Fedora 上使用 Kubernetes 官方文档 https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes/
+# Fedora 40（及更新版本）安装 Kubernetes 建议 https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-non-versioned/#sect-fedora-40-recommendations
+# Kubelet 是节点上的 Kubernetes 运行时。对应 kubernetes 包
+# Kubeadm 初始化集群并将新节点加入集群。这个rpm是可选的，但由Kubernetes团队推荐。如果使用，请在每个节点上安装。
+# kubectl 命令行客户端。建议在任何配置为控制平面的节点上使用，因为它允许集群管理员从控制平面的SSH会话中对集群进行控制。在可以通过网络连接到集群的机器上安装。
+# kubernetes-systemd 用于 Kubernetes 控制平面和/或节点的 Systemd 服务。对于大多数安装，不需要这些服务，因为 kubeadm 会将这些组件作为静态 Pod 安装。如果使用，则需要在所有节点上安装。使用 systemctl 在所有节点上启用 kube-proxy。在控制平面节点上启用 kube-apiserver、kube-controller-manager 和 kube-scheduler。
+sudo dnf install -y kubernetes kubernetes-kubeadm kubernetes-client
+sudo systemctl enable --now kubelet
+# 查看 kubelet 服务状态
+# systemctl status kubelet
+# kubelet 每个节点都在运行的服务，管理本节点上的所有 Pod 和容器
+echo "🐍 你安装的 kubernetes 版本号为：$(kubelet --version)"
+# Kubeadm 初始化集群并将新节点加入集群
+echo "🐍 你安装的 kubernetes-kubeadm 版本号为：$(kubeadm version)"
+# kubectl 是 Kubernetes 命令行客户端，由 kubernetes-client 包提供
+echo "🐍 你安装的 k8s 命令行工具 kubectl 版本号为：$(kubectl version --client)"
+# IDEA 添加 Kubernetes 集群，参考 jetbrains 官方文档 https://www.jetbrains.com/zh-cn/help/idea/kubernetes.html
+# 在 设置 对话框（Ctrl + Alt + S ）中，选择 构建、执行、部署 | Kubernetes。测试好 kubectl（K8s 的命令行工具 CLI） 和 Helm（K8s 的“包管理器”） 
+# 有关群集的信息存储在 kubeconfig 文件中。 IntelliJ IDEA 会检测默认的 kubeconfig 文件，这个文件通常位于 $HOME/.kube/config （此位置可以通过 KUBECONFIG 环境变量更改）。
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-kubeadm/
+# 使用 kubeadm 初始化 Kubernetes 集群
+flatpak install -y flathub dev.skynomads.Seabird
 # ------------------------------------------------------------------------------
 
 
