@@ -151,11 +151,10 @@ EOF
 systemctl enable --now dnf-automatic.timer
 # 检查DNF-自动状态：
 systemctl status dnf-automatic.timer
-
+# https://mirrormanager.fedoraproject.org/
+# https://mirrormanager.fedoraproject.org/mirrors
+# https://mirrormanager.fedoraproject.org/statistics
 sudo dnf install -y dnf-plugins-core
-sudo dnf install -y fedora-mirror-statistics
-sudo fedora-mirror-statistics --fastestmirror
-
 
 # Fedora 安装 Chromium 或 Google Chrome 浏览器
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
