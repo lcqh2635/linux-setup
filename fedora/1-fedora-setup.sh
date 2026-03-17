@@ -139,6 +139,7 @@ sudo dnf remove -y mediawriter libreoffice-*
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
 sudo dnf install -y dnf-automatic
+# ls /etc/dnf && cat /etc/dnf/automatic.conf
 # 默认情况下，dnf-automatic 会从 /etc/dnf/automatic.conf 文件中的配置中运行。这些配置只会下载，但不会应用任何包。
 # 要更改或添加任何配置，请以 root 用户身份（或使用sudo）从终端窗口打开 .conf 文件。
 # 修改 automatic.conf 以下载所有更新、应用并重启，可以是：
