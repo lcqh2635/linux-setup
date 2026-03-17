@@ -151,7 +151,7 @@ EOF
 # 配置完成后，执行以下命令以启用并启动系统D计时器
 systemctl enable --now dnf-automatic.timer
 # 检查DNF-自动状态：
-systemctl status dnf-automatic.timer
+# systemctl status dnf-automatic.timer
 # https://mirrormanager.fedoraproject.org/
 # https://mirrormanager.fedoraproject.org/mirrors
 # https://mirrormanager.fedoraproject.org/statistics
@@ -193,7 +193,6 @@ sudo flatpak override --filesystem=xdg-data/icons:ro
 sudo flatpak override --filesystem=$HOME/.themes:ro
 sudo flatpak override --filesystem=$HOME/.icons:ro
 # ------------------------------------------------------------------------------
-
 # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
 # 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
 
@@ -205,6 +204,8 @@ flatpak install -y flathub io.github.kolunmi.Bazaar
 flatpak install -y flathub com.github.tchx84.Flatseal
 # Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
 flatpak install -y flathub io.github.flattool.Warehouse
+# 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
+flatpak install -y flathub io.github.giantpinkrobots.flatsweep
 # Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
 flatpak install -y flathub org.gnome.Evolution
 # 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
@@ -223,6 +224,8 @@ flatpak install -y flathub io.github.sitraorg.sitra
 flatpak install -y flathub page.tesk.Refine
 # 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
 flatpak install -y flathub com.github.neithern.g4music
+# netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
+flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
 # 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
 flatpak install -y flathub it.mijorus.gearlever
 # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
@@ -239,6 +242,10 @@ flatpak install -y flathub io.github.mightycreak.Diffuse
 flatpak install -y flathub com.usebottles.bottles
 # Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
 flatpak install -y flathub org.gnome.Builder
+# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
+flatpak install -y flathub de.haeckerfelix.Fragments
+# GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
+flatpak install -y flathub org.gnome.Epiphany
 # OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
@@ -864,6 +871,11 @@ git clone https://gh-proxy.com/https://github.com/StorageB/custom-command-menu.g
 cd custom-command-menu && ./buildforupload.sh
 gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
 cd ~/下载/extensions
+
+git clone https://gh-proxy.com/https://github.com/tuberry/desktop-lyric.git && cd desktop-lyric
+meson setup build && meson install -C build
+# 系统级别构建安装，默认 --prefix=/usr/local
+# meson setup build -Dtarget=system && meson install -C build
     
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
     for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
