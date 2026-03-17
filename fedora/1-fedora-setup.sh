@@ -272,12 +272,36 @@ sudo flatpak install -y flathub io.github.realmazharhussain.GdmSettings
 sudo flatpak install -y flathub io.gitlab.adhami3310.Impression
 # 用干净、无干扰的标记删除编辑器专注于你的写作
 sudo flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+# 忘记忘记事情
+sudo flatpak install -y flathub io.github.alainm23.planify
 # 浏览并安装GNOME Shell扩展以定制你的桌面
 sudo flatpak install -y flathub com.mattjakeman.ExtensionManager
+# 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
+sudo flatpak install -y flathub io.github.sitraorg.sitra
+# Refine 帮助发现 GNOME 中的高级和实验性功能
+sudo flatpak install -y flathub page.tesk.Refine
+# 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
+sudo flatpak install -y flathub com.github.neithern.g4music
+# 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
+sudo flatpak install -y flathub it.mijorus.gearlever
 # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
 sudo flatpak install -y flathub com.google.Chrome
 sudo flatpak install -y flathub com.qq.QQ
 sudo flatpak install -y flathub com.tencent.WeChat
+# Postman 是 API 开发者的完整工具链，全球有 500 万开发者和超过 10 万家公司每月访问 1.3 亿个 API
+sudo flatpak install -y flathub com.getpostman.Postman
+# Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
+sudo flatpak install -y flathub re.sonny.Playhouse
+# Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
+sudo flatpak install -y flathub re.sonny.Workbench
+# 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
+sudo flatpak install -y flathub me.iepure.devtoolbox
+# Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
+sudo flatpak install -y flathub io.github.mightycreak.Diffuse
+# Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
+sudo flatpak install -y flathub com.usebottles.bottles
+# Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
+sudo flatpak install -y flathub org.gnome.Builder
 
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
