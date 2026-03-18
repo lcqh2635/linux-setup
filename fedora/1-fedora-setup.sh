@@ -152,11 +152,6 @@ sudo sed -e 's|^metalink=|#metalink=|g' \
 # 修改完成后，清除并重建缓存：
 sudo dnf clean all
 sudo dnf makecache
-
-# 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
-sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
-# 删除无用的应用
-sudo dnf remove -y mediawriter libreoffice-*
 }
 
 # 还原上述固定加速镜像源配置
@@ -193,6 +188,11 @@ dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
 sudo dnf check-update
 # ls /etc/dnf && cat /etc/dnf/dnf.conf
 }
+
+# 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
+sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
+# 删除无用的应用
+sudo dnf remove -y mediawriter libreoffice-*
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
 sudo dnf install -y dnf-automatic
@@ -318,94 +318,9 @@ ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com"
 # cd ~/下载 && git clone https://gitee.com/lcqh2635/init-fedora.git
 # cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
 
-# 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
-# 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
 
-# 浏览并安装GNOME Shell扩展以定制你的桌面
-flatpak install -y flathub com.mattjakeman.ExtensionManager
-# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
-flatpak install -y flathub io.github.kolunmi.Bazaar
-# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
-flatpak install -y flathub com.github.tchx84.Flatseal
-# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
-flatpak install -y flathub io.github.flattool.Warehouse
-# 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
-flatpak install -y flathub io.github.giantpinkrobots.flatsweep
-# Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
-flatpak install -y flathub org.gnome.Evolution
-# 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
-flatpak install -y flathub org.gnome.Firmware
-# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
-flatpak install -y flathub io.github.realmazharhussain.GdmSettings
-# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
-flatpak install -y flathub io.gitlab.adhami3310.Impression
-# 用干净、无干扰的标记删除编辑器专注于你的写作
-flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
-# 忘记忘记事情
-flatpak install -y flathub io.github.alainm23.planify
-# 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
-flatpak install -y flathub io.github.sitraorg.sitra
-# Refine 帮助发现 GNOME 中的高级和实验性功能
-flatpak install -y flathub page.tesk.Refine
-# 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
-flatpak install -y flathub com.github.neithern.g4music
-# 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
-# netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
-flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
-# 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
-flatpak install -y flathub it.mijorus.gearlever
-# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
-flatpak install -y flathub com.google.Chrome
-# Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
-flatpak install -y flathub re.sonny.Playhouse
-# Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
-flatpak install -y flathub re.sonny.Workbench
-# 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
-flatpak install -y flathub me.iepure.devtoolbox
-# Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
-flatpak install -y flathub io.github.mightycreak.Diffuse
-# Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
-flatpak install -y flathub com.usebottles.bottles
-# Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
-flatpak install -y flathub org.gnome.Builder
-# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
-flatpak install -y flathub de.haeckerfelix.Fragments
-# GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
-flatpak install -y flathub org.gnome.Epiphany
-flatpak install -y flathub com.qq.QQ
-flatpak install -y flathub com.tencent.WeChat
-# OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
-
-# VPN 相关软件和订阅来源
-# https://gh-proxy.com/
-# https://ghproxylist.com/
-# https://www.freeclashnode.com/
-install_vpn() {
-    # 进入到下载目录
-    cd ~/下载
-    # https://v2rayn.co/
-    # https://github.com/2dust/v2rayN/releases
-    # 使用教程	https://v2rayn.co/v2rayn-tutorial/
-    # 1、点击顶部菜单栏的 “订阅分组”，选择 “订阅分组设置”，在弹出的窗口中点击 "添加"，
-    # 2、添加订阅节点完成后回到主界面，点击 “订阅分组” -> “更新全部订阅 (不通过代理)” 操作完成后，你应该能看到列表中出现了一排节点
-    # 3、开启代理与模式选择。这是最关键的一步，决定了电脑是否已经处于代理加速状态
-    	# 3.1、选择节点。 在节点列表中，点击上方的 “网络测速图标” 进行 “一键多线程测试延迟和速度”，选择网速最好的节点并将其设为活动，当节点的别名变色或显示“活动”状态时，表示已选中
-    	# 3.2、设置系统代理。在软件界面的最底部图标栏，找到以下三项关键设置：
-    		# 系统代理：将其设置为 自动配置系统代理。此时底部图标会变为红色
-    		# 路由：将其设置为 绕过大陆。这可以确保访问百度、淘宝等国内网站时不走代理，访问 YouTube、Google 时才加速
-    # 4、测试网络。打开浏览器，尝试访问 Google。如果能正常打开，恭喜，配置已成功
-    # 5、v2rayN 高级设置说明：
-    # TUN 模式，在软件底部可以找到 TUN 模式开关
-    	# 作用：接管整机流量。对于一些不遵循系统代理的浏览器插件、游戏或特定软件非常有用
-    	# 建议：普通网页浏览不需要开启，仅在某些软件无法正常代理时开启
-    # 核心选择：v2rayN 支持切换 Xray-core、sing-box 等核心。目前大部分订阅链接都支持 Xray，保持默认即可
-    wget "https://gh-proxy.org/https://github.com/2dust/v2rayN/releases/download/7.18.0/v2rayN-linux-rhel-64.rpm"
-    sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
-    wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge-2.4.6-1.x86_64.rpm"
-    sudo dnf install -y ./Clash.Verge-2.4.6-1.x86_64.rpm
-}
-
-
+# 安装编程语言开发环境
+install_development_environment() {
 # ------------------------------------------------------------------------------
 # https://ubuntu.com/toolchains
 sudo dnf install -y nodejs
@@ -784,7 +699,68 @@ echo "🐍 你安装的 k8s 命令行工具 kubectl 版本号为：$(kubectl ver
 # 使用 kubeadm 初始化 Kubernetes 集群
 flatpak install -y flathub dev.skynomads.Seabird
 # ------------------------------------------------------------------------------
+}
 
+
+# 安装基础应用软件
+install_basic_application_software() {
+# 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
+# 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
+
+# 浏览并安装GNOME Shell扩展以定制你的桌面
+flatpak install -y flathub com.mattjakeman.ExtensionManager
+# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
+flatpak install -y flathub io.github.kolunmi.Bazaar
+# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
+flatpak install -y flathub com.github.tchx84.Flatseal
+# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
+flatpak install -y flathub io.github.flattool.Warehouse
+# 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
+flatpak install -y flathub io.github.giantpinkrobots.flatsweep
+# Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
+flatpak install -y flathub org.gnome.Evolution
+# 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
+flatpak install -y flathub org.gnome.Firmware
+# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
+flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
+flatpak install -y flathub io.gitlab.adhami3310.Impression
+# 用干净、无干扰的标记删除编辑器专注于你的写作
+flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+# 忘记忘记事情
+flatpak install -y flathub io.github.alainm23.planify
+# 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
+flatpak install -y flathub io.github.sitraorg.sitra
+# Refine 帮助发现 GNOME 中的高级和实验性功能
+flatpak install -y flathub page.tesk.Refine
+# 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
+flatpak install -y flathub com.github.neithern.g4music
+# 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
+# netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
+flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
+# 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
+flatpak install -y flathub it.mijorus.gearlever
+# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
+flatpak install -y flathub com.google.Chrome
+# Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
+flatpak install -y flathub re.sonny.Playhouse
+# Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
+flatpak install -y flathub re.sonny.Workbench
+# 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
+flatpak install -y flathub me.iepure.devtoolbox
+# Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
+flatpak install -y flathub io.github.mightycreak.Diffuse
+# Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
+flatpak install -y flathub com.usebottles.bottles
+# Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
+flatpak install -y flathub org.gnome.Builder
+# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
+flatpak install -y flathub de.haeckerfelix.Fragments
+# GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
+flatpak install -y flathub org.gnome.Epiphany
+flatpak install -y flathub com.qq.QQ
+flatpak install -y flathub com.tencent.WeChat
+# OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
 
 # ------------------------------------------------------------------------------
 # 1. 进入下载目录 (假设你的安装包在这里)
@@ -815,8 +791,40 @@ unzip jetbra-*.zip && mv jetbra ~/.jetbra
 # 自动配置  jetbrains 代码编辑器 vmoptions
 ~/.jetbra/scripts/install.sh
 # ------------------------------------------------------------------------------
+}
+
+# VPN 相关软件和订阅来源
+# https://gh-proxy.com/
+# https://ghproxylist.com/
+# https://www.freeclashnode.com/
+install_vpn() {
+    # 进入到下载目录
+    cd ~/下载
+    # https://v2rayn.co/
+    # https://github.com/2dust/v2rayN/releases
+    # 使用教程	https://v2rayn.co/v2rayn-tutorial/
+    # 1、点击顶部菜单栏的 “订阅分组”，选择 “订阅分组设置”，在弹出的窗口中点击 "添加"，
+    # 2、添加订阅节点完成后回到主界面，点击 “订阅分组” -> “更新全部订阅 (不通过代理)” 操作完成后，你应该能看到列表中出现了一排节点
+    # 3、开启代理与模式选择。这是最关键的一步，决定了电脑是否已经处于代理加速状态
+    	# 3.1、选择节点。 在节点列表中，点击上方的 “网络测速图标” 进行 “一键多线程测试延迟和速度”，选择网速最好的节点并将其设为活动，当节点的别名变色或显示“活动”状态时，表示已选中
+    	# 3.2、设置系统代理。在软件界面的最底部图标栏，找到以下三项关键设置：
+    		# 系统代理：将其设置为 自动配置系统代理。此时底部图标会变为红色
+    		# 路由：将其设置为 绕过大陆。这可以确保访问百度、淘宝等国内网站时不走代理，访问 YouTube、Google 时才加速
+    # 4、测试网络。打开浏览器，尝试访问 Google。如果能正常打开，恭喜，配置已成功
+    # 5、v2rayN 高级设置说明：
+    # TUN 模式，在软件底部可以找到 TUN 模式开关
+    	# 作用：接管整机流量。对于一些不遵循系统代理的浏览器插件、游戏或特定软件非常有用
+    	# 建议：普通网页浏览不需要开启，仅在某些软件无法正常代理时开启
+    # 核心选择：v2rayN 支持切换 Xray-core、sing-box 等核心。目前大部分订阅链接都支持 Xray，保持默认即可
+    wget "https://gh-proxy.org/https://github.com/2dust/v2rayN/releases/download/7.18.0/v2rayN-linux-rhel-64.rpm"
+    sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
+    wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge-2.4.6-1.x86_64.rpm"
+    sudo dnf install -y ./Clash.Verge-2.4.6-1.x86_64.rpm
+}
 
 
+# 安装 gnome shell 扩展插件
+install_gnome_extensions() {
 # ------------------------------------------------------------------------------
 # 列出所有系统级扩展
 # gnome-extensions list --system
@@ -938,13 +946,15 @@ cd ~/下载/extensions
     glib-compile-schemas ~/.local/share/glib-2.0/schemas/
     # gsettings list-schemas | grep 'org.gnome.shell.extensions'
 # ------------------------------------------------------------------------------
+}
+
+
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
 sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 
 
-# 安装 Ubuntu 的声音主题
-sudo dnf install -y yaru-sound-theme
-gsettings set org.gnome.desktop.sound theme-name 'Yaru'
+# 安装 gnome shell 扩展插件
+install_and_configure_theme() {
 # ------------------------------------------------------------------------------
 # dnf list *fonts*
 # Noto Fonts（思源黑体/宋体 的谷歌版本）
@@ -978,7 +988,57 @@ gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
 # 微调：full（较好）或 slight
 gsettings set org.gnome.desktop.interface font-hinting 'slight'
 
+mkdir -vp ~/下载/WhiteSur-themes && cd ~/下载/WhiteSur-themes
+git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
+git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
+git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
+git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
+# 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
+# grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
+# sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
+sed -i 's/0\.96/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/src/sass/_colors.scss
+sed -i 's/0\.95/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/light.css
+sed -i 's/0\.95/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/dark.css
+cd ~/下载/WhiteSur-themes/WhiteSur-wallpapers && ./install-wallpapers.sh && sudo ./install-gnome-backgrounds.sh
+# gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/Ventura/Ventura-timed.xml'
+cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh
+cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh
+# 在执行 ./tweaks.sh -f flat 安装 Firefox 主题时，Firefox 不能正在运行
+if pgrep firefox > /dev/null; then
+    print_info "Firefox 正在运行，正在杀死进程..."
+    pkill firefox && sleep 3
+else
+    print_info "Firefox 未在运行..."
+    # 快速启动 Firefox 并在 3 秒后杀死它
+    firefox & sleep 3 && pkill firefox
+fi
+# firefox not yet initialized error
+# https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1384
+# git clone https://cdn.gh-proxy.org/https://github.com/Sayanduary/WhiteSur-gtk-theme.git
+# 为 libadwaita 安装，默认是普通暗色主题
+cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
+# cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid
+# 使用自定义背景
+# sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
+sudo ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-noon.jpg"
+# 如果文件都在当前目录
+cd ~/下载 && rm -rf WhiteSur-*
+# cd ~/下载/WhiteSur-themes && rm -rf WhiteSur-{cursors,icon-theme,gtk-theme}
 
+# 安装 Ubuntu 的声音主题
+sudo dnf install -y yaru-sound-theme
+gsettings set org.gnome.desktop.sound theme-name 'Yaru'
+}
+
+# 卸载主题
+uninstall_theme() {
+cd ~/下载/WhiteSur-themes/WhiteSur-wallpapers && ./install-wallpapers.sh -u && sudo ./install-gnome-backgrounds.sh -u
+cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh
+cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh
+cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
+}
+
+# 重置系统字体配置
 reset_font() {
 gsettings reset org.gnome.desktop.interface font-name
 gsettings reset org.gnome.desktop.interface document-font-name
@@ -988,59 +1048,16 @@ gsettings reset org.gnome.desktop.interface font-antialiasing
 gsettings reset org.gnome.desktop.interface font-hinting
 }
 
-uninstall_theme() {
-./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
+# 重置系统主题配置
+reset_theme() {
+gsettings reset org.gnome.desktop.interface cursor-theme
+gsettings reset org.gnome.desktop.interface icon-theme
+gsettings reset org.gnome.shell.extensions.user-theme name
+gsettings reset org.gnome.desktop.interface gtk-theme
+gsettings reset org.gnome.desktop.wm.preferences theme
+gsettings reset org.gnome.desktop.sound theme-name
 }
 
-# 安装字体、图标、主题
-install_themes_and_icons() {
-    print_info "正在安装并配置系统字体..."
-    echo "正在安装WhiteSur主题..."
-    cd ~/下载
-    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
-    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
-    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
-    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
-    # 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
-    # grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
-    # sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
-    sed -i 's/0\.96/1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
-    sed -i 's/0\.95/1/g' ~/下载/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/light.css
-    sed -i 's/0\.95/1/g' ~/下载/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/dark.css
-
-    cd ~/下载/WhiteSur-wallpapers && ./install-wallpapers.sh && sudo ./install-gnome-backgrounds.sh
-    # gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/Ventura/Ventura-timed.xml'
-    cd ~/下载/WhiteSur-cursors && ./install.sh
-    cd ~/下载/WhiteSur-icon-theme && ./install.sh
-    
-    # 在执行 ./tweaks.sh -f flat 安装 Firefox 主题时，Firefox 不能正在运行
-    if pgrep firefox > /dev/null; then
-        print_info "Firefox 正在运行，正在杀死进程..."
-        pkill firefox
-        sleep 3
-    else
-        print_info "Firefox 未在运行..."
-        # 快速启动 Firefox 并在 3 秒后杀死它
-        firefox & sleep 3 && pkill firefox
-    fi
-    
-    # firefox not yet initialized error
-    # https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1384
-    # git clone https://cdn.gh-proxy.org/https://github.com/Sayanduary/WhiteSur-gtk-theme.git
-    # 为 libadwaita 安装，默认是普通暗色主题
-    cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
-    # cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid
-    # 使用自定义背景
-    # sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
-    sudo ~/下载/WhiteSur-gtk-theme/tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-noon.jpg"
-    # 卸载主题
-    # ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
-
-    # 如果文件都在当前目录
-    cd ~/下载 && rm -rf WhiteSur-*
-    # 最简洁的方式
-    # cd ~/下载 && rm -rf WhiteSur-{cursors,icon-theme,gtk-theme}
-}
 
 gsettings set org.gnome.desktop.interface color-scheme 'default'
 gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
