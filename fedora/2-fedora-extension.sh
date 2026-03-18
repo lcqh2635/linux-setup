@@ -107,6 +107,7 @@ gnome-shell-extension-prefs
 # Desktop Lyric
 # Pigeon Email Notifier
 # Shortcuts
+# Smart Auto Move NG
 
 # 应用默认配置
 apply_default_settings() {
