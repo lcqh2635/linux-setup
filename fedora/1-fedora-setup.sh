@@ -141,6 +141,27 @@ reset_rpmfusion_mirror() {
 for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 }
 
+# https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
+# 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
+# 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
+# 当前的Fedora版本使用DNF5，最简洁的更改方式是使用 dnf config-manager setopt，而不是先在编辑器中打开/etc/dnf/dnf.conf。
+# 这样可以保持更改的可重复性，清晰显示当前运行时的值，并且方便之后降低max_parallel_downloads或关闭fastestmirror=true。
+# https://mirrormanager.fedoraproject.org/
+# https://dnf-plugins-core.readthedocs.io/en/latest/
+# https://github.com/rpm-software-management/dnf5
+sudo dnf install -y dnf5 dnf-plugins-core
+# 先从安全刷新开始，这样你可以用当前的元数据对比后续运行。--assumeno 标志会预览交易并在 DNF 安装任何东西前退出
+sudo dnf upgrade --refresh --assumeno
+# 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
+# Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
+# 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
+sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
+# 现在验证当前运行时的值，而不仅仅是检查文件内容：
+dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
+# 执行一次 DNF 操作（如检查更新），观察输出信息。如果配置成功，你会看到类似以下的提示，表明它正在检测镜像速度：
+sudo dnf check-update
+# ls /etc/dnf && cat /etc/dnf/dnf.conf
+
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
 sudo dnf install -y dnf-automatic
 # ls /etc/dnf && cat /etc/dnf/automatic.conf
@@ -156,10 +177,6 @@ EOF
 systemctl enable --now dnf-automatic.timer
 # 检查DNF-自动状态：
 # systemctl status dnf-automatic.timer
-# https://mirrormanager.fedoraproject.org/
-# https://mirrormanager.fedoraproject.org/mirrors
-# https://mirrormanager.fedoraproject.org/statistics
-sudo dnf install -y dnf-plugins-core
 
 # Fedora 安装 Chromium 或 Google Chrome 浏览器
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
@@ -197,63 +214,6 @@ sudo flatpak override --filesystem=xdg-data/icons:ro
 sudo flatpak override --filesystem=$HOME/.themes:ro
 sudo flatpak override --filesystem=$HOME/.icons:ro
 # ------------------------------------------------------------------------------
-# 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
-# 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
-
-# 浏览并安装GNOME Shell扩展以定制你的桌面
-flatpak install -y flathub com.mattjakeman.ExtensionManager
-# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
-flatpak install -y flathub io.github.kolunmi.Bazaar
-# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
-flatpak install -y flathub com.github.tchx84.Flatseal
-# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
-flatpak install -y flathub io.github.flattool.Warehouse
-# 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
-flatpak install -y flathub io.github.giantpinkrobots.flatsweep
-# Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
-flatpak install -y flathub org.gnome.Evolution
-# 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
-flatpak install -y flathub org.gnome.Firmware
-# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
-flatpak install -y flathub io.github.realmazharhussain.GdmSettings
-# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
-flatpak install -y flathub io.gitlab.adhami3310.Impression
-# 用干净、无干扰的标记删除编辑器专注于你的写作
-flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
-# 忘记忘记事情
-flatpak install -y flathub io.github.alainm23.planify
-# 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
-flatpak install -y flathub io.github.sitraorg.sitra
-# Refine 帮助发现 GNOME 中的高级和实验性功能
-flatpak install -y flathub page.tesk.Refine
-# 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
-flatpak install -y flathub com.github.neithern.g4music
-# 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
-# netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
-flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
-# 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
-flatpak install -y flathub it.mijorus.gearlever
-# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
-flatpak install -y flathub com.google.Chrome
-# Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
-flatpak install -y flathub re.sonny.Playhouse
-# Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
-flatpak install -y flathub re.sonny.Workbench
-# 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
-flatpak install -y flathub me.iepure.devtoolbox
-# Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
-flatpak install -y flathub io.github.mightycreak.Diffuse
-# Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
-flatpak install -y flathub com.usebottles.bottles
-# Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
-flatpak install -y flathub org.gnome.Builder
-# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
-flatpak install -y flathub de.haeckerfelix.Fragments
-# GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
-flatpak install -y flathub org.gnome.Epiphany
-flatpak install -y flathub com.qq.QQ
-flatpak install -y flathub com.tencent.WeChat
-# OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
 
 
 # development-tools 是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
@@ -272,7 +232,7 @@ sudo dnf group install -y --with-optional virtualization
 # 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件
 sudo dnf group install -y multimedia
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
-# 从 fedora-cisco-openh264 存储库安装
+# 从 fedora-cisco-openh264 存储库安	dnf list gstreamer1-plugin-*
 sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-origin
 # 之后，您需要打开 Firefox，转到菜单 → 附加组件 → 插件 并启用 OpenH264 插件。
 # 您可以在此页面 https://mozilla.github.io/webrtc-landing/pc_test.html 上对您的 H.264 是否在 RTC 中工作进行简单测试（检查需要 H.264 视频）
@@ -285,9 +245,6 @@ sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-o
 # 它支持广泛的编解码器（如 H.264、HEVC、AAC 等），包括一些专利保护的编解码器。 
 # Fedora ffmpeg-free 在大多数时候都能正常工作，但有时会遇到版本不匹配的情况。切换到 rpmfusion 提供的 ffmpeg 构建，它得到了更好的支持。您仍然需要按照下一节了解与您可能已安装的软件包相关的其他编解码器或插件。
 sudo dnf swap -y ffmpeg-free ffmpeg --allowerasing
-# 安装其他编解码器，这将允许使用 gstreamer 框架和其他多媒体软件的应用程序播放其他受限编解码器：
-# 以下命令将安装启用 gstreamer 的应用程序所需的补充多媒体包： 
-sudo dnf update -y @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
 # 硬件加速编解码器
 # 使用 AMD（mesa）的硬件编解码器
 # 使用 rpmfusion-free 部分这是从 Fedora 37 及更高版本开始需要的...主要关注 AMD 硬件，因为带有 nouveau 的 NVIDIA 硬件运行不佳 
@@ -354,6 +311,64 @@ cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
 
+
+# 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
+# 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
+
+# 浏览并安装GNOME Shell扩展以定制你的桌面
+flatpak install -y flathub com.mattjakeman.ExtensionManager
+# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
+flatpak install -y flathub io.github.kolunmi.Bazaar
+# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
+flatpak install -y flathub com.github.tchx84.Flatseal
+# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
+flatpak install -y flathub io.github.flattool.Warehouse
+# 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
+flatpak install -y flathub io.github.giantpinkrobots.flatsweep
+# Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
+flatpak install -y flathub org.gnome.Evolution
+# 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
+flatpak install -y flathub org.gnome.Firmware
+# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
+flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
+flatpak install -y flathub io.gitlab.adhami3310.Impression
+# 用干净、无干扰的标记删除编辑器专注于你的写作
+flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+# 忘记忘记事情
+flatpak install -y flathub io.github.alainm23.planify
+# 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
+flatpak install -y flathub io.github.sitraorg.sitra
+# Refine 帮助发现 GNOME 中的高级和实验性功能
+flatpak install -y flathub page.tesk.Refine
+# 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
+flatpak install -y flathub com.github.neithern.g4music
+# 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
+# netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
+flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
+# 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
+flatpak install -y flathub it.mijorus.gearlever
+# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
+flatpak install -y flathub com.google.Chrome
+# Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
+flatpak install -y flathub re.sonny.Playhouse
+# Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
+flatpak install -y flathub re.sonny.Workbench
+# 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
+flatpak install -y flathub me.iepure.devtoolbox
+# Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
+flatpak install -y flathub io.github.mightycreak.Diffuse
+# Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
+flatpak install -y flathub com.usebottles.bottles
+# Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
+flatpak install -y flathub org.gnome.Builder
+# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
+flatpak install -y flathub de.haeckerfelix.Fragments
+# GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
+flatpak install -y flathub org.gnome.Epiphany
+flatpak install -y flathub com.qq.QQ
+flatpak install -y flathub com.tencent.WeChat
+# OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
 
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
