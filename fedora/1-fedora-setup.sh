@@ -74,6 +74,18 @@ gsettings set org.gnome.mutter dynamic-workspaces false
 gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
 # 预设工作区名称
 gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
+
+# nautilus ~/.local/share/backgrounds/
+cd ~/下载
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
+wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
+cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
+cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
+cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
+# gsettings list-recursively org.gnome.desktop.background
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
+gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
 }
 # ------------------------------------------------------------------------------
 
@@ -93,6 +105,15 @@ sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
 sudo dnf clean all
 # 重建 DNF 缓存
 sudo dnf makecache
+# Fedora 安装 Chromium 或 Google Chrome 浏览器
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
+# 安装第三方仓库
+sudo dnf install -y fedora-workstation-repositories
+# 启用 Google Chrome 仓库：
+sudo dnf config-manager setopt google-chrome.enabled=1
+# 最后，安装  Google Chrome 浏览器：
+# sudo dnf install -y google-chrome-stable
+# sudo dnf remove -y google-chrome-stable
 # 删除官方 Fedora Flatpaks 源
 sudo flatpak remote-delete fedora
 
@@ -148,7 +169,9 @@ for i in /etc/yum.repos.d/fedora*.bak; do sudo mv "$i" "${i%.bak}"; done
 for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 }
 
+
 # 如何在Fedora Linux上提高DNF速度
+configure_dnf_acceleration() {
 # https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
 # 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
 # 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
@@ -169,6 +192,7 @@ dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
 # 执行一次 DNF 操作（如检查更新），观察输出信息。如果配置成功，你会看到类似以下的提示，表明它正在检测镜像速度：
 sudo dnf check-update
 # ls /etc/dnf && cat /etc/dnf/dnf.conf
+}
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
 sudo dnf install -y dnf-automatic
@@ -186,15 +210,6 @@ systemctl enable --now dnf-automatic.timer
 # 检查DNF-自动状态：
 # systemctl status dnf-automatic.timer
 
-# Fedora 安装 Chromium 或 Google Chrome 浏览器
-# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
-# 安装第三方仓库
-sudo dnf install -y fedora-workstation-repositories
-# 启用 Google Chrome 仓库：
-sudo dnf config-manager setopt google-chrome.enabled=1
-# 最后，安装  Google Chrome 浏览器：
-# sudo dnf install -y google-chrome-stable
-# sudo dnf remove -y google-chrome-stable
 
 # Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
 # 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
@@ -302,20 +317,6 @@ ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com"
 # cd ~/文档 && git clone git@github.com:lcqh2635/linux-setup.git
 # cd ~/下载 && git clone https://gitee.com/lcqh2635/init-fedora.git
 # cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
-
-
-# nautilus ~/.local/share/backgrounds/
-cd ~/下载
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
-cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
-cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
-cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
-# gsettings list-recursively org.gnome.desktop.background
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
-gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
-
 
 # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
 # 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
