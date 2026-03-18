@@ -1058,7 +1058,7 @@ gsettings reset org.gnome.desktop.wm.preferences theme
 gsettings reset org.gnome.desktop.sound theme-name
 }
 
-
+set_theme_example() {
 gsettings set org.gnome.desktop.interface color-scheme 'default'
 gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
 gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
@@ -1074,3 +1074,4 @@ gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
+}
