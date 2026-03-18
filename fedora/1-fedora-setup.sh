@@ -75,6 +75,17 @@ gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
 # 预设工作区名称
 gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
 
+# 自定义快捷键优化，Alt 管理工作区、Super 管理窗口
+# gsettings list-recursively org.gnome.desktop.wm.keybindings
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
+gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
+gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
+
 # nautilus ~/.local/share/backgrounds/
 cd ~/下载
 wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
