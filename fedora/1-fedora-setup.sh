@@ -85,6 +85,7 @@ gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
 gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
 gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
+gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
 
 # nautilus ~/.local/share/backgrounds/
 cd ~/下载
