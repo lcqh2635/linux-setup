@@ -105,6 +105,8 @@ gnome-shell-extension-prefs
 # Custom Command Menu
 # Customize IBus
 # Desktop Lyric
+# Pigeon Email Notifier
+# Shortcuts
 
 # 应用默认配置
 apply_default_settings() {
