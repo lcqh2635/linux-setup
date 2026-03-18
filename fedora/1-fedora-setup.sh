@@ -348,12 +348,6 @@ sudo chown -R $(whoami):$(whoami) /usr/local
 # https://www.npmjs.com/package/bun
 npm install -g bun
 # bun create vite my-vue-app --template vue-ts
-# Claude Code 是一款存在于终端中的代理编码工具，理解你的代码库，并通过自然语言命令帮助你执行例行任务、
-# 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
-# https://www.npmjs.com/package/@anthropic-ai/claude-code
-npm install -g @anthropic-ai/claude-code
-# https://openclaw.cc/
-npm install -g openclaw
 echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
 # bun 自行升级	bun upgrade
 # bun run config --help
@@ -371,6 +365,12 @@ EOF
 # 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
 # 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
 
+# Claude Code 是一款存在于终端中的代理编码工具，理解你的代码库，并通过自然语言命令帮助你执行例行任务、
+# 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
+# https://www.npmjs.com/package/@anthropic-ai/claude-code
+npm install -g @anthropic-ai/claude-code
+# https://openclaw.cc/
+npm install -g openclaw
 # 推荐安装的全局工具包
 # https://docs.deno.org.cn/
 npm install -g deno
@@ -478,7 +478,6 @@ export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
 # export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup
 # export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup
 EOF
-
 source ~/.bash_profile
 # cat ~/.bash_profile
 
@@ -490,10 +489,8 @@ source ~/.bash_profile
 curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
 # 激活 Rust 环境
 . "$HOME/.cargo/env"
-
 # rustup update
 # 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
-
 # -v (verbose)：详细模式。
 # 作用：每创建一个目录，都会在终端打印一条提示信息。让用户知道命令到底执行了什么
 # -p (parents)：父目录模式。
@@ -502,7 +499,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup
 # 作用：检查环境变量 MAVEN_HOME 是否已设置且非空。如果是：使用 MAVEN_HOME 的值作为目录路径。如果否（未设置或为空）：使用默认值 $HOME/.m2
 mkdir -vp ${CARGO_HOME:-$HOME/.cargo}
 # tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
-cat << EOF | tee -a ${CARGO_HOME:-$HOME/.cargo}/config.toml
+cat << EOF | tee ${CARGO_HOME:-$HOME/.cargo}/config.toml
 # 配置 Cargo 国内加速镜像源，可选：ustc、aliyun、tuna 此处默认选择 ustc
 # 使用稀疏协议（sparse）减少元数据下载量，大幅加速
 [source.crates-io]
