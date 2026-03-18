@@ -881,6 +881,9 @@ git clone https://gh-proxy.com/https://github.com/amivaleo/Show-Desktop-Button.g
 git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
 git clone https://gh-proxy.com/https://github.com/StorageB/custom-command-menu.git
 git clone https://gh-proxy.com/https://github.com/tuberry/desktop-lyric.git
+git clone https://gh-proxy.com/https://github.com/subz69/pigeon.git
+git clone https://gitlab.com/paddatrapper/shortcuts-gnome-extension.git
+git clone https://gh-proxy.com/https://github.com/ChrisLauinger77/gnome-shell-extension-SmartAutoMoveNG.git
 cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
 cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
 cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
@@ -897,6 +900,9 @@ cd ~/下载/extensions && mv Show-Desktop-Button show-desktop-button@amivaleo &&
 cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
 cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
 cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
+cd ~/下载/extensions/pigeon && make install
+cd ~/下载/extensions/shortcuts-gnome-extension && ./shortcuts.sh install
+cd ~/下载/extensions/gnome-shell-extension-SmartAutoMoveNG && zip -r SmartAutoMoveNG@lauinger-clan.de.zip SmartAutoMoveNG@lauinger-clan.de && gnome-extensions install -f SmartAutoMoveNG@lauinger-clan.de.zip
 # 系统级别构建安装，默认 --prefix=/usr/local
 # meson setup build -Dtarget=system && meson install -C build
     
@@ -914,7 +920,6 @@ glib-compile-schemas ~/.local/share/glib-2.0/schemas/
 # gsettings list-schemas | grep 'org.gnome.shell.extensions'
 # ------------------------------------------------------------------------------
 }
-
 
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
 sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
