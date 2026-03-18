@@ -53,6 +53,7 @@ set -euo pipefail
 # nautilus ~/.local/share/gnome-shell/extensions
 
 # 调整和优化系统基础布局和显示
+configure_basics_gsettings() {
 # 设置强调色为蓝色
 gsettings set org.gnome.desktop.interface accent-color 'blue'
 # 设置新窗口居中显示
@@ -73,6 +74,7 @@ gsettings set org.gnome.mutter dynamic-workspaces false
 gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
 # 预设工作区名称
 gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
+}
 # ------------------------------------------------------------------------------
 
 
@@ -94,6 +96,8 @@ sudo dnf makecache
 # 删除官方 Fedora Flatpaks 源
 sudo flatpak remote-delete fedora
 
+# 配置固定加速镜像源
+configure_fixed_mirror() {
 # Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
 # 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
 # https://mirrors.ustc.edu.cn/help/fedora.html
@@ -109,10 +113,6 @@ sudo sed -e 's|^metalink=|#metalink=|g' \
          /etc/yum.repos.d/fedora-updates.repo
 # 更新本地缓存，即可使用所选择的软件源镜像
 sudo dnf makecache
-# 遍历 /etc/yum.repos.d/ 目录下所有以 fedora 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
-reset_fedora_mirror() {
-for i in /etc/yum.repos.d/fedora*.bak; do sudo mv "$i" "${i%.bak}"; done
-}
 
 # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
 # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
@@ -131,16 +131,24 @@ sudo sed -e 's|^metalink=|#metalink=|g' \
 # 修改完成后，清除并重建缓存：
 sudo dnf clean all
 sudo dnf makecache
+
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
 sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 # 删除无用的应用
 sudo dnf remove -y mediawriter libreoffice-*
+}
+
+# 还原上述固定加速镜像源配置
+reset_fixed_mirror() {
+# 还原上述 fedora 修改
+# 遍历 /etc/yum.repos.d/ 目录下所有以 fedora 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
+for i in /etc/yum.repos.d/fedora*.bak; do sudo mv "$i" "${i%.bak}"; done
 # 还原上述 RPM Fusion 修改
 # 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
-reset_rpmfusion_mirror() {
 for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 }
 
+# 如何在Fedora Linux上提高DNF速度
 # https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
 # 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
 # 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
@@ -276,14 +284,11 @@ libadwaita-demo
 # Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
 # https://tauri.app/zh-cn/start/prerequisites/#linux
 sudo dnf check-update
-sudo dnf install -y webkit2gtk4.1-devel \
-  openssl-devel \
-  curl \
-  wget \
-  file \
-  libappindicator-gtk3-devel \
-  librsvg2-devel \
-  libxdo-devel
+sudo dnf install -y \
+webkit2gtk4.1-devel \
+openssl-devel curl wget file \
+libappindicator-gtk3-devel \
+librsvg2-devel libxdo-devel
 # 配置 Git 访问的 SSH 密钥
 git config --global user.name 'lcqh2635' 
 git config --global user.email 'lcqh2635@gmail.com'
