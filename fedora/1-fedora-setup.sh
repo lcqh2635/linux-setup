@@ -54,55 +54,55 @@ set -euo pipefail
 
 # 调整和优化系统基础布局和显示
 configure_basics_gsettings() {
-# 设置强调色为蓝色
-gsettings set org.gnome.desktop.interface accent-color 'blue'
-# 设置新窗口居中显示
-gsettings set org.gnome.mutter center-new-windows true
-# 显示星期几
-gsettings set org.gnome.desktop.interface clock-show-weekday true
-# 设置电量百分比
-gsettings set org.gnome.desktop.interface show-battery-percentage true
-# 设置夜灯温度（色温，范围 1000~10000，默认约 2700 色温严重偏黄，越小越黄）
-gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
-# 开启夜灯
-gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
-# 设置窗口按钮位置 (右)
-gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-# 禁用动态工作区
-gsettings set org.gnome.mutter dynamic-workspaces false
-# 设置工作区数量为3（奇数确保有中间位）
-gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
-# 预设工作区名称
-gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
+    # 设置强调色为蓝色
+    gsettings set org.gnome.desktop.interface accent-color 'blue'
+    # 设置新窗口居中显示
+    gsettings set org.gnome.mutter center-new-windows true
+    # 显示星期几
+    gsettings set org.gnome.desktop.interface clock-show-weekday true
+    # 设置电量百分比
+    gsettings set org.gnome.desktop.interface show-battery-percentage true
+    # 设置夜灯温度（色温，范围 1000~10000，默认约 2700 色温严重偏黄，越小越黄）
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
+    # 开启夜灯
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+    # 设置窗口按钮位置 (右)
+    gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+    # 禁用动态工作区
+    gsettings set org.gnome.mutter dynamic-workspaces false
+    # 设置工作区数量为3（奇数确保有中间位）
+    gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
+    # 预设工作区名称
+    gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
 
-# 自定义快捷键优化，Alt 管理工作区、Super 管理窗口
-# gsettings list-recursively org.gnome.desktop.wm.keybindings
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
-# 切换当前工作区所有的窗口的显示与隐藏，可以替代 Show Desktop Button 扩展插件的功能
-gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
-gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
-gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
-gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
-# Alt + Super 移动当前工作取得窗口到左右其他工作区
-gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
-gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
+    # 自定义快捷键优化，Alt 管理工作区、Super 管理窗口
+    # gsettings list-recursively org.gnome.desktop.wm.keybindings
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
+    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
+    # 切换当前工作区所有的窗口的显示与隐藏，可以替代 Show Desktop Button 扩展插件的功能
+    gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
+    gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
+    gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
+    gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
+    # Alt + Super 移动当前工作取得窗口到左右其他工作区
+    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
+    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
 
-# nautilus ~/.local/share/backgrounds/
-cd ~/下载
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
-wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
-cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
-cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
-cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
-# gsettings list-recursively org.gnome.desktop.background
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
-gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
+    # nautilus ~/.local/share/backgrounds/
+    cd ~/下载
+    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
+    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
+    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
+    cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
+    cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
+    cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
+    # gsettings list-recursively org.gnome.desktop.background
+    gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
+    gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
 }
 # ------------------------------------------------------------------------------
 
@@ -137,74 +137,74 @@ sudo dnf makecache
 
 # 配置固定加速镜像源
 configure_fixed_mirror() {
-# Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
-# 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
-# https://mirrors.ustc.edu.cn/help/fedora.html
-# https://developer.aliyun.com/mirror/fedora
-# https://mirrors.tuna.tsinghua.edu.cn/help/fedora/
-# ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora.repo
-# ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-updates.repo
-# 将上述两个文件先做个备份，根据 Fedora 系统版本分别替换为下面内容，之后通过 sudo dnf makecache 命令更新本地缓存，即可使用所选择的软件源镜像。
-sudo sed -e 's|^metalink=|#metalink=|g' \
-         -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g' \
-         -i.bak \
-         /etc/yum.repos.d/fedora.repo \
-         /etc/yum.repos.d/fedora-updates.repo
-# 更新本地缓存，即可使用所选择的软件源镜像
-sudo dnf makecache
+    # Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
+    # 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
+    # https://mirrors.ustc.edu.cn/help/fedora.html
+    # https://developer.aliyun.com/mirror/fedora
+    # https://mirrors.tuna.tsinghua.edu.cn/help/fedora/
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora.repo
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-updates.repo
+    # 将上述两个文件先做个备份，根据 Fedora 系统版本分别替换为下面内容，之后通过 sudo dnf makecache 命令更新本地缓存，即可使用所选择的软件源镜像。
+    sudo sed -e 's|^metalink=|#metalink=|g' \
+             -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g' \
+             -i.bak \
+             /etc/yum.repos.d/fedora.repo \
+             /etc/yum.repos.d/fedora-updates.repo
+    # 更新本地缓存，即可使用所选择的软件源镜像
+    sudo dnf makecache
 
-# RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
-# 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
-# 使用下列命令（在 bash 或兼容 shell 中），可以同时启用其 free 和 nonfree 软件源
-sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-# 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
-# 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
-# 并将等号后面链接中的 http://download1.rpmfusion.org 替换为 https://mirrors.ustc.edu.cn/rpmfusion：
-# ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free.repo
-# ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free-updates.repo
-sudo sed -e 's|^metalink=|#metalink=|g' \
-         -e 's|^#baseurl=http://download1.rpmfusion.org|baseurl=https://mirrors.ustc.edu.cn/rpmfusion|g' \
-         -i.bak \
-         /etc/yum.repos.d/rpmfusion*.repo
-# 修改完成后，清除并重建缓存：
-sudo dnf clean all
-sudo dnf makecache
+    # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
+    # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
+    # 使用下列命令（在 bash 或兼容 shell 中），可以同时启用其 free 和 nonfree 软件源
+    sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    # 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
+    # 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
+    # 并将等号后面链接中的 http://download1.rpmfusion.org 替换为 https://mirrors.ustc.edu.cn/rpmfusion：
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free.repo
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free-updates.repo
+    sudo sed -e 's|^metalink=|#metalink=|g' \
+             -e 's|^#baseurl=http://download1.rpmfusion.org|baseurl=https://mirrors.ustc.edu.cn/rpmfusion|g' \
+             -i.bak \
+             /etc/yum.repos.d/rpmfusion*.repo
+    # 修改完成后，清除并重建缓存：
+    sudo dnf clean all
+    sudo dnf makecache
 }
 
 # 还原上述固定加速镜像源配置
 reset_fixed_mirror() {
-# 还原上述 fedora 修改
-# 遍历 /etc/yum.repos.d/ 目录下所有以 fedora 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
-for i in /etc/yum.repos.d/fedora*.bak; do sudo mv "$i" "${i%.bak}"; done
-# 还原上述 RPM Fusion 修改
-# 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
-for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
+    # 还原上述 fedora 修改
+    # 遍历 /etc/yum.repos.d/ 目录下所有以 fedora 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
+    for i in /etc/yum.repos.d/fedora*.bak; do sudo mv "$i" "${i%.bak}"; done
+    # 还原上述 RPM Fusion 修改
+    # 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
+    for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 }
 
 
 # 如何在Fedora Linux上提高DNF速度
 configure_dnf_acceleration() {
-# https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
-# 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
-# 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
-# 当前的Fedora版本使用DNF5，最简洁的更改方式是使用 dnf config-manager setopt，而不是先在编辑器中打开/etc/dnf/dnf.conf。
-# 这样可以保持更改的可重复性，清晰显示当前运行时的值，并且方便之后降低max_parallel_downloads或关闭fastestmirror=true。
-# https://mirrormanager.fedoraproject.org/
-# https://dnf-plugins-core.readthedocs.io/en/latest/
-# https://github.com/rpm-software-management/dnf5
-sudo dnf install -y dnf5 dnf-plugins-core
-# 先从安全刷新开始，这样你可以用当前的元数据对比后续运行。--assumeno 标志会预览交易并在 DNF 安装任何东西前退出
-sudo dnf upgrade --refresh --assumeno
-# 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
-# Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
-# 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
-sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
-# 现在验证当前运行时的值，而不仅仅是检查文件内容：
-dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
-# 执行一次 DNF 操作（如检查更新），观察输出信息。如果配置成功，你会看到类似以下的提示，表明它正在检测镜像速度：
-sudo dnf check-update
-# ls /etc/dnf && cat /etc/dnf/dnf.conf
+    # https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
+    # 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
+    # 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
+    # 当前的Fedora版本使用DNF5，最简洁的更改方式是使用 dnf config-manager setopt，而不是先在编辑器中打开/etc/dnf/dnf.conf。
+    # 这样可以保持更改的可重复性，清晰显示当前运行时的值，并且方便之后降低max_parallel_downloads或关闭fastestmirror=true。
+    # https://mirrormanager.fedoraproject.org/
+    # https://dnf-plugins-core.readthedocs.io/en/latest/
+    # https://github.com/rpm-software-management/dnf5
+    sudo dnf install -y dnf5 dnf-plugins-core
+    # 先从安全刷新开始，这样你可以用当前的元数据对比后续运行。--assumeno 标志会预览交易并在 DNF 安装任何东西前退出
+    sudo dnf upgrade --refresh --assumeno
+    # 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
+    # Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
+    # 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
+    sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
+    # 现在验证当前运行时的值，而不仅仅是检查文件内容：
+    dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
+    # 执行一次 DNF 操作（如检查更新），观察输出信息。如果配置成功，你会看到类似以下的提示，表明它正在检测镜像速度：
+    sudo dnf check-update
+    # ls /etc/dnf && cat /etc/dnf/dnf.conf
 }
 
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
