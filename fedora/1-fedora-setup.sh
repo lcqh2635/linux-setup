@@ -841,10 +841,8 @@ install_vpn() {
     # 免费通用机场节点仓库  https://github.com/mksshare/mksshare.github.io
     	# https://pPiPDy.mcsslk.xyz/fa998be69a450c433133472d2ddd7a68
     	# https://woDF6n.tosslk.xyz/2c58cc7fb6edb08f1b88e0ce07f03f78
-    # 对于 AppImage 格式应用的安装，先打开 AppImage 安装管理器 Gear Lever 这个软件 flatpak run it.mijorus.gearlever 配置 AppImage 安装目录为 ~/.apps
+    # 对于 AppImage 格式应用的安装，先打开 AppImage 安装管理器 Gear Lever 这个软件 flatpak run it.mijorus.gearlever 配置 AppImage 安装目录为 ~/.apps 然后点击 + 添加下面的 AppImage 应用
     wget "https://gh-proxy.org/https://github.com/hiddify/hiddify-app/releases/download/v4.1.1/Hiddify-Linux-x64-AppImage.AppImage"
-    chmod +x Hiddify-Linux-x64-AppImage.AppImage
-    ./Hiddify-Linux-x64-AppImage.AppImage
 }
 
 
