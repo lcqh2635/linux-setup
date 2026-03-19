@@ -205,6 +205,9 @@ sudo dnf check-update
 sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 # 删除无用的应用
 sudo dnf remove -y mediawriter libreoffice-*
+# ShellCheck 是一个专门用于分析 Shell 脚本的工具，它能发现语法错误、逻辑隐患、未引用的变量、过时的写法等，而无需运行脚本
+sudo dnf install -y ShellCheck
+# shellcheck fedora-setup.sh
 
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
 sudo dnf install -y dnf-automatic
@@ -333,63 +336,65 @@ ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com"
 
 # 安装编程语言开发环境
 install_development_environment() {
-# ------------------------------------------------------------------------------
-# https://ubuntu.com/toolchains
-sudo dnf install -y nodejs
-# npm config get registry
-# 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
-# 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
-# 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
-npm config set registry https://registry.npmmirror.com/
-# 将目录所有权改为当前用户，否则如下命令将因为权限问题执行失败
-sudo chown -R $(whoami):$(whoami) /usr/local
-# 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
-# bun - 现代的 JavaScript 运行时和包管理器
-# https://www.npmjs.com/package/bun
-npm install -g bun
-# bun create vite my-vue-app --template vue-ts
-echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
-# bun 自行升级	bun upgrade
-# bun run config --help
-# bun --config
+    # ------------------------------------------------------------------------------
+    # https://ubuntu.com/toolchains
+    sudo dnf install -y nodejs
+    # npm config get registry
+    # 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
+    # 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
+    # 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
+    npm config set registry https://registry.npmmirror.com/
+    # 将目录所有权改为当前用户，否则如下命令将因为权限问题执行失败
+    sudo chown -R $(whoami):$(whoami) /usr/local
+    # Claude Code 是一款存在于终端中的代理编码工具，理解你的代码库，并通过自然语言命令帮助你执行例行任务、
+    # 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
+    # https://www.npmjs.com/package/@anthropic-ai/claude-code
+    npm install -g @anthropic-ai/claude-code
+    # https://openclaw.cc/
+    npm install -g openclaw
+    # 推荐安装的全局工具包
+    # https://docs.deno.org.cn/
+    npm install -g deno
+    # deno init --npm vite my-vue-app --template vue-ts
+    # vite - 下一代前端构建工具（通常项目局部安装，但全局也有用）
+    npm install -g typescript vite eslint prettier
+    # npm 列出所有全局安装的包
+    # npm list -g --depth=0
+    # 执行更新命令，更新所有可更新的全局包
+    # npm update -g
+    
+    # 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
+    # bun - 现代的 JavaScript 运行时和包管理器
+    # https://www.npmjs.com/package/bun
+    npm install -g bun
+    # bun create vite my-vue-app --template vue-ts
+    echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
+    # bun 自行升级	bun upgrade
+    # bun run config --help
+    # bun --config
 # 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
 cat << EOF | tee $HOME/.bunfig.toml
 [install]
 # 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为	https://developer.aliyun.com/mirror/NPM
 registry = "https://registry.npmmirror.com/"
 EOF
-# which node
-# whereis node
-# whereis bun
-# 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
-# 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
-# 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
-
-# Claude Code 是一款存在于终端中的代理编码工具，理解你的代码库，并通过自然语言命令帮助你执行例行任务、
-# 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
-# https://www.npmjs.com/package/@anthropic-ai/claude-code
-npm install -g @anthropic-ai/claude-code
-# https://openclaw.cc/
-npm install -g openclaw
-# 推荐安装的全局工具包
-# https://docs.deno.org.cn/
-npm install -g deno
-# deno init --npm vite my-vue-app --template vue-ts
-# vite - 下一代前端构建工具（通常项目局部安装，但全局也有用）
-npm install -g typescript vite eslint prettier
-# npm 列出所有全局安装的包
-# npm list -g --depth=0
-# 执行更新命令，更新所有可更新的全局包
-# npm update -g
-# ------------------------------------------------------------------------------
+    # which node
+    # whereis node
+    # whereis bun
+    # 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
+    # 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
+    # 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
+    # ------------------------------------------------------------------------------
 
 
 # ------------------------------------------------------------------------------
 # 通过 dnf 安装 (推荐)
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-java/
-sudo dnf install -y java-25-openjdk maven
+sudo dnf install -y java-25-openjdk maven4 maven4-openjdk25
+# sudo dnf remove -y maven
 echo "🐍 你刚安装的 java 版本号为：$(java --version)"
 echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
+echo "🐍 你刚安装的 maven 版本号为：$(mvn4 --version)"
 # whereis maven
 # nautilus admin:/usr/share/maven
 # 配置 maven 阿里云 aliyun 加速镜像	https://maven.aliyun.com/mvn/guide
@@ -713,93 +718,93 @@ flatpak install -y flathub dev.skynomads.Seabird
 
 # 安装基础应用软件
 install_basic_application_software() {
-# 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
-# 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
+    # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
+    # 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
 
-# 浏览并安装GNOME Shell扩展以定制你的桌面
-flatpak install -y flathub com.mattjakeman.ExtensionManager
-# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
-flatpak install -y flathub io.github.kolunmi.Bazaar
-# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
-flatpak install -y flathub com.github.tchx84.Flatseal
-# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
-flatpak install -y flathub io.github.flattool.Warehouse
-# 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
-flatpak install -y flathub io.github.giantpinkrobots.flatsweep
-# Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
-flatpak install -y flathub org.gnome.Evolution
-# 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
-flatpak install -y flathub org.gnome.Firmware
-# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
-flatpak install -y flathub io.github.realmazharhussain.GdmSettings
-# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
-flatpak install -y flathub io.gitlab.adhami3310.Impression
-# 用干净、无干扰的标记删除编辑器专注于你的写作
-flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
-# 忘记忘记事情
-flatpak install -y flathub io.github.alainm23.planify
-# 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
-flatpak install -y flathub io.github.sitraorg.sitra
-# Refine 帮助发现 GNOME 中的高级和实验性功能
-flatpak install -y flathub page.tesk.Refine
-# 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
-flatpak install -y flathub com.github.neithern.g4music
-# 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
-# netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
-flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
-# 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
-flatpak install -y flathub it.mijorus.gearlever
-# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
-flatpak install -y flathub com.google.Chrome
-# Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
-flatpak install -y flathub re.sonny.Playhouse
-# Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
-flatpak install -y flathub re.sonny.Workbench
-# 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
-flatpak install -y flathub me.iepure.devtoolbox
-# Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
-flatpak install -y flathub io.github.mightycreak.Diffuse
-# Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
-flatpak install -y flathub com.usebottles.bottles
-# Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
-flatpak install -y flathub org.gnome.Builder
-# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
-flatpak install -y flathub de.haeckerfelix.Fragments
-# GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
-flatpak install -y flathub org.gnome.Epiphany
-flatpak install -y flathub com.qq.QQ
-flatpak install -y flathub com.tencent.WeChat
-# OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
+    # 浏览并安装GNOME Shell扩展以定制你的桌面
+    flatpak install -y flathub com.mattjakeman.ExtensionManager
+    # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
+    flatpak install -y flathub io.github.kolunmi.Bazaar
+    # Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
+    flatpak install -y flathub com.github.tchx84.Flatseal
+    # Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
+    flatpak install -y flathub io.github.flattool.Warehouse
+    # 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
+    flatpak install -y flathub io.github.giantpinkrobots.flatsweep
+    # Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
+    flatpak install -y flathub org.gnome.Evolution
+    # 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
+    flatpak install -y flathub org.gnome.Firmware
+    # 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
+    flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+    # 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
+    flatpak install -y flathub io.gitlab.adhami3310.Impression
+    # 用干净、无干扰的标记删除编辑器专注于你的写作
+    flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+    # 忘记忘记事情
+    flatpak install -y flathub io.github.alainm23.planify
+    # 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
+    flatpak install -y flathub io.github.sitraorg.sitra
+    # Refine 帮助发现 GNOME 中的高级和实验性功能
+    flatpak install -y flathub page.tesk.Refine
+    # 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
+    flatpak install -y flathub com.github.neithern.g4music
+    # 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
+    # netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
+    flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
+    # 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
+    flatpak install -y flathub it.mijorus.gearlever
+    # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
+    flatpak install -y flathub com.google.Chrome
+    # Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
+    flatpak install -y flathub re.sonny.Playhouse
+    # Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
+    flatpak install -y flathub re.sonny.Workbench
+    # 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
+    flatpak install -y flathub me.iepure.devtoolbox
+    # Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
+    flatpak install -y flathub io.github.mightycreak.Diffuse
+    # Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
+    flatpak install -y flathub com.usebottles.bottles
+    # Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
+    flatpak install -y flathub org.gnome.Builder
+    # 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
+    flatpak install -y flathub de.haeckerfelix.Fragments
+    # GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
+    flatpak install -y flathub org.gnome.Epiphany
+    flatpak install -y flathub com.qq.QQ
+    flatpak install -y flathub com.tencent.WeChat
+    # OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
 
-# ------------------------------------------------------------------------------
-# 1. 进入下载目录 (假设你的安装包在这里)
-cd ~/下载
-# JetBrains 的 API 返回的 JSON 中包含 多个架构的下载链接，你的 grep 命令会匹配 所有 包含 jetbrains-toolbox-*.tar.gz 的链接，
-# 而 head -1 恰好取到了第一个（可能是 arm64）
-# 关键：| grep -v 'arm64' 会过滤掉包含 "arm64" 的链接
-wget -O jetbrains-toolbox.tar.gz "$(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release' | grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | grep -v 'arm64' | head -1)"
-# 2. 创建一个专门放软件的目录 (例如在 home 目录下创建一个 apps 文件夹)
-mkdir -p ~/.apps
-# 3. 解压到刚才创建的目录
-# 注意：将 jetbrains-toolbox*.tar.gz 替换为你实际下载的文件名，可以用 Tab 键自动补全
-tar -xvf jetbrains-toolbox*.tar.gz -C ~/.apps
-# nautilus ~/.apps
-# 1. 进入解压后的文件夹
-cd ~/.apps/jetbrains-toolbox-*/bin
-# 2. 赋予执行权限 (防止提示权限不足)
-chmod +x jetbrains-toolbox
-# 3. 启动程序
-./jetbrains-toolbox
-# https://3.jetbra.in/
-# https://github.com/jonssonyan/3.jetbra.in
-# https://account.jetbrains.com/licenses
-cd ~/下载
-wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
-unzip jetbra-*.zip && mv jetbra ~/.jetbra
-# nautilus ~/.jetbra
-# 自动配置  jetbrains 代码编辑器 vmoptions
-~/.jetbra/scripts/install.sh
-# ------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------
+    # 1. 进入下载目录 (假设你的安装包在这里)
+    cd ~/下载
+    # JetBrains 的 API 返回的 JSON 中包含 多个架构的下载链接，你的 grep 命令会匹配 所有 包含 jetbrains-toolbox-*.tar.gz 的链接，
+    # 而 head -1 恰好取到了第一个（可能是 arm64）
+    # 关键：| grep -v 'arm64' 会过滤掉包含 "arm64" 的链接
+    wget -O jetbrains-toolbox.tar.gz "$(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release' | grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | grep -v 'arm64' | head -1)"
+    # 2. 创建一个专门放软件的目录 (例如在 home 目录下创建一个 apps 文件夹)
+    mkdir -p ~/.apps
+    # 3. 解压到刚才创建的目录
+    # 注意：将 jetbrains-toolbox*.tar.gz 替换为你实际下载的文件名，可以用 Tab 键自动补全
+    tar -xvf jetbrains-toolbox*.tar.gz -C ~/.apps
+    # nautilus ~/.apps
+    # 1. 进入解压后的文件夹
+    cd ~/.apps/jetbrains-toolbox-*/bin
+    # 2. 赋予执行权限 (防止提示权限不足)
+    chmod +x jetbrains-toolbox
+    # 3. 启动程序
+    ./jetbrains-toolbox
+    # https://3.jetbra.in/
+    # https://github.com/jonssonyan/3.jetbra.in
+    # https://account.jetbrains.com/licenses
+    cd ~/下载
+    wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
+    unzip jetbra-*.zip && mv jetbra ~/.jetbra
+    # nautilus ~/.jetbra
+    # 自动配置  jetbrains 代码编辑器 vmoptions
+    ~/.jetbra/scripts/install.sh
+    # ------------------------------------------------------------------------------
 }
 
 # VPN 相关软件和订阅来源
@@ -829,97 +834,109 @@ install_vpn() {
     sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
     wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge-2.4.6-1.x86_64.rpm"
     sudo dnf install -y ./Clash.Verge-2.4.6-1.x86_64.rpm
+    # https://github.com/hiddify/hiddify-app/blob/main/README_cn.md
+    # 一款基于 Sing-box 通用代理工具的跨平台代理客户端。Hiddify 提供了较全面的代理功能，例如自动选择节点、TUN 模式、使用远程配置文件等。Hiddify 无广告，并且代码开源。
+    # 它为大家自由访问互联网提供了一个支持多种协议的、安全且私密的工具。多种订阅链接和配置文件格式支持： Sing-box、V2ray、Clash、Clash meta
+    # Hiddify 使用教程 https://hiddify.la/tutorial/
+    # 免费通用机场节点仓库  https://github.com/mksshare/mksshare.github.io
+    	# https://pPiPDy.mcsslk.xyz/fa998be69a450c433133472d2ddd7a68
+    	# https://woDF6n.tosslk.xyz/2c58cc7fb6edb08f1b88e0ce07f03f78
+    # 对于 AppImage 格式应用的安装，先打开 AppImage 安装管理器 Gear Lever 这个软件 flatpak run it.mijorus.gearlever 配置 AppImage 安装目录为 ~/.apps
+    wget "https://gh-proxy.org/https://github.com/hiddify/hiddify-app/releases/download/v4.1.1/Hiddify-Linux-x64-AppImage.AppImage"
+    chmod +x Hiddify-Linux-x64-AppImage.AppImage
+    ./Hiddify-Linux-x64-AppImage.AppImage
 }
 
 
 # 安装 gnome shell 扩展插件
 install_gnome_extensions() {
-# ------------------------------------------------------------------------------
-# 列出所有系统级扩展
-# gnome-extensions list --system
-# 查看所有系统级扩展的文件目录
-# nautilus admin:/usr/share/gnome-shell/extensions
-# dnf list gnome-shell-extension*
-sudo dnf remove -y \
-gnome-shell-extension-apps-menu \
-gnome-shell-extension-places-menu \
-gnome-shell-extension-window-list \
-gnome-shell-extension-launch-new-instance
-sudo dnf install -y \
-gnome-shell-extension-user-theme \
-gnome-shell-extension-dash-to-dock \
-gnome-shell-extension-blur-my-shell \
-gnome-shell-extension-just-perfection \
-gnome-shell-extension-drive-menu \
-gnome-shell-extension-appindicator \
-gnome-shell-extension-auto-move-windows \
-gnome-shell-extension-workspace-indicator \
-gnome-shell-extension-caffeine \
-gnome-shell-extension-gsconnect \
-gnome-shell-extension-forge \
-gnome-shell-extension-no-overview \
-gnome-shell-extension-light-style
-# 列出所有用户级扩展
-# gnome-extensions list --user
-# 查看所有用户级扩展的文件目录
-# nautilus ~/.local/share/gnome-shell/extensions
-sudo dnf install -y gettext meson just
-mkdir -p ~/下载/extensions && cd ~/下载/extensions
-git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
-git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
-git clone https://gitlab.com/smedius/desktop-icons-ng.git
-git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
-git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
-git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
-git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
-git clone https://gh-proxy.com/https://github.com/maniacx/Bluetooth-Battery-Meter.git
-git clone https://gh-proxy.com/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
-git clone https://gh-proxy.com/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
-git clone https://gh-proxy.com/https://github.com/icedman/search-light.git
-git clone https://gh-proxy.com/https://github.com/amivaleo/Show-Desktop-Button.git
-git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
-git clone https://gh-proxy.com/https://github.com/StorageB/custom-command-menu.git
-git clone https://gh-proxy.com/https://github.com/tuberry/desktop-lyric.git
-git clone https://gh-proxy.com/https://github.com/subz69/pigeon.git
-git clone https://gitlab.com/paddatrapper/shortcuts-gnome-extension.git
-git clone https://gh-proxy.com/https://github.com/ChrisLauinger77/gnome-shell-extension-SmartAutoMoveNG.git
-cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
-cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
-cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
-cd ~/下载/extensions/disable-unredirect && make install
-cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
-cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
-cd ~/下载/extensions/rounded-window-corners && just install
-cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
-cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
-cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
-cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
-cd ~/下载/extensions/search-light && make
-cd ~/下载/extensions && mv Show-Desktop-Button show-desktop-button@amivaleo && zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo && gnome-extensions install -f show-desktop-button@amivaleo.zip
-cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
-cd ~/下载/extensions/pigeon && make install
-cd ~/下载/extensions/shortcuts-gnome-extension && ./shortcuts.sh install
-cd ~/下载/extensions/gnome-shell-extension-SmartAutoMoveNG && zip -r SmartAutoMoveNG@lauinger-clan.de.zip SmartAutoMoveNG@lauinger-clan.de && gnome-extensions install -f SmartAutoMoveNG@lauinger-clan.de.zip
-# 系统级别构建安装，默认 --prefix=/usr/local
-# meson setup build -Dtarget=system && meson install -C build
-    
-# 解决用户 Gnome 扩展无法使用 gsettings 的问题
-for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
-    EXT_ID=$(basename "$EXT_DIR")
-    echo "处理扩展: $EXT_ID"
-    if [ -d "$EXT_DIR/schemas" ]; then
-        glib-compile-schemas "$EXT_DIR/schemas"
-        mkdir -p ~/.local/share/glib-2.0/schemas/
-        cp "$EXT_DIR/schemas"/*.xml ~/.local/share/glib-2.0/schemas/
-    fi
-done
-glib-compile-schemas ~/.local/share/glib-2.0/schemas/
-# gsettings list-schemas | grep 'org.gnome.shell.extensions'
-# ------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------
+    # 列出所有系统级扩展
+    # gnome-extensions list --system
+    # 查看所有系统级扩展的文件目录
+    # nautilus admin:/usr/share/gnome-shell/extensions
+    # dnf list gnome-shell-extension*
+    sudo dnf remove -y \
+    gnome-shell-extension-apps-menu \
+    gnome-shell-extension-places-menu \
+    gnome-shell-extension-window-list \
+    gnome-shell-extension-launch-new-instance
+    sudo dnf install -y \
+    gnome-shell-extension-user-theme \
+    gnome-shell-extension-dash-to-dock \
+    gnome-shell-extension-blur-my-shell \
+    gnome-shell-extension-just-perfection \
+    gnome-shell-extension-drive-menu \
+    gnome-shell-extension-appindicator \
+    gnome-shell-extension-auto-move-windows \
+    gnome-shell-extension-workspace-indicator \
+    gnome-shell-extension-caffeine \
+    gnome-shell-extension-gsconnect \
+    gnome-shell-extension-forge \
+    gnome-shell-extension-no-overview \
+    gnome-shell-extension-light-style
+    # 列出所有用户级扩展
+    # gnome-extensions list --user
+    # 查看所有用户级扩展的文件目录
+    # nautilus ~/.local/share/gnome-shell/extensions
+    sudo dnf install -y gettext meson just
+    mkdir -p ~/下载/extensions && cd ~/下载/extensions
+    git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
+    git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
+    git clone https://gitlab.com/smedius/desktop-icons-ng.git
+    git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
+    git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
+    git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
+    git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
+    git clone https://gh-proxy.com/https://github.com/maniacx/Bluetooth-Battery-Meter.git
+    git clone https://gh-proxy.com/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
+    git clone https://gh-proxy.com/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
+    git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
+    git clone https://gh-proxy.com/https://github.com/icedman/search-light.git
+    git clone https://gh-proxy.com/https://github.com/amivaleo/Show-Desktop-Button.git
+    git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
+    git clone https://gh-proxy.com/https://github.com/StorageB/custom-command-menu.git
+    git clone https://gh-proxy.com/https://github.com/tuberry/desktop-lyric.git
+    git clone https://gh-proxy.com/https://github.com/subz69/pigeon.git
+    git clone https://gitlab.com/paddatrapper/shortcuts-gnome-extension.git
+    git clone https://gh-proxy.com/https://github.com/ChrisLauinger77/gnome-shell-extension-SmartAutoMoveNG.git
+    cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
+    cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
+    cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
+    cd ~/下载/extensions/disable-unredirect && make install
+    cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
+    cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
+    cd ~/下载/extensions/rounded-window-corners && just install
+    cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
+    cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
+    cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
+    cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
+    cd ~/下载/extensions/search-light && make
+    cd ~/下载/extensions && mv Show-Desktop-Button show-desktop-button@amivaleo && zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo && gnome-extensions install -f show-desktop-button@amivaleo.zip
+    cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+    cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+    cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
+    cd ~/下载/extensions/pigeon && make install
+    cd ~/下载/extensions/shortcuts-gnome-extension && ./shortcuts.sh install
+    cd ~/下载/extensions/gnome-shell-extension-SmartAutoMoveNG && zip -r SmartAutoMoveNG@lauinger-clan.de.zip SmartAutoMoveNG@lauinger-clan.de && gnome-extensions install -f SmartAutoMoveNG@lauinger-clan.de.zip
+    # 系统级别构建安装，默认 --prefix=/usr/local
+    # meson setup build -Dtarget=system && meson install -C build
+
+    # 解决用户 Gnome 扩展无法使用 gsettings 的问题
+    for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
+        EXT_ID=$(basename "$EXT_DIR")
+        echo "处理扩展: $EXT_ID"
+        if [ -d "$EXT_DIR/schemas" ]; then
+            glib-compile-schemas "$EXT_DIR/schemas"
+            mkdir -p ~/.local/share/glib-2.0/schemas/
+            cp "$EXT_DIR/schemas"/*.xml ~/.local/share/glib-2.0/schemas/
+        fi
+    done
+    glib-compile-schemas ~/.local/share/glib-2.0/schemas/
+    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
+    # ------------------------------------------------------------------------------
 }
+
 
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
 sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
@@ -927,123 +944,188 @@ sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 
 # 安装 gnome shell 扩展插件
 install_and_configure_theme() {
-# ------------------------------------------------------------------------------
-# dnf list *fonts*
-# Noto Fonts（思源黑体/宋体 的谷歌版本）
-# Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
-# Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
-# JetBrains Mono JetBrains 公司专门为 IDE 设计的字体。字母宽度大，容易区分 1、l、I，默认支持连字符，非常耐看。
+    # ------------------------------------------------------------------------------
+    # dnf list *fonts*
+    # Noto Fonts（思源黑体/宋体 的谷歌版本）
+    # Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
+    # Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
+    # JetBrains Mono JetBrains 公司专门为 IDE 设计的字体。字母宽度大，容易区分 1、l、I，默认支持连字符，非常耐看。
+    # 系统界面（中文）	Noto Sans CJK SC	谷歌思源黑体，字库全，笔画均衡，与 Inter 风格协调
+    # 文档阅读/写作		Noto Serif CJK SC	思源宋体，适合长时间阅读，衬线带来轻松的纸质感
+    # 编程/终端		JetBrains Mono		字母区分度高，支持连字，视觉疲劳度低
+    # fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
+    # Noto Sans CJK SC （思源黑体——简体中文）
+    # Noto Serif CJK SC （思源宋体——简体中文）
+    sudo dnf install -y \
+    google-noto-sans-cjk-fonts \
+    google-noto-serif-cjk-fonts \
+    adobe-source-han-sans-cn-fonts \
+    adobe-source-han-serif-cn-fonts \
+    jetbrains-mono-fonts
+    # 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
+    gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
+    # 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
+    gsettings set org.gnome.desktop.interface document-font-name 'Noto Serif CJK SC Regular 11'
+    # 设置等宽字体，影响范围：终端、代码编辑器
+    gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono Regular 11'
+    # 设置窗口标题栏字体，影响范围：所有应用程序窗口顶部的标题文字
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC Bold 11'
+    # 抗锯齿：rggb（LCD 显示器常用）或 grayscale
+    gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
+    # 微调：full（较好）或 slight
+    gsettings set org.gnome.desktop.interface font-hinting 'slight'
 
-# 系统界面（中文）	Noto Sans CJK SC	谷歌思源黑体，字库全，笔画均衡，与 Inter 风格协调
-# 文档阅读/写作		Noto Serif CJK SC	思源宋体，适合长时间阅读，衬线带来轻松的纸质感
-# 编程/终端		JetBrains Mono		字母区分度高，支持连字，视觉疲劳度低
+    mkdir -vp ~/下载/WhiteSur-themes && cd ~/下载/WhiteSur-themes
+    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
+    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
+    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
+    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
+    # 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
+    # grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
+    # sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
+    sed -i 's/0\.96/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/src/sass/_colors.scss
+    sed -i 's/0\.95/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/light.css
+    sed -i 's/0\.95/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/dark.css
+    cd ~/下载/WhiteSur-themes/WhiteSur-wallpapers && ./install-wallpapers.sh && sudo ./install-gnome-backgrounds.sh
+    # gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/Ventura/Ventura-timed.xml'
+    cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh
+    cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh
+    # 在执行 ./tweaks.sh -f flat 安装 Firefox 主题时，Firefox 不能正在运行
+    if pgrep firefox > /dev/null; then
+        print_info "Firefox 正在运行，正在杀死进程..."
+        pkill firefox && sleep 3
+    else
+        print_info "Firefox 未在运行..."
+        # 快速启动 Firefox 并在 3 秒后杀死它
+        firefox & sleep 3 && pkill firefox
+    fi
+    # firefox not yet initialized error
+    # https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1384
+    # git clone https://cdn.gh-proxy.org/https://github.com/Sayanduary/WhiteSur-gtk-theme.git
+    # 为 libadwaita 安装，默认是普通暗色主题
+    cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
+    # cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid
+    # 使用自定义背景
+    # sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
+    sudo ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-noon.jpg"
+    # 如果文件都在当前目录
+    cd ~/下载 && rm -rf WhiteSur-*
+    # cd ~/下载/WhiteSur-themes && rm -rf WhiteSur-{cursors,icon-theme,gtk-theme}
 
-# fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
-# Noto Sans CJK SC （思源黑体——简体中文）
-# Noto Serif CJK SC （思源宋体——简体中文）
-sudo dnf install -y \
-google-noto-sans-cjk-fonts \
-google-noto-serif-cjk-fonts \
-adobe-source-han-sans-cn-fonts \
-adobe-source-han-serif-cn-fonts \
-jetbrains-mono-fonts
-# 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
-gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
-# 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
-gsettings set org.gnome.desktop.interface document-font-name 'Noto Serif CJK SC Regular 11'
-# 设置等宽字体，影响范围：终端、代码编辑器
-gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono Regular 11'
-# 设置窗口标题栏字体，影响范围：所有应用程序窗口顶部的标题文字
-gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC Bold 11'
-# 抗锯齿：rggb（LCD 显示器常用）或 grayscale
-gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
-# 微调：full（较好）或 slight
-gsettings set org.gnome.desktop.interface font-hinting 'slight'
-
-mkdir -vp ~/下载/WhiteSur-themes && cd ~/下载/WhiteSur-themes
-git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
-git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
-git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
-git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
-# 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
-# grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
-# sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
-sed -i 's/0\.96/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/src/sass/_colors.scss
-sed -i 's/0\.95/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/light.css
-sed -i 's/0\.95/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/dark.css
-cd ~/下载/WhiteSur-themes/WhiteSur-wallpapers && ./install-wallpapers.sh && sudo ./install-gnome-backgrounds.sh
-# gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/Ventura/Ventura-timed.xml'
-cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh
-cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh
-# 在执行 ./tweaks.sh -f flat 安装 Firefox 主题时，Firefox 不能正在运行
-if pgrep firefox > /dev/null; then
-    print_info "Firefox 正在运行，正在杀死进程..."
-    pkill firefox && sleep 3
-else
-    print_info "Firefox 未在运行..."
-    # 快速启动 Firefox 并在 3 秒后杀死它
-    firefox & sleep 3 && pkill firefox
-fi
-# firefox not yet initialized error
-# https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1384
-# git clone https://cdn.gh-proxy.org/https://github.com/Sayanduary/WhiteSur-gtk-theme.git
-# 为 libadwaita 安装，默认是普通暗色主题
-cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
-# cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid
-# 使用自定义背景
-# sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
-sudo ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-noon.jpg"
-# 如果文件都在当前目录
-cd ~/下载 && rm -rf WhiteSur-*
-# cd ~/下载/WhiteSur-themes && rm -rf WhiteSur-{cursors,icon-theme,gtk-theme}
-
-# 安装 Ubuntu 的声音主题
-sudo dnf install -y yaru-sound-theme
-gsettings set org.gnome.desktop.sound theme-name 'Yaru'
+    # 安装 Ubuntu 的声音主题
+    sudo dnf install -y yaru-sound-theme
+    gsettings set org.gnome.desktop.sound theme-name 'Yaru'
 }
 
 # 卸载主题
 uninstall_theme() {
-cd ~/下载/WhiteSur-themes/WhiteSur-wallpapers && ./install-wallpapers.sh -u && sudo ./install-gnome-backgrounds.sh -u
-cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh
-cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh
-cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
+    cd ~/下载/WhiteSur-themes/WhiteSur-wallpapers && ./install-wallpapers.sh -u && sudo ./install-gnome-backgrounds.sh -u
+    cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh
+    cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh
+    cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
 }
 
 # 重置系统字体配置
 reset_font() {
-gsettings reset org.gnome.desktop.interface font-name
-gsettings reset org.gnome.desktop.interface document-font-name
-gsettings reset org.gnome.desktop.interface monospace-font-name
-gsettings reset org.gnome.desktop.wm.preferences titlebar-font
-gsettings reset org.gnome.desktop.interface font-antialiasing
-gsettings reset org.gnome.desktop.interface font-hinting
+    gsettings reset org.gnome.desktop.interface font-name
+    gsettings reset org.gnome.desktop.interface document-font-name
+    gsettings reset org.gnome.desktop.interface monospace-font-name
+    gsettings reset org.gnome.desktop.wm.preferences titlebar-font
+    gsettings reset org.gnome.desktop.interface font-antialiasing
+    gsettings reset org.gnome.desktop.interface font-hinting
 }
 
 # 重置系统主题配置
 reset_theme() {
-gsettings reset org.gnome.desktop.interface cursor-theme
-gsettings reset org.gnome.desktop.interface icon-theme
-gsettings reset org.gnome.shell.extensions.user-theme name
-gsettings reset org.gnome.desktop.interface gtk-theme
-gsettings reset org.gnome.desktop.wm.preferences theme
-gsettings reset org.gnome.desktop.sound theme-name
+    gsettings reset org.gnome.desktop.interface cursor-theme
+    gsettings reset org.gnome.desktop.interface icon-theme
+    gsettings reset org.gnome.shell.extensions.user-theme name
+    gsettings reset org.gnome.desktop.interface gtk-theme
+    gsettings reset org.gnome.desktop.wm.preferences theme
+    gsettings reset org.gnome.desktop.sound theme-name
 }
 
 set_theme_example() {
-gsettings set org.gnome.desktop.interface color-scheme 'default'
-gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
-gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
-gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
-gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
-gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
+    gsettings set org.gnome.desktop.interface color-scheme 'default'
+    gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+    gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
+    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
+    gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
+    gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
+    gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
 
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
-gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
-gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
-gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
-gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+    gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+    gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
+    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
+    gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
+    gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
+    gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
 }
+
+# ------------------------------------------------------------------------------
+# 主执行流程
+# ------------------------------------------------------------------------------
+main() {
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${BLUE}  Fedora 初始化配置脚本 v2.0${NC}"
+    echo -e "${BLUE}  作者：龙茶清欢 (优化版)${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    
+    wait_for_network
+
+    if ! confirm_action "即将开始系统配置，过程中可能需要输入 sudo 密码。是否继续？"; then
+        exit 0
+    fi
+
+    # 1. 基础 GNOME 设置
+    configure_basics_gsettings
+
+    # 2. 软件源与 DNF
+    configure_repos_and_dnf
+
+    # 3. 系统更新
+    system_update_and_cleanup
+
+    # 4. 开发工具
+    install_dev_tools
+    configure_languages
+    configure_git
+
+    # 5. Flatpak 应用
+    configure_flatpak
+
+    # 6. 主题美化 (可选)
+    if confirm_action "是否安装 WhiteSur 主题并进行美化？"; then
+        install_theme_whitesur
+        apply_theme_settings
+    else
+        log_warn "跳过主题安装。"
+    fi
+
+    # 7. JetBrains Toolbox
+    if confirm_action "是否安装 JetBrains Toolbox？"; then
+        install_jetbrains_toolbox
+    else
+        log_warn "跳过 JetBrains Toolbox 安装。"
+    fi
+
+    # 8. 最终清理
+    log_info "执行最终清理..."
+    sudo dnf autoremove -y
+    sudo dnf clean all
+
+    echo -e "${GREEN}========================================${NC}"
+    echo -e "${GREEN}  配置全部完成！${NC}"
+    echo -e "${GREEN}  建议重启系统以应用所有更改。${NC}"
+    echo -e "${GREEN}========================================${NC}"
+    
+    read -p "是否立即重启？(y/n): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        systemctl reboot
+    fi
+}
+
+# 执行主函数
+main "$@"

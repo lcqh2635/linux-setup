@@ -320,6 +320,7 @@ configure_gnome_extensions() {
     gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
     gnome-extensions enable AlphabeticalAppGrid@stuarthayhurst
     gnome-extensions enable custom-command-list@storageb.github.com
+    gnome-extensions enable pigeon@subz69.github
     
     print_info "正在配置Hide Top Bar..."
     # 配置 Hide Top Bar
