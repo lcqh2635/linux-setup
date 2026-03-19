@@ -925,12 +925,10 @@ install_gnome_extensions() {
     cd ~/下载/extensions/gnome-shell-extension-SmartAutoMoveNG && zip -r SmartAutoMoveNG@lauinger-clan.de.zip SmartAutoMoveNG@lauinger-clan.de && gnome-extensions install -f SmartAutoMoveNG@lauinger-clan.de.zip
     # 系统级别构建安装，默认 --prefix=/usr/local
     # meson setup build -Dtarget=system && meson install -C build
+    git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
+    cd ~/下载/extensions/Customize-IBus && make install
     
-    # https://github.com/openSUSE/Customize-IBus
-    wget https://gh-proxy.com/https://github.com/openSUSE/Customize-IBus/raw/package-repo/customize-ibus-rpm.repo
-    sudo mv customize-ibus-rpm.repo /etc/yum.repos.d/
-    sudo dnf update
-    sudo dnf install -y gnome-shell-extension-customize-ibus
+    # gnome-session-quit --logout
 
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
     for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
