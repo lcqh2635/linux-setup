@@ -108,6 +108,9 @@ gnome-shell-extension-prefs
 # Pigeon Email Notifier
 # Shortcuts
 # Smart Auto Move NG
+# Kiwi is not Apple
+# Kiwi Menu
+# Weather or Not 
 
 # 应用默认配置
 apply_default_settings() {
