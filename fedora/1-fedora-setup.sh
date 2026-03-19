@@ -108,6 +108,18 @@ gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local
 
 
 # ------------------------------------------------------------------------------
+# Fedora 安装 Chromium 或 Google Chrome 浏览器
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
+# 安装第三方仓库
+# sudo dnf install -y fedora-workstation-repositories
+# 禁用 Google Chrome 仓库，由于从该仓库中安装的 Google Chrome 只有一个暗色主题，无法根据系统切换主题，所以禁用
+sudo dnf config-manager setopt google-chrome.enabled=0
+# 启用 Google Chrome 仓库：
+# sudo dnf config-manager setopt google-chrome.enabled=1
+# 最后，安装  Google Chrome 浏览器：
+# sudo dnf install -y google-chrome-stable
+# sudo dnf remove -y google-chrome-stable
+# 创建一个 Google Chrome 扩展，复刻 Dev Toolbox 的功能
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/adding-or-removing-software-repositories-in-fedora/
 # dnf config-manager --help
 # 查看所有仓库
@@ -218,20 +230,6 @@ EOF
 systemctl enable --now dnf-automatic.timer
 # 检查DNF-自动状态：
 # systemctl status dnf-automatic.timer
-
-
-# Fedora 安装 Chromium 或 Google Chrome 浏览器
-# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
-# 安装第三方仓库
-sudo dnf install -y fedora-workstation-repositories
-# 禁用 Google Chrome 仓库，由于从该仓库中安装的 Google Chrome 只有一个暗色主题，无法根据系统切换主题，所以禁用
-sudo dnf config-manager setopt google-chrome.enabled=0
-# 启用 Google Chrome 仓库：
-# sudo dnf config-manager setopt google-chrome.enabled=1
-# 最后，安装  Google Chrome 浏览器：
-# sudo dnf install -y google-chrome-stable
-# sudo dnf remove -y google-chrome-stable
-# 创建一个 Google Chrome 扩展，复刻 Dev Toolbox 的功能
 
 # 删除官方 Fedora Flatpaks 源
 sudo flatpak remote-delete fedora
