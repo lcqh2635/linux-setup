@@ -126,8 +126,7 @@ sudo dnf config-manager setopt google-chrome.enabled=1
 # 最后，安装  Google Chrome 浏览器：
 # sudo dnf install -y google-chrome-stable
 # sudo dnf remove -y google-chrome-stable
-# 删除官方 Fedora Flatpaks 源
-sudo flatpak remote-delete fedora
+# 创建一个 Google Chrome 扩展，复刻 Dev Toolbox 的功能 
 
 # 配置固定加速镜像源
 configure_fixed_mirror() {
@@ -202,7 +201,7 @@ sudo dnf check-update
 }
 
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
-sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
+sudo dnf update -y && sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
 # 删除无用的应用
 sudo dnf remove -y mediawriter libreoffice-*
 # ShellCheck 是一个专门用于分析 Shell 脚本的工具，它能发现语法错误、逻辑隐患、未引用的变量、过时的写法等，而无需运行脚本
@@ -226,6 +225,8 @@ systemctl enable --now dnf-automatic.timer
 # systemctl status dnf-automatic.timer
 
 
+# 删除官方 Fedora Flatpaks 源
+sudo flatpak remote-delete fedora
 # Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
 # 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
 # 在已有 flathub 远程源的基础上替换 Flatpak 默认的软件源
@@ -809,6 +810,7 @@ install_basic_application_software() {
 
 # VPN 相关软件和订阅来源
 # https://gh-proxy.com/
+# https://github.akams.cn/
 # https://ghproxylist.com/
 # https://www.freeclashnode.com/
 install_vpn() {
