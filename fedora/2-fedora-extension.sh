@@ -60,22 +60,15 @@ gnome-shell-extension-prefs
 # nautilus ~/.local/share/gnome-shell/extensions
 
 # Add to Desktop
-# Applications Overview Tooltip
-# App menu is back
-# ArcMenu
 # Battery Health Charging
-# Bing Wallpape
 # Bluetooth Battery Meter
 # Blur my Shell
-# Burn My Windows
-# Caffeine
 # CHC-E (Custom Hot Corners - Extended)
 # Clipboard Indicator
 # Compiz alike magic lamp effect
 # Compiz windows effect
 # Coverflow Alt-Tab
 # ddterm
-# Dash to Dock
 # Fedora Linux Update Indicator
 # Disable Unredirect
 # Do Not Disturb While Screen Sharing Or Recording
@@ -108,13 +101,32 @@ gnome-shell-extension-prefs
 # Pigeon Email Notifier
 # Shortcuts
 # Smart Auto Move NG
-# Kiwi is not Apple
+
+# Bing Wallpaper
+# Burn My Windows
 # Kiwi Menu
+# Kiwi is not Apple
 # Weather or Not 
+
+
+
 
 # 应用默认配置
 apply_default_settings() {
     print_info "正在应用默认配置..."
+    # AppIndicator and KStatusNotifierItem Support
+    # Auto Move Windows
+    # Blur my Shell
+    # Caffeine
+    # Dash to Dock
+    # Forge
+    # GSConnect
+    # Just Perfection
+    # Light Style
+    # No overview at start-up
+    # Removable Drive Menu
+    # User Themes
+    # Workspace Indicator
 
     # 系统外观主题和Gnome扩展插件优化
     # 自定义快捷键优化，Super-管理窗口、Alt-管理工作区

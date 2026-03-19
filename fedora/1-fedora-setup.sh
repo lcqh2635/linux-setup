@@ -117,16 +117,6 @@ sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
 sudo dnf clean all
 # 重建 DNF 缓存
 sudo dnf makecache
-# Fedora 安装 Chromium 或 Google Chrome 浏览器
-# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
-# 安装第三方仓库
-sudo dnf install -y fedora-workstation-repositories
-# 启用 Google Chrome 仓库：
-sudo dnf config-manager setopt google-chrome.enabled=1
-# 最后，安装  Google Chrome 浏览器：
-# sudo dnf install -y google-chrome-stable
-# sudo dnf remove -y google-chrome-stable
-# 创建一个 Google Chrome 扩展，复刻 Dev Toolbox 的功能 
 
 # 配置固定加速镜像源
 configure_fixed_mirror() {
@@ -224,6 +214,19 @@ systemctl enable --now dnf-automatic.timer
 # 检查DNF-自动状态：
 # systemctl status dnf-automatic.timer
 
+
+# Fedora 安装 Chromium 或 Google Chrome 浏览器
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
+# 安装第三方仓库
+sudo dnf install -y fedora-workstation-repositories
+# 禁用 Google Chrome 仓库，由于从该仓库中安装的 Google Chrome 只有一个暗色主题，无法根据系统切换主题，所以禁用
+sudo dnf config-manager setopt google-chrome.enabled=0
+# 启用 Google Chrome 仓库：
+# sudo dnf config-manager setopt google-chrome.enabled=1
+# 最后，安装  Google Chrome 浏览器：
+# sudo dnf install -y google-chrome-stable
+# sudo dnf remove -y google-chrome-stable
+# 创建一个 Google Chrome 扩展，复刻 Dev Toolbox 的功能
 
 # 删除官方 Fedora Flatpaks 源
 sudo flatpak remote-delete fedora
@@ -862,19 +865,20 @@ install_gnome_extensions() {
     gnome-shell-extension-window-list \
     gnome-shell-extension-launch-new-instance
     sudo dnf install -y \
-    gnome-shell-extension-user-theme \
-    gnome-shell-extension-dash-to-dock \
-    gnome-shell-extension-blur-my-shell \
-    gnome-shell-extension-just-perfection \
-    gnome-shell-extension-drive-menu \
     gnome-shell-extension-appindicator \
     gnome-shell-extension-auto-move-windows \
-    gnome-shell-extension-workspace-indicator \
+    gnome-shell-extension-blur-my-shell \
     gnome-shell-extension-caffeine \
-    gnome-shell-extension-gsconnect \
+    gnome-shell-extension-dash-to-dock \
     gnome-shell-extension-forge \
+    gnome-shell-extension-gsconnect \
+    gnome-shell-extension-just-perfection \
+    gnome-shell-extension-light-style \
     gnome-shell-extension-no-overview \
-    gnome-shell-extension-light-style
+    gnome-shell-extension-drive-menu \
+    gnome-shell-extension-user-theme \
+    gnome-shell-extension-workspace-indicator
+    
     # 列出所有用户级扩展
     # gnome-extensions list --user
     # 查看所有用户级扩展的文件目录
