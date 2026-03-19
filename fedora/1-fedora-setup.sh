@@ -928,6 +928,10 @@ install_gnome_extensions() {
     git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
     cd ~/下载/extensions/Customize-IBus && make install
     
+    # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
+    # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
+    # gnome-session-quit --logout --no-prompt
+    # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
     # gnome-session-quit --logout
 
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
