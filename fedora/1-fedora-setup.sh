@@ -885,48 +885,46 @@ install_gnome_extensions() {
     # nautilus ~/.local/share/gnome-shell/extensions
     sudo dnf install -y gettext meson just
     mkdir -p ~/下载/extensions && cd ~/下载/extensions
-    git clone https://gh-proxy.com/https://github.com/fthx/appmenu-is-back.git
-    git clone https://gh-proxy.com/https://github.com/Tommimon/add-to-desktop.git
     git clone https://gitlab.com/smedius/desktop-icons-ng.git
-    git clone https://gh-proxy.com/https://github.com/Exeos/disable-unredirect.git
-    git clone https://gh-proxy.com/https://github.com/tuxor1337/hidetopbar.git
-    git clone https://gh-proxy.com/https://github.com/lennart-k/gnome-rounded-corners.git
-    git clone https://gh-proxy.com/https://github.com/flexagoon/rounded-window-corners.git
-    git clone https://gh-proxy.com/https://github.com/maniacx/Bluetooth-Battery-Meter.git
-    git clone https://gh-proxy.com/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
-    git clone https://gh-proxy.com/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-    git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
-    git clone https://gh-proxy.com/https://github.com/icedman/search-light.git
-    git clone https://gh-proxy.com/https://github.com/amivaleo/Show-Desktop-Button.git
-    git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
-    git clone https://gh-proxy.com/https://github.com/StorageB/custom-command-menu.git
-    git clone https://gh-proxy.com/https://github.com/tuberry/desktop-lyric.git
-    git clone https://gh-proxy.com/https://github.com/subz69/pigeon.git
-    git clone https://gitlab.com/paddatrapper/shortcuts-gnome-extension.git
-    git clone https://gh-proxy.com/https://github.com/ChrisLauinger77/gnome-shell-extension-SmartAutoMoveNG.git
-    cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
-    cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
     cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
-    cd ~/下载/extensions/disable-unredirect && make install
-    cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
-    cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
-    cd ~/下载/extensions/rounded-window-corners && just install
-    cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
-    cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
-    cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
-    cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
-    cd ~/下载/extensions/search-light && make
-    cd ~/下载/extensions && mv Show-Desktop-Button show-desktop-button@amivaleo && zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo && gnome-extensions install -f show-desktop-button@amivaleo.zip
-    cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
-    cd ~/下载/extensions/pigeon && make install
+    git clone https://gitlab.com/paddatrapper/shortcuts-gnome-extension.git
     cd ~/下载/extensions/shortcuts-gnome-extension && ./shortcuts.sh install
-    cd ~/下载/extensions/gnome-shell-extension-SmartAutoMoveNG && zip -r SmartAutoMoveNG@lauinger-clan.de.zip SmartAutoMoveNG@lauinger-clan.de && gnome-extensions install -f SmartAutoMoveNG@lauinger-clan.de.zip
-    # 系统级别构建安装，默认 --prefix=/usr/local
-    # meson setup build -Dtarget=system && meson install -C build
+    git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
+    cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
+    git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
+    cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+    git clone https://gh-proxy.org/https://github.com/fthx/appmenu-is-back.git
+    cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
+    git clone https://gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git
+    cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
+    git clone https://gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
+    cd ~/下载/extensions/disable-unredirect && make install
+    git clone https://gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
+    cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
+    git clone https://gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git
+    cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
+    git clone https://gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git
+    cd ~/下载/extensions/rounded-window-corners && just install
+    git clone https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
+    cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
+    git clone https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
+    cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
+    git clone https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
+    cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
+    git clone https://gh-proxy.org/https://github.com/icedman/search-light.git
+    cd ~/下载/extensions/search-light && make
+    git clone https://gh-proxy.org/https://github.com/amivaleo/Show-Desktop-Button.git
+    cd ~/下载/extensions && mv Show-Desktop-Button show-desktop-button@amivaleo && zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo && gnome-extensions install -f show-desktop-button@amivaleo.zip
+    git clone https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
+    cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+    git clone https://gh-proxy.org/https://github.com/subz69/pigeon.git
+    cd ~/下载/extensions/pigeon && make install
     git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
     cd ~/下载/extensions/Customize-IBus && make install
+    git clone https://gh-proxy.org/https://github.com/tuberry/desktop-lyric.git
+    cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
+    # 系统级别构建安装，默认 --prefix=/usr/local
+    # meson setup build -Dtarget=system && meson install -C build
     
     # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
     # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
