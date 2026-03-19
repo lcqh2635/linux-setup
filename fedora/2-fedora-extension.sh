@@ -59,55 +59,54 @@ gnome-shell-extension-prefs
 # 查看所有用户级扩展的文件目录
 # nautilus ~/.local/share/gnome-shell/extensions
 
+
+# Hide Top Bar
+# Disable Unredirect
+# Rounded Corners
+# Rounded Window Corners Reborn
+# Night Theme Switcher
 # Add to Desktop
-# Battery Health Charging
+# Gtk4 Desktop Icons NG (DING)
 # Bluetooth Battery Meter
-# Blur my Shell
-# CHC-E (Custom Hot Corners - Extended)
 # Clipboard Indicator
 # Compiz alike magic lamp effect
-# Compiz windows effect
 # Coverflow Alt-Tab
 # ddterm
 # Fedora Linux Update Indicator
-# Disable Unredirect
+# Privacy Quick Settings
+# Quick Settings Tweaks
+# Show Desktop Button
+# Status Area Horizontal Spacing
+# Top Bar Organizer
+# Weather O'Clock
+
+# Battery Health Charging
+# CHC-E (Custom Hot Corners - Extended)
+# Compiz windows effect
 # Do Not Disturb While Screen Sharing Or Recording
 # Extension List
 # Fly-Pie
 # GNOME Fuzzy App Search
 # gTile
-# Gtk4 Desktop Icons NG (DING)
-# Hide Top Bar
 # In Picture
 # Lock Keys
 # Lunar Calendar 农历
-# Night Theme Switcher
-# Privacy Quick Settings
-# Quick Settings Tweaks
-# Rounded Corners
-# Rounded Window Corners Reborn
 # Screencast extra Feature
 # Screen word translate
 # Search Light
-# Show Desktop Button
-# Status Area Horizontal Spacing
-# Top Bar Organizer
 # User Avatar In Quick Settings
-# Weather O'Clock
 # Wifi QR Code
 # Custom Command Menu
 # Customize IBus
 # Desktop Lyric
 # Pigeon Email Notifier
 # Shortcuts
-# Smart Auto Move NG
-
 # Bing Wallpaper
 # Burn My Windows
 # Kiwi Menu
 # Kiwi is not Apple
 # Weather or Not 
-
+# Smart Auto Move NG
 
 
 
