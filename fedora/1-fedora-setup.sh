@@ -901,7 +901,6 @@ install_gnome_extensions() {
     git clone https://gh-proxy.org/https://github.com/icedman/search-light.git
     git clone https://gh-proxy.org/https://github.com/amivaleo/Show-Desktop-Button.git
     git clone https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
-    git clone https://gh-proxy.org/https://github.com/subz69/pigeon.git
     git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
     git clone https://gh-proxy.org/https://github.com/purejava/fedora-update.git
     git clone https://gh-proxy.org/https://github.com/tuberry/desktop-lyric.git
@@ -921,7 +920,6 @@ install_gnome_extensions() {
     cd ~/下载/extensions/search-light && make
     cd ~/下载/extensions && mv Show-Desktop-Button show-desktop-button@amivaleo && zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo && gnome-extensions install -f show-desktop-button@amivaleo.zip
     cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    cd ~/下载/extensions/pigeon && make install
     cd ~/下载/extensions/Customize-IBus && make install
     cd ~/下载/extensions && mv fedora-update update-extension@purejava.org && zip -r update-extension@purejava.org.zip update-extension@purejava.org && gnome-extensions install -f update-extension@purejava.org.zip
     cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
