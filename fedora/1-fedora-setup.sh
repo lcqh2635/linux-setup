@@ -83,12 +83,15 @@ gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
+gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
 gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
 gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
 gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
 # Alt + Super 移动当前工作取得窗口到左右其他工作区
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
+
+
 
 # nautilus ~/.local/share/backgrounds/
 cd ~/下载
