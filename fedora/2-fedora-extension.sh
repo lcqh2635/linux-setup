@@ -60,72 +60,9 @@ gnome-shell-extension-prefs
 # nautilus ~/.local/share/gnome-shell/extensions
 
 
-# Hide Top Bar
-# Disable Unredirect
-# Rounded Corners
-# Rounded Window Corners Reborn
-# Night Theme Switcher
-# Add to Desktop
-# Gtk4 Desktop Icons NG (DING)
-# Bluetooth Battery Meter
-# Clipboard Indicator
-# Compiz alike magic lamp effect
-# Coverflow Alt-Tab
-# ddterm
-# Fedora Linux Update Indicator
-# Privacy Quick Settings
-# Quick Settings Tweaks
-# Show Desktop Button
-# Status Area Horizontal Spacing
-# Top Bar Organizer
-# Weather O'Clock
-
-# Battery Health Charging
-# CHC-E (Custom Hot Corners - Extended)
-# Compiz windows effect
-# Do Not Disturb While Screen Sharing Or Recording
-# Extension List
-# Fly-Pie
-# GNOME Fuzzy App Search
-# gTile
-# In Picture
-# Lock Keys
-# Lunar Calendar 农历
-# Screencast extra Feature
-# Screen word translate
-# Search Light
-# User Avatar In Quick Settings
-# Wifi QR Code
-# Custom Command Menu
-# Customize IBus
-# Desktop Lyric
-# Pigeon Email Notifier
-# Shortcuts
-# Bing Wallpaper
-# Burn My Windows
-# Kiwi Menu
-# Kiwi is not Apple
-# Weather or Not 
-# Smart Auto Move NG
-
-
-
 # 应用默认配置
-apply_default_settings() {
+apply_system_settings() {
     print_info "正在应用默认配置..."
-    # AppIndicator and KStatusNotifierItem Support
-    # Auto Move Windows
-    # Blur my Shell
-    # Caffeine
-    # Dash to Dock
-    # Forge
-    # GSConnect
-    # Just Perfection
-    # Light Style
-    # No overview at start-up
-    # Removable Drive Menu
-    # User Themes
-    # Workspace Indicator
 
     # 系统外观主题和Gnome扩展插件优化
     # 自定义快捷键优化，Super-管理窗口、Alt-管理工作区
@@ -162,20 +99,23 @@ apply_default_settings() {
     print_success "默认配置应用完成！"
 }
 
-# 更新系统
-update_system() {
-    print_info "正在更新系统软件包..."
-    sudo dnf upgrade -y
-    if [ $? -eq 0 ]; then
-        print_success "系统更新完成！"
-    else
-        print_error "系统更新失败！"
-    fi
-}
 
-# 配置 GNOME 扩展
-configure_gnome_extensions() {
-
+    # AppIndicator and KStatusNotifierItem Support
+    # Auto Move Windows
+    # Blur my Shell
+    # Caffeine
+    # Dash to Dock
+    # Forge
+    # GSConnect
+    # Just Perfection
+    # Light Style
+    # No overview at start-up
+    # Removable Drive Menu
+    # User Themes
+    # Workspace Indicator
+# 配置系统级别 Gnome Shell 扩展
+configure_system_gnome_extensions() {
+    # dnf list gnome-shell-extension*
     # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
     # gsettings list-schemas
     # gsettings list-schemas | grep 'org.gnome.shell.extensions'
@@ -185,7 +125,6 @@ configure_gnome_extensions() {
     # gnome-extensions list --system
     # 查看所有系统级扩展的文件目录
     # nautilus admin:/usr/share/gnome-shell/extensions
-    # dnf list gnome-shell-extension*
     # ------------------------------------------------------------------------------
     print_info "正在启用并配置 GNOME 扩展..."
     # 启用系统 GNOME 扩展
@@ -303,9 +242,64 @@ configure_gnome_extensions() {
     # 默认不启用窗口平铺模式
     # gsettings set org.gnome.shell.extensions.forge tiling-mode-enabled false
     # gnome-extensions enable forge@jmmaranan.com
-    # ------------------------------------------------------------------------------
-    
-    
+    # ------------------------------------------------------------------------------  
+}
+
+
+# Hide Top Bar
+# Disable Unredirect
+# Rounded Corners
+# Rounded Window Corners Reborn
+# Night Theme Switcher
+# Add to Desktop
+# Gtk4 Desktop Icons NG (DING)
+# Bluetooth Battery Meter
+# Clipboard Indicator
+# Compiz alike magic lamp effect
+# Coverflow Alt-Tab
+# ddterm
+# Fedora Linux Update Indicator
+# Privacy Quick Settings
+# Quick Settings Tweaks
+# Show Desktop Button
+# Status Area Horizontal Spacing
+# Top Bar Organizer
+# Weather O'Clock
+# Battery Health Charging
+# CHC-E (Custom Hot Corners - Extended)
+# Compiz windows effect
+# Do Not Disturb While Screen Sharing Or Recording
+# Extension List
+# Fly-Pie
+# GNOME Fuzzy App Search
+# gTile
+# In Picture
+# Lock Keys
+# Lunar Calendar 农历
+# Screencast extra Feature
+# Screen word translate
+# Search Light
+# User Avatar In Quick Settings
+# Wifi QR Code
+# Custom Command Menu
+# Customize IBus
+# Desktop Lyric
+# Pigeon Email Notifier
+# Shortcuts
+# Bing Wallpaper
+# Burn My Windows
+# Kiwi Menu
+# Kiwi is not Apple
+# Weather or Not 
+# Smart Auto Move NG
+# 配置系统级别 Gnome Shell 扩展 
+configure_user_gnome_extensions() {
+    # dnf list gnome-shell-extension*
+    # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
+    # gsettings list-schemas
+    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
+    # gsettings list-recursively org.gnome.desktop.interface
+    # gsettings list-recursively org.gnome.desktop.wm.preferences
     # 列出所有用户级扩展
     # gnome-extensions list --user
     # 查看所有用户级扩展的文件目录
@@ -349,6 +343,23 @@ configure_gnome_extensions() {
     # 恢复默认设置
     # gsettings reset-recursively org.gnome.shell.extensions.hidetopbar
     
+    print_info "正在配置Night Theme Switcher..."
+    # 递归列出某个 Schema 的键值
+    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.color-scheme
+    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
+    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.time
+    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
+    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
+    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands enabled true
+    # 使用 WhiteSur-*-solid 不透明 GTK 主题版本
+    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
+    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunrise "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'"
+    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
+    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunset "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'"
+    # gsettings reset-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
+    
+    
+    
     print_info "正在配置Gtk4 Desktop Icons NG..."
     # Gtk4 Desktop Icons NG
     # gsettings list-recursively org.gnome.shell.extensions.gtk4-ding
@@ -385,21 +396,6 @@ configure_gnome_extensions() {
     # gsettings reset org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
     # 恢复默认设置
     # gsettings reset-recursively org.gnome.shell.extensions.coverflowalttab
-    
-    print_info "正在配置Night Theme Switcher..."
-    # 递归列出某个 Schema 的键值
-    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.color-scheme
-    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
-    # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.time
-    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
-    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
-    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands enabled true
-    # 使用 WhiteSur-*-solid 不透明 GTK 主题版本
-    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
-    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunrise "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text false"
-    # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
-    gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunset "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true"
-    # gsettings reset-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
     
     # gsettings list-recursively org.gnome.shell.extensions.fedora-update
     gsettings set org.gnome.shell.extensions.fedora-update notify true

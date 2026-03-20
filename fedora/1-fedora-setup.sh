@@ -1077,6 +1077,162 @@ set_theme_example() {
 }
 
 
+# https://github.com/VandalByte/grub-tweaks
+# 安装 GRUB2 主题，并配置多系统时的扫描
+# https://www.gnome-look.org/browse?cat=109&ord=rating
+sudo cp /etc/default/grub /etc/default/grub.bak
+sudo cp -r /boot/grub/ /boot/grub.bak # 防止配置失效导致系统无法启动‌
+sudo dnf install -y grub2-breeze-theme
+# https://github.com/VandalByte/darkmatter-grub2-theme/
+git clone --depth 1 https://github.com/VandalByte/darkmatter-grub2-theme.git && cd darkmatter-grub2-theme
+sudo python3 darkmatter-theme.py -i
+# 
+sudo python3 darkmatter-theme.py -u
+
+# 设置GRUB显示分辨率
+# 首先找到你的屏幕分辨率
+sudo dnf install -y xdpyinfo
+xdpyinfo | awk '/dimensions/{print $2}'
+# 打开文件 /etc/default/grub，编辑行 GRUB_GFXMODE=[宽度]x[高度]x32以匹配你的分辨率
+
+
+# 备份到同目录（添加 .bak 后缀）
+sudo cp /etc/default/grub{,.bak}
+# 检查 .bak 文件是否存在
+# ls /etc/default && cat /etc/default/grub
+# 从同目录 .bak 文件恢复
+# sudo cp /etc/default/grub{.bak,}
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
+cat << EOF | sudo tee /etc/default/grub
+# ==============================================================================
+# Fedora GRUB2 配置文件示例 (/etc/default/grub)
+# ==============================================================================
+# 说明：
+# 1. 本文件用于控制 GRUB 引导加载程序的行为。
+# 2. 修改此文件后，必须运行 'sudo grub2-mkconfig' 命令重新生成配置才能生效。
+# 3. 以 '#' 开头的行为注释，不会被执行。
+# 4. GRUB2 文档	https://fedoraproject.org/wiki/GRUB_2/zh-cn
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# [基础设置]
+# ------------------------------------------------------------------------------
+
+# 设置 GRUB 菜单在自动启动前的等待时间（单位：秒）。
+# - 设置为 0：立即启动默认项，不显示菜单（不推荐双系统用户）。
+# - 设置为 -1：无限等待，直到用户手动选择（适合需要频繁切换系统的用户）。
+# - 设置为 5~10：推荐值，给用户足够的时间选择操作系统。
+GRUB_TIMEOUT=0
+GRUB_HIDDEN_TIMEOUT=0
+
+# 动态获取当前安装的 Linux 发行版名称，并将其显示在 GRUB 启动菜单的条目中。
+# 简单来说，它决定了你在开机启动菜单里看到的名字是 Fedora、Fedora Linux 还是其他变体，而不是写死在配置文件里的硬编码字符串。
+GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
+
+# 设置默认的启动项。
+# - 0：启动菜单中的第一项（通常是 Fedora）。
+# - 1, 2, ...：启动菜单中的第二、第三项（如果 Windows 被识别为第二项，这里填 1）。
+# - "saved"：记住上次用户手动选择的系统，下次优先启动该系统（双系统推荐）。
+#   *注意：若使用 "saved"，通常建议同时启用下方的 GRUB_SAVEDEFAULT=true*
+GRUB_DEFAULT=saved
+
+# 启用“保存上次选择”功能。
+# - true：当 GRUB_DEFAULT 设置为 "saved" 时，用户手动选择的启动项会被记录，
+#         下次重启时自动作为默认项。这对双系统用户非常友好。
+# - false：每次重启都强制回到 GRUB_DEFAULT 指定的固定项。
+GRUB_SAVEDEFAULT=true
+
+# 强制 GRUB 将所有启动项（包括不同内核版本、恢复模式等）直接平铺显示在主菜单的第一页，而不是折叠进一个“高级选项”子菜单中。
+# 如果你是普通桌面用户，且只关心“启动最新的 Fedora”和“启动 Windows”，保持默认（即不使用该选项，或设为 false） 更好，界面更清爽。
+# 如果你经常需要手动选择旧内核，或者觉得进入子菜单很麻烦，那么设置 GRUB_DISABLE_SUBMENU=true 是一个非常实用的优化。
+GRUB_DISABLE_SUBMENU=false
+
+# 设置菜单样式。
+# - "console"：纯文本模式（兼容性最好，默认）。
+# console：代表“控制台”。这意味着你在开机选择系统时，看到的将是一个黑底白字（或白底黑字）的简单列表，没有背景图片、没有进度条动画、也没有漂亮的字体渲染。
+# - "gfxterm"：图形化模式（需要加载主题和字体，更美观）。
+# gfxterm (Graphics Terminal)：这是现代发行版（如 Fedora, Ubuntu）的默认推荐值。它加载显卡驱动，支持高分辨率、背景图片、主题美化以及图形化的启动进度条。
+# 如果你的系统安装了 grub2-theme 包，通常保持默认或设为 gfxterm 即可。
+GRUB_TERMINAL_OUTPUT="gfxterm"
+
+# 是否禁用恢复模式菜单项。配置文件默认为："true"
+# - false：显示恢复模式（推荐，方便系统出错时修复）。
+# - true：隐藏恢复模式。
+GRUB_DISABLE_RECOVERY="false"
+
+# 启用“引导加载器规范配置”（Boot Loader Specification, BLS）支持
+# 简单来说，它改变了 GRUB 管理启动项的方式：从“把所有启动项写在一个大文件里”变成了“每个内核版本对应一个独立的小配置文件”
+GRUB_ENABLE_BLSCFG=true
+
+# ------------------------------------------------------------------------------
+# [双系统关键配置] (Fedora + Windows)
+# ------------------------------------------------------------------------------
+
+# 【重要】启用外部操作系统探测器 (os-prober)。
+# - 背景：出于安全考虑，较新版本的 GRUB2 默认禁用了扫描其他硬盘分区的功能。
+# - 作用：设置为 'false' 意味着“不要禁用 os-prober”，即允许 GRUB 扫描并添加 Windows 
+#        或其他 Linux 发行版的启动项到菜单中。
+# - 如果你发现重启后没有 Windows 选项，请确保这一行存在且值为 false。
+GRUB_DISABLE_OS_PROBER=false
+
+# ------------------------------------------------------------------------------
+# [内核命令行参数] (传递给 Linux 内核的参数)
+# ------------------------------------------------------------------------------
+
+# 默认的内核启动参数。
+# - rhgb：Red Hat Graphical Boot，启用图形化启动进度条（隐藏详细日志）。
+# - quiet：安静模式，减少启动过程中打印到屏幕的详细日志信息。
+# 如果需要排查启动故障，可以临时删除这两个参数以查看详细信息。
+GRUB_CMDLINE_LINUX="rhgb quiet"
+
+# 【高级】额外内核参数（可选）。
+# - 这里的参数会追加到上面的 GRUB_CMDLINE_LINUX 之后。
+# - 示例：nomodeset (解决显卡驱动导致的黑屏问题)
+# - 示例：intel_iommu=on (开启虚拟化直通支持)
+# - 示例：mem_sleep_default=deep (优化睡眠耗电问题，部分笔记本需要)
+# 普通用户通常不需要修改此项，留空即可。
+GRUB_CMDLINE_LINUX_DEFAULT=""
+
+# ------------------------------------------------------------------------------
+# [外观与主题] (可选)
+# ------------------------------------------------------------------------------
+
+# 设置 GRUB 菜单的分辨率。
+# - 格式：宽x高 (例如 1920x1080、3840x2400 使用 xdpyinfo | awk '/dimensions/{print $2}' 命令查看)。
+# - auto：让 GRUB 自动检测最佳分辨率（推荐）。
+# - 如果图形界面显示异常，可以尝试强制指定一个较低的分辨率，如 3840x2400。
+GRUB_GFXMODE=auto
+
+# 设置控制台分辨率（通常与 GFXMODE 保持一致）。
+GRUB_GFXPAYLOAD_LINUX=keep
+
+# 指定 GRUB 主题路径。
+# - Fedora 默认主题通常位于 /usr/share/grub/themes/ 下。
+# - 如果想自定义主题，需先安装主题包，然后在此处填写绝对路径。
+# - 注释掉此行将使用默认样式。
+# GRUB_THEME="/usr/share/grub/themes/fedora/theme.txt"
+EOF
+
+
+GRUB_THEME="/boot/grub/themes/Vimix/theme.txt" # 主题路径‌ 
+GRUB_GFXMODE="1920x1080x32" # 匹配显示器分辨率‌ 
+GRUB_TIMEOUT_STYLE="menu" # 显示菜单界面‌
+
+# 重新生成 GRUB 配置文件：保存并退出编辑器后，运行以下命令让更改生效并扫描 Windows：
+# 对于 BIOS (Legacy) 启动的系统：
+# sudo ls /boot/grub2 && sudo cat /boot/grub2/grub.cfg
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+# 对于 UEFI 启动的系统（现代电脑通常是 UEFI）：
+# sudo ls /boot/efi/EFI/fedora && sudo cat /boot/efi/EFI/fedora/grub.cfg
+sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+
+
+
+
+
+
+
+
 
 # 定义颜色输出
 RED='\033[0;31m'
