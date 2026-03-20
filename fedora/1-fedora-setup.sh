@@ -1196,9 +1196,10 @@ GRUB_CMDLINE_LINUX_DEFAULT=""
 # ------------------------------------------------------------------------------
 # [外观与主题] (可选)
 # ------------------------------------------------------------------------------
+# darkmatter-grub2-theme 官方仓库 https://github.com/VandalByte/darkmatter-grub2-theme/
 
 # 设置 GRUB 菜单的分辨率。
-# - 格式：宽x高 (例如 1920x1080、3840x2400 使用 xdpyinfo | awk '/dimensions/{print $2}' 命令查看)。
+# - 格式：宽x高 (例如 1920x1080、3840x2400 可使用 xdpyinfo | awk '/dimensions/{print $2}' 命令查看)。
 # - auto：让 GRUB 自动检测最佳分辨率（推荐）。
 # - 如果图形界面显示异常，可以尝试强制指定一个较低的分辨率，如 3840x2400。
 GRUB_GFXMODE=auto
@@ -1210,7 +1211,7 @@ GRUB_GFXPAYLOAD_LINUX=keep
 # - Fedora 默认主题通常位于 /usr/share/grub/themes/ 下。
 # - 如果想自定义主题，需先安装主题包，然后在此处填写绝对路径。
 # - 注释掉此行将使用默认样式。
-# GRUB_THEME="/usr/share/grub/themes/fedora/theme.txt"
+# GRUB_THEME="/boot/grub2/themes/dark-matter/theme.txt
 EOF
 }
 
