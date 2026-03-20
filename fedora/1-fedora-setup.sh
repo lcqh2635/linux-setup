@@ -989,10 +989,10 @@ install_and_configure_theme() {
     gsettings set org.gnome.desktop.interface font-hinting 'slight'
 
     mkdir -vp ~/下载/WhiteSur-themes && cd ~/下载/WhiteSur-themes
-    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
-    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
-    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
-    git clone https://gh-proxy.com/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
+    git clone https://gh-proxy.org/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
+    git clone https://gh-proxy.org/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
+    git clone https://gh-proxy.org/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
+    git clone https://gh-proxy.org/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
     # 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
     # grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
     # sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
@@ -1085,14 +1085,15 @@ sudo cp /etc/default/grub /etc/default/grub.bak
 sudo cp -r /boot/grub/ /boot/grub.bak # 防止配置失效导致系统无法启动‌
 sudo dnf install -y grub2-breeze-theme
 # https://github.com/VandalByte/darkmatter-grub2-theme/
-git clone --depth 1 https://github.com/VandalByte/darkmatter-grub2-theme.git && cd darkmatter-grub2-theme
+git clone --depth 1 https://gh-proxy.org/https://github.com/VandalByte/darkmatter-grub2-theme.git && cd darkmatter-grub2-theme
+# 安装主体
 sudo python3 darkmatter-theme.py -i
-# 
+# 卸载主题
 sudo python3 darkmatter-theme.py -u
 
 # 设置GRUB显示分辨率
 # 首先找到你的屏幕分辨率
-sudo dnf install -y xdpyinfo
+sudo dnf install -y xdpyinfo lsb_release
 xdpyinfo | awk '/dimensions/{print $2}'
 # 打开文件 /etc/default/grub，编辑行 GRUB_GFXMODE=[宽度]x[高度]x32以匹配你的分辨率
 
@@ -1211,13 +1212,14 @@ GRUB_GFXPAYLOAD_LINUX=keep
 # - Fedora 默认主题通常位于 /usr/share/grub/themes/ 下。
 # - 如果想自定义主题，需先安装主题包，然后在此处填写绝对路径。
 # - 注释掉此行将使用默认样式。
+# sudo ls /boot/grub2/themes
 # GRUB_THEME="/boot/grub2/themes/dark-matter/theme.txt
 EOF
-}
 
 # sudo ls /boot/grub2 && sudo cat /boot/grub2/grub.cfg
 # 重新生成 GRUB 配置文件：保存并退出编辑器后，运行以下命令让更改生效并扫描 Windows：
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+}
 
 
 # 定义颜色输出
