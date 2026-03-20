@@ -947,12 +947,6 @@ install_gnome_extensions() {
     cd ~/下载/extensions && mv kiwi-kemma kiwi@kemma && zip -r kiwi@kemma.zip kiwi@kemma && gnome-extensions install -f kiwi@kemma.zip
     # 系统级别构建安装，默认 --prefix=/usr/local
     # meson setup build -Dtarget=system && meson install -C build
-    
-    # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
-    # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
-    # gnome-session-quit --logout --no-prompt
-    # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
-    # gnome-session-quit --logout
 
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
     for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
@@ -967,6 +961,17 @@ install_gnome_extensions() {
     glib-compile-schemas ~/.local/share/glib-2.0/schemas/
     # gsettings list-schemas | grep 'org.gnome.shell.extensions'
     # ------------------------------------------------------------------------------
+    
+    # gsettings list-recursively org.gnome.shell.extensions.kiwi
+    gsettings set org.gnome.shell.extensions.kiwi transparent-on-moving false
+    # gsettings reset-recursively org.gnome.shell.extensions.kiwi
+    # gnome-extensions enable kiwi@kemma
+    
+    # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
+    # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
+    # gnome-session-quit --logout --no-prompt
+    # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
+    # gnome-session-quit --logout
 }
 
 
