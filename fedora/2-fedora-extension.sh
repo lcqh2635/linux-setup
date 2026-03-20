@@ -312,13 +312,15 @@ configure_gnome_extensions() {
     # nautilus ~/.local/share/gnome-shell/extensions
     # ------------------------------------------------------------------------------
     # 用户 GNOME 扩展
+    gnome-extensions enable disable-unredirect@exeos
+    gnome-extensions enable hidetopbar@mathieu.bidon.ca
     gnome-extensions enable Rounded_Corners@lennart-k
     gnome-extensions enable rounded-window-corners@fxgn
-    gnome-extensions enable hidetopbar@mathieu.bidon.ca
     gnome-extensions enable add-to-desktop@tommimon.github.com
     gnome-extensions enable gtk4-ding@smedius.gitlab.com
     gnome-extensions enable appmenu-is-back@fthx
     gnome-extensions enable Bluetooth-Battery-Meter@maniacx.github.com
+    gnome-extensions enable customize-ibus@hollowman.ml
     gnome-extensions enable clipboard-indicator@tudmotu.com
     gnome-extensions enable compiz-alike-magic-lamp-effect@hermes83.github.com
     gnome-extensions enable CoverflowAltTab@palatis.blogspot.com
@@ -329,12 +331,10 @@ configure_gnome_extensions() {
     gnome-extensions enable nightthemeswitcher@romainvigier.fr
     gnome-extensions enable quick-settings-tweaks@qwreey
     gnome-extensions enable search-light@icedman.github.com
-    gnome-extensions enable show-desktop-button@amivaleo
     gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
     gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
     gnome-extensions enable AlphabeticalAppGrid@stuarthayhurst
     gnome-extensions enable custom-command-list@storageb.github.com
-    gnome-extensions enable pigeon@subz69.github
     
     print_info "正在配置Hide Top Bar..."
     # 配置 Hide Top Bar
@@ -400,6 +400,10 @@ configure_gnome_extensions() {
     # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
     gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunset "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true"
     # gsettings reset-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
+    
+    # gsettings list-recursively org.gnome.shell.extensions.fedora-update
+    gsettings set org.gnome.shell.extensions.fedora-update notify true
+    # gsettings reset-recursively org.gnome.shell.extensions.fedora-update
     
     print_info "正在配置ddterm..."
     # ddterm，默认的切换快捷键 F12

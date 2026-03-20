@@ -904,7 +904,6 @@ install_gnome_extensions() {
     git clone https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
     git clone https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
     git clone https://gh-proxy.org/https://github.com/icedman/search-light.git
-    git clone https://gh-proxy.org/https://github.com/amivaleo/Show-Desktop-Button.git
     git clone https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
     git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
     git clone https://gh-proxy.org/https://github.com/purejava/fedora-update.git
@@ -923,7 +922,6 @@ install_gnome_extensions() {
     cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
     cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
     cd ~/下载/extensions/search-light && make
-    cd ~/下载/extensions && mv Show-Desktop-Button show-desktop-button@amivaleo && zip -r show-desktop-button@amivaleo.zip show-desktop-button@amivaleo && gnome-extensions install -f show-desktop-button@amivaleo.zip
     cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
     cd ~/下载/extensions/Customize-IBus && make install
     cd ~/下载/extensions && mv fedora-update update-extension@purejava.org && zip -r update-extension@purejava.org.zip update-extension@purejava.org && gnome-extensions install -f update-extension@purejava.org.zip
@@ -1200,6 +1198,18 @@ configure_basics_gsettings() {
 # ------------------------------------------------------------------------------
 configure_repos_and_dnf() {
     log_info "正在配置软件源加速与 DNF 优化..."
+        # 定义镜像列表
+        # 格式：显示名称|域名基础路径|RPMSync基础路径
+        # 注意：USTC 和 TUNA 的 rpmfusion 路径略有不同，这里做统一处理或特殊判断
+        declare -a MIRRORS=(
+            "USTC (中国科技大学 - 推荐)"|"mirrors.ustc.edu.cn/fedora"|"mirrors.ustc.edu.cn/rpmfusion"
+            "TUNA (清华大学)"|"mirrors.tuna.tsinghua.edu.cn/fedora"|"mirrors.tuna.tsinghua.edu.cn/rpmfusion"
+            "Aliyun (阿里云)"|"mirrors.aliyun.com/fedora"|"mirrors.aliyun.com/rpmfusion"
+            "Default (保持官方 Metalink 自动选择)"|"NONE"|"NONE"
+        )
+
+
+
     # 1. 备份并替换 Fedora 官方源为中科大镜像
     log_info "替换 Fedora 主仓库镜像 (USTC)..."
     # Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
@@ -1299,6 +1309,14 @@ system_update_and_cleanup() {
     sudo dnf remove -y mediawriter libreoffice-* abrt* || true
 
     log_info "正在更新系统并清理无用包..."
+    # 你刚刚修改了软件源（从官方 metalink 切换到了中科大/阿里云等固定镜像）。如果不加 --refresh，DNF 可能会继续使用旧的、缓存的元数据（这些元数据可能指向旧的镜像地址或包含旧的包列表），
+    # 导致升级失败、包找不到或仍然从旧源下载。--refresh 强制 DNF 忽略本地缓存，重新从新配置的镜像下载最新的元数据。
+    # 只有在以下特殊情况下，你才需要在日常更新时加上 --refresh：
+    	# 1、修改了 .repo 文件：比如你刚才手动启用/禁用了某个仓库，或者像我们脚本里那样换了镜像源
+    	# 2、怀疑缓存损坏：当你运行 dnf upgrade 报错，提示“元数据不匹配”、“GPG 校验失败”或“找不到包”，但你知道网络上肯定有这个包时。此时执行 sudo dnf upgrade --refresh 可以修复缓存
+    	# 3、急需刚刚发布的软件/安全补丁：假设某个严重安全漏洞在 10 分钟前修复并推送到仓库了，而你昨天的缓存还没过期。为了立刻拿到这个补丁，你可以强制刷新。但通常等待几小时让缓存自然过期也是可接受的
+    	# 4、长时间未开机：如果你这台电脑关机了几个月没开，本地缓存肯定过期了。虽然 DNF 会自动检测到过期并刷新，但显式加上 --refresh 也没坏处，只是略显多余
+    # 但是对于日常的系统更新，推荐命令：sudo dnf upgrade -y 这会直接读取本地缓存的元数据（通常只有几 MB），瞬间完成分析，然后只下载需要更新的软件包
     sudo dnf upgrade --refresh -y
     sudo dnf autoremove -y
 
