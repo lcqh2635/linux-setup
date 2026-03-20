@@ -731,6 +731,11 @@ flatpak install -y flathub dev.skynomads.Seabird
 }
 
 
+
+sudo dnf install -y \
+bottles gnome-boxes gnome-builder gnome-firmware gnome-power-manager
+
+
 # 安装基础应用软件
 install_basic_application_software() {
     # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。

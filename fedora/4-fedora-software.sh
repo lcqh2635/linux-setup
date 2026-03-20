@@ -125,6 +125,8 @@ flatpak install -y flathub io.github.tobagin.karere
 # 和美是一款动漫直播应用，允许你创建合集并根据自定义规则观看。该应用旨在帮助你从不同平台流媒体内容，
 # 内置“直播弹幕”功能，提供在线评论，提升观看体验。请注意，应用内所有内容均仅提供中文版本，为你提供了一个流畅且可定制的享受喜爱动漫的方式
 flatpak install -y flathub io.github.Predidit.Kazumi
+# Biblioteca 允许你浏览和阅读 GNOME 文档。Biblioteca 除了其他内容外，还附带了
+flatpak install flathub app.drey.Biblioteca
 
 
 # Shortwave 是一个互联网广播播放器，提供访问超过5万个电台的电台数据库
@@ -217,6 +219,7 @@ flatpak install -y flathub io.gitlab.theevilskeleton.Upscaler
 # 简单的应用程序，可以从wallhaven下载和设置壁纸
 flatpak install -y flathub io.github.davidoc26.wallpaper_selector
 
+flatpak install flathub app.devsuite.Manuals
 # Wordbook 是一款离线英英词典应用，由 WordNet 和 eSpeak 提供支持
 flatpak install -y flathub dev.mufeed.Wordbook
 # 可生成双因素验证码的简单应用程序
