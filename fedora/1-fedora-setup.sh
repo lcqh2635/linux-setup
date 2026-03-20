@@ -1220,13 +1220,6 @@ EOF
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
 
-
-
-
-
-
-
-
 # 定义颜色输出
 RED='\033[0;31m'
 GREEN='\033[0;32m'
