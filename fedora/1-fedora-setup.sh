@@ -1077,6 +1077,7 @@ set_theme_example() {
 }
 
 
+set_grub2_theme() {
 # https://github.com/VandalByte/grub-tweaks
 # 安装 GRUB2 主题，并配置多系统时的扫描
 # https://www.gnome-look.org/browse?cat=109&ord=rating
@@ -1094,7 +1095,6 @@ sudo python3 darkmatter-theme.py -u
 sudo dnf install -y xdpyinfo
 xdpyinfo | awk '/dimensions/{print $2}'
 # 打开文件 /etc/default/grub，编辑行 GRUB_GFXMODE=[宽度]x[高度]x32以匹配你的分辨率
-
 
 # 备份到同目录（添加 .bak 后缀）
 sudo cp /etc/default/grub{,.bak}
@@ -1212,19 +1212,11 @@ GRUB_GFXPAYLOAD_LINUX=keep
 # - 注释掉此行将使用默认样式。
 # GRUB_THEME="/usr/share/grub/themes/fedora/theme.txt"
 EOF
+}
 
-
-GRUB_THEME="/boot/grub/themes/Vimix/theme.txt" # 主题路径‌ 
-GRUB_GFXMODE="1920x1080x32" # 匹配显示器分辨率‌ 
-GRUB_TIMEOUT_STYLE="menu" # 显示菜单界面‌
-
-# 重新生成 GRUB 配置文件：保存并退出编辑器后，运行以下命令让更改生效并扫描 Windows：
-# 对于 BIOS (Legacy) 启动的系统：
 # sudo ls /boot/grub2 && sudo cat /boot/grub2/grub.cfg
+# 重新生成 GRUB 配置文件：保存并退出编辑器后，运行以下命令让更改生效并扫描 Windows：
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-# 对于 UEFI 启动的系统（现代电脑通常是 UEFI）：
-# sudo ls /boot/efi/EFI/fedora && sudo cat /boot/efi/EFI/fedora/grub.cfg
-sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 
 
 
