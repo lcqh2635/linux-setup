@@ -341,7 +341,7 @@ configure_flatpak() {
 install_theme_whitesur() {
     log_info "正在下载并安装 WhiteSur 主题..."
     
-    THEME_DIR="$HOME/Downloads/WhiteSur-themes"
+    THEME_DIR="$HOME/下载/WhiteSur-themes"
     mkdir -p "$THEME_DIR"
     cd "$THEME_DIR"
 
@@ -404,7 +404,7 @@ apply_theme_settings() {
 install_jetbrains_toolbox() {
     log_info "正在安装 JetBrains Toolbox..."
     
-    cd "$HOME/Downloads"
+    cd "$HOME/下载"
     # 获取最新正式版链接 (排除 arm64)
     DOWNLOAD_URL=$(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release' | \
                    grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | \
