@@ -1202,32 +1202,37 @@ configure_repos_and_dnf() {
     log_info "正在配置软件源加速与 DNF 优化..."
     # 1. 备份并替换 Fedora 官方源为中科大镜像
     log_info "替换 Fedora 主仓库镜像 (USTC)..."
-    if [ ! -f /etc/yum.repos.d/fedora.repo.bak ]; then
-        sudo cp /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora.repo.bak
-        sudo cp /etc/yum.repos.d/fedora-updates.repo /etc/yum.repos.d/fedora-updates.repo.bak
-    fi
-
+    # Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
+    # 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
+    # https://mirrors.ustc.edu.cn/help/fedora.html
+    # https://developer.aliyun.com/mirror/fedora
+    # https://mirrors.tuna.tsinghua.edu.cn/help/fedora/
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora.repo
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-updates.repo
+    # 将上述两个文件先做个备份，根据 Fedora 系统版本分别替换为下面内容，之后通过 sudo dnf makecache 命令更新本地缓存，即可使用所选择的软件源镜像。
     sudo sed -e 's|^metalink=|#metalink=|g' \
              -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g' \
-             -i /etc/yum.repos.d/fedora.repo \
+             -i.bak \
+             /etc/yum.repos.d/fedora.repo \
              /etc/yum.repos.d/fedora-updates.repo
-
     # 2. 安装 RPM Fusion 源 (使用 USTC 镜像)
     log_info "安装并配置 RPM Fusion 源..."
-    FEDORA_VERSION=$(rpm -E %fedora)
-    if [ ! -f /etc/yum.repos.d/rpmfusion-free.repo ]; then
-        sudo dnf install -y --nogpgcheck \
-            https://mirrors.ustc.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-${FEDORA_VERSION}.noarch.rpm \
-            https://mirrors.ustc.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VERSION}.noarch.rpm
-    fi
-
+    # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
+    # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
+    # 使用下列命令（在 bash 或兼容 shell 中），可以同时启用其 free 和 nonfree 软件源
+    sudo dnf install -y --nogpgcheck \
+        https://mirrors.ustc.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+        https://mirrors.ustc.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     # 修改 RPM Fusion 源为 USTC
-    if [ -f /etc/yum.repos.d/rpmfusion-free.repo ]; then
-        sudo sed -e 's|^metalink=|#metalink=|g' \
-                 -e 's|^#baseurl=http://download1.rpmfusion.org|baseurl=https://mirrors.ustc.edu.cn/rpmfusion|g' \
-                 -i /etc/yum.repos.d/rpmfusion*.repo
-    fi
-
+    # 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
+    # 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
+    # 并将等号后面链接中的 http://download1.rpmfusion.org 替换为 https://mirrors.ustc.edu.cn/rpmfusion：
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free.repo
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free-updates.repo
+    sudo sed -e 's|^metalink=|#metalink=|g' \
+             -e 's|^#baseurl=http://download1.rpmfusion.org|baseurl=https://mirrors.ustc.edu.cn/rpmfusion|g' \
+             -i.bak \
+             /etc/yum.repos.d/rpmfusion*.repo
     # 3. 启用 Google Chrome 仓库 (可选，按需开启)
     log_info "正在关闭 google-chrome、copr:copr.fedorainfracloud.org:phracek:PyCharm 两个第三方软件仓库..."
     # Fedora 安装 Chromium 或 Google Chrome 浏览器
@@ -1262,13 +1267,25 @@ configure_repos_and_dnf() {
     # 5. 优化 DNF 速度 (并行下载 + 最快镜像)
     log_info "优化 DNF 下载速度..."
     # 兼容 DNF 4 和 DNF 5 的配置方式
-    if check_command dnf; then
-        # 直接修改配置文件以确保持久化
-        if ! grep -q "max_parallel_downloads" /etc/dnf/dnf.conf; then
-            echo "max_parallel_downloads=10" | sudo tee -a /etc/dnf/dnf.conf
-            echo "fastestmirror=True" | sudo tee -a /etc/dnf/dnf.conf
-        fi
-    fi
+    # https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
+    # 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
+    # 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
+    # 当前的Fedora版本使用DNF5，最简洁的更改方式是使用 dnf config-manager setopt，而不是先在编辑器中打开/etc/dnf/dnf.conf。
+    # 这样可以保持更改的可重复性，清晰显示当前运行时的值，并且方便之后降低max_parallel_downloads或关闭fastestmirror=true。
+    # https://mirrormanager.fedoraproject.org/
+    # https://dnf-plugins-core.readthedocs.io/en/latest/
+    # https://github.com/rpm-software-management/dnf5
+    # 先从安全刷新开始，这样你可以用当前的元数据对比后续运行。--assumeno 标志会预览交易并在 DNF 安装任何东西前退出
+    sudo dnf upgrade --refresh --assumeno -y
+    # 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
+    # Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
+    # 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
+    sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
+    # 现在验证当前运行时的值，而不仅仅是检查文件内容：
+    dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
+    # 执行一次 DNF 操作（如检查更新），观察输出信息。如果配置成功，你会看到类似以下的提示，表明它正在检测镜像速度：
+    sudo dnf check-update
+    # ls /etc/dnf && cat /etc/dnf/dnf.conf
 
     log_success "软件源与 DNF 配置完成。"
 }
