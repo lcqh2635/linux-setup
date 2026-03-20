@@ -260,6 +260,12 @@ sudo flatpak override --filesystem=xdg-data/themes:ro
 sudo flatpak override --filesystem=xdg-data/icons:ro
 sudo flatpak override --filesystem=$HOME/.themes:ro
 sudo flatpak override --filesystem=$HOME/.icons:ro
+# https://github.com/kem-a/kiwi-kemma
+# 执行此命令以覆盖 Flatpak 应用的 'xdg-config' 和主题窗口控制按钮：
+flatpak override --user --filesystem=xdg-config/gtk-3.0:ro
+flatpak override --user --filesystem=xdg-config/gtk-4.0:ro
+flatpak override --user --filesystem=xdg-config/environment.d/:ro
+flatpak override --user --filesystem=$HOME/.local/share/gnome-shell/extensions/kiwi@kemma/:ro
 # ------------------------------------------------------------------------------
 
 
@@ -859,11 +865,16 @@ install_vpn() {
 # 安装 gnome shell 扩展插件
 install_gnome_extensions() {
     # ------------------------------------------------------------------------------
+    # dnf list gnome-shell-extension*
+    # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
+    # gsettings list-schemas
+    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
+    # gsettings list-recursively org.gnome.desktop.interface
+    # gsettings list-recursively org.gnome.desktop.wm.preferences
     # 列出所有系统级扩展
     # gnome-extensions list --system
     # 查看所有系统级扩展的文件目录
     # nautilus admin:/usr/share/gnome-shell/extensions
-    # dnf list gnome-shell-extension*
     sudo dnf remove -y \
     gnome-shell-extension-apps-menu \
     gnome-shell-extension-places-menu \
@@ -884,6 +895,12 @@ install_gnome_extensions() {
     gnome-shell-extension-user-theme \
     gnome-shell-extension-workspace-indicator
     
+    # dnf list gnome-shell-extension*
+    # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
+    # gsettings list-schemas
+    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
+    # gsettings list-recursively org.gnome.desktop.interface
+    # gsettings list-recursively org.gnome.desktop.wm.preferences
     # 列出所有用户级扩展
     # gnome-extensions list --user
     # 查看所有用户级扩展的文件目录
@@ -908,6 +925,7 @@ install_gnome_extensions() {
     git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
     git clone https://gh-proxy.org/https://github.com/purejava/fedora-update.git
     git clone https://gh-proxy.org/https://github.com/tuberry/desktop-lyric.git
+    git clone https://gh-proxy.org/https://github.com/kem-a/kiwi-kemma.git
     cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
     cd ~/下载/extensions/shortcuts-gnome-extension && ./shortcuts.sh install
     cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
@@ -926,6 +944,7 @@ install_gnome_extensions() {
     cd ~/下载/extensions/Customize-IBus && make install
     cd ~/下载/extensions && mv fedora-update update-extension@purejava.org && zip -r update-extension@purejava.org.zip update-extension@purejava.org && gnome-extensions install -f update-extension@purejava.org.zip
     cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
+    cd ~/下载/extensions && mv kiwi-kemma kiwi@kemma && zip -r kiwi@kemma.zip kiwi@kemma && gnome-extensions install -f kiwi@kemma.zip
     # 系统级别构建安装，默认 --prefix=/usr/local
     # meson setup build -Dtarget=system && meson install -C build
     
