@@ -1028,11 +1028,9 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
     
     # Top Bar Organizer
     # gsettings list-recursively org.gnome.shell.extensions.top-bar-organizer
-    gsettings set org.gnome.shell.extensions.top-bar-organizer left-box-order "['ArcMenu', 'apps-menu', 'places-menu', 'vitalsMenu', 'appmenu-indicator']"
-    # gsettings set org.gnome.shell.extensions.top-bar-organizer center-box-order "['dateMenu']"
-    gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['workspace-indicator', 'flag', 'FedoraUpdateIndicator', 'Show Desktop Button Indicator', 'ddterm', 'copyous@boerdereinar.dev', 'lockkeys', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
-    # gsettings set org.gnome.shell.extensions.top-bar-organizer hide "[]"
-    # gsettings set org.gnome.shell.extensions.top-bar-organizer show "[]"
+    gsettings set org.gnome.shell.extensions.top-bar-organizer left-box-order "['activities', 'apps-menu', 'places-menu', 'command-menu', 'appmenu-indicator']"
+    gsettings set org.gnome.shell.extensions.top-bar-organizer center-box-order "['dateMenu']"
+    gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['appindicator-kstatusnotifieritem-toolbox', 'workspace-indicator', 'FedoraUpdateIndicator', 'ddterm', 'clipboardIndicator', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
     # gsettings reset-recursively org.gnome.shell.extensions.top-bar-organizer
     
     # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
