@@ -818,9 +818,11 @@ install_gnome_extensions() {
         git clone https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git --depth=1
         git clone https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git --depth=1
         git clone https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git --depth=1
         git clone https://gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git --depth=1
         git clone https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git --depth=1
         git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git --depth=1
+        wget https://ddterm.github.io/gnome-shell-extension-ddterm/ddterm@amezin.github.com.shell-extension.zip
         git clone https://gh-proxy.org/https://github.com/tuberry/desktop-lyric.git --depth=1
         git clone https://gitlab.com/smedius/desktop-icons-ng.git --depth=1
         git clone https://gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git --depth=1
@@ -829,15 +831,16 @@ install_gnome_extensions() {
         git clone https://gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git --depth=1
         git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git --depth=1
         git clone https://gh-proxy.org/https://github.com/purejava/fedora-update.git --depth=1
-        
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
         cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
         cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
         cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
         cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
+        cd ~/下载/extensions/quick-settings-tweaks && npm i && TARGET=dev ./install.sh create-release && gnome-extensions install -f target/quick-settings-tweaks@qwreey.shell-extension.zip
         cd ~/下载/extensions/CoverflowAltTab && make all
         cd ~/下载/extensions && zip -FSr custom-command-menu.zip custom-command-menu/* && gnome-extensions install -f custom-command-menu.zip
         cd ~/下载/extensions/Customize-IBus && make install
+        cd ~/下载/extensions && gnome-extensions install -f ddterm@amezin.github.com.shell-extension.zip
         cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
         cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
         cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
@@ -850,7 +853,6 @@ install_gnome_extensions() {
          # 系统级别构建安装，默认 --prefix=/usr/local
         # meson setup build -Dtarget=system && meson install -C build
     fi
-    
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
     for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
         EXT_ID=$(basename "$EXT_DIR")
@@ -1258,10 +1260,14 @@ main() {
     echo -e "${GREEN}  建议重启系统以应用所有更改。${NC}"
     echo -e "${GREEN}========================================${NC}"
     
-    read -p "是否立即重启？(y/n): " -n 1 -r
+    read -p "是否立即退出当前用户登录？(y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        systemctl reboot
+        # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
+        # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
+        # gnome-session-quit --logout --no-prompt
+        # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
+        gnome-session-quit --logout
     fi
 }
 
