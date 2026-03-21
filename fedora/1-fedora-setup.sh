@@ -113,6 +113,16 @@ configure_basics_gsettings() {
 
 
 # ------------------------------------------------------------------------------
+# 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
+# Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
+# 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
+sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
+# ls /etc/dnf && cat /etc/dnf/dnf.conf
+# 现在验证当前运行时的值，而不仅仅是检查文件内容：
+dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
+# 由于这个仓库默认使用 https://mirrors.fedoraproject.org 导致经常等新超时，先禁用该仓库
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-cisco-openh264.repo
+sudo dnf config-manager setopt fedora-cisco-openh264.enabled=0
 # Fedora 安装 Chromium 或 Google Chrome 浏览器
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
 # 禁用 Google Chrome 仓库，由于从该仓库中安装的 Google Chrome 只有一个暗色主题，无法根据系统切换主题，所以禁用
@@ -133,15 +143,6 @@ sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.en
 # grep -E "^\[.*]" /etc/yum.repos.d/*
 # 删除仓库文件
 sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
-# 由于这个仓库默认使用 https://mirrors.fedoraproject.org 导致经常等新超时，先禁用该仓库
-sudo dnf config-manager setopt fedora-cisco-openh264.enabled=0
-# 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
-# Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
-# 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
-sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
-# 现在验证当前运行时的值，而不仅仅是检查文件内容：
-dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
-# ls /etc/dnf && cat /etc/dnf/dnf.conf
 # 删除文件后，必须清理 DNF 缓存以生效
 sudo dnf clean all
 # 重建 DNF 缓存
@@ -304,6 +305,7 @@ sudo dnf group install -y --with-optional virtualization
 # 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件
 sudo dnf group install -y multimedia
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
+# dnf list --available \*openh264\*
 # 从 fedora-cisco-openh264 存储库安	dnf list gstreamer1-plugin-*
 sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-origin
 # 之后，您需要打开 Firefox，转到菜单 → 附加组件 → 插件 并启用 OpenH264 插件。
