@@ -283,8 +283,9 @@ sudo sh -c "echo gpgcheck=0 >> /etc/yum.repos.d/linglong%3ACI%3Arelease.repo"
 sudo dnf update
 # 安装后可通过 ‘网页版应用商店 https://store.linyaps.org.cn/’ 进行安装，但不会安装 ‘客户端应用商店’	
 sudo dnf install -y linglong-bin linyaps-web-store-installer
-# 安装意玲珑客户端应用商店	https://linyaps.org.cn/linyaps-appstore
-curl -fsSL https://gitee.com/hanplus/linglong-installer/releases/download/latest/linglong-store-installer.sh | LLI_PREFER_PKEXEC=1 bash            
+# 安装意玲珑客户端应用商店	https://linyaps.org.cn/linyaps-appstore 
+cd $HOME/下载 && wget "https://gh-proxy.org/https://github.com/SXFreell/linglong-store/releases/download/2.2.0/linglong-store-2.1.2-1.x86_64.rpm"
+sudo dnf install -y ./linglong-store-2.1.2-1.x86_64.rpm
 
 
 # development-tools 是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
