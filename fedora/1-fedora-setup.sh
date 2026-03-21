@@ -7,7 +7,7 @@
 # 版本：2.0.0
 # 使用方法：chmod +x 1-fedora-setup.sh && ./1-fedora-setup.sh
 # (请勿直接使用 sudo 运行此脚本，脚本内部会自动提权需要 root 的操作)
-# 仓库克隆：cd ~/下载 && git clone https://cdn.gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
+# 仓库克隆：cd ~/下载 && git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
 # 仓库提交：cd ~/文档/linux-setup && git add . && git commit -m 'backup' && git push
 # ==============================================================================
 
@@ -100,12 +100,14 @@ configure_basics_gsettings() {
     wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
     wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
     wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
+    mkdir -vp ~/.local/share/backgrounds/
     cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
     cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
     cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
     # gsettings list-recursively org.gnome.desktop.background
     gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
     gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
+    
 }
 # ------------------------------------------------------------------------------
 
@@ -113,8 +115,6 @@ configure_basics_gsettings() {
 # ------------------------------------------------------------------------------
 # Fedora 安装 Chromium 或 Google Chrome 浏览器
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
-# 安装第三方仓库
-# sudo dnf install -y fedora-workstation-repositories
 # 禁用 Google Chrome 仓库，由于从该仓库中安装的 Google Chrome 只有一个暗色主题，无法根据系统切换主题，所以禁用
 sudo dnf config-manager setopt google-chrome.enabled=0
 # 启用 Google Chrome 仓库：
@@ -133,10 +133,51 @@ sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.en
 # grep -E "^\[.*]" /etc/yum.repos.d/*
 # 删除仓库文件
 sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
+# 由于这个仓库默认使用 https://mirrors.fedoraproject.org 导致经常等新超时，先禁用该仓库
+sudo dnf config-manager setopt fedora-cisco-openh264.enabled=0
+# 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
+# Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
+# 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
+sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
+# 现在验证当前运行时的值，而不仅仅是检查文件内容：
+dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
+# ls /etc/dnf && cat /etc/dnf/dnf.conf
 # 删除文件后，必须清理 DNF 缓存以生效
 sudo dnf clean all
 # 重建 DNF 缓存
 sudo dnf makecache
+# 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
+sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
+
+# 删除官方 Fedora Flatpaks 源
+sudo flatpak remote-delete fedora
+# sudo flatpak remote-add --if-not-exists --title=Fedora fedora oci+https://registry.fedoraproject.org
+# Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
+# 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
+# 在已有 flathub 远程源的基础上替换 Flatpak 默认的软件源
+# Fedora默认安装了Flatpak，只要配置Flatpak加速镜像即可
+echo "开始配置Flatpak加速镜像..."
+# flatpak remotes --show-details
+# 添加 Flathub 官方仓库
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+# 修改 Flathub 仓库地址为国内镜像
+# 2、中科大 Flatpak 镜像源（处于测试阶段） https://mirrors.ustc.edu.cn/help/flathub.html
+sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
+# 上海交通大学 Flatpak 软件源镜像
+# sudo flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
+sudo flatpak update --appstream
+# 恢复默认值：
+# sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
+# 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
+# xdg-data/themes 是 ~/.local/share/themes 的标准化路径别名（Flatpak 优先识别）
+# :ro 表示只读权限，避免应用误修改主题文件。
+sudo flatpak override --filesystem=xdg-config/gtk-3.0:ro
+sudo flatpak override --filesystem=xdg-config/gtk-4.0:ro
+sudo flatpak override --filesystem=xdg-data/themes:ro
+sudo flatpak override --filesystem=xdg-data/icons:ro
+sudo flatpak override --filesystem=$HOME/.themes:ro
+sudo flatpak override --filesystem=$HOME/.icons:ro
+# ------------------------------------------------------------------------------
 
 # 配置固定加速镜像源
 configure_fixed_mirror() {
@@ -153,9 +194,6 @@ configure_fixed_mirror() {
              -i.bak \
              /etc/yum.repos.d/fedora.repo \
              /etc/yum.repos.d/fedora-updates.repo
-    # 更新本地缓存，即可使用所选择的软件源镜像
-    sudo dnf makecache
-
     # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
     # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
     # 使用下列命令（在 bash 或兼容 shell 中），可以同时启用其 free 和 nonfree 软件源
@@ -172,6 +210,7 @@ configure_fixed_mirror() {
              /etc/yum.repos.d/rpmfusion*.repo
     # 修改完成后，清除并重建缓存：
     sudo dnf clean all
+    # 更新本地缓存，即可使用所选择的软件源镜像
     sudo dnf makecache
 }
 
@@ -211,7 +250,7 @@ configure_dnf_acceleration() {
 }
 
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
-sudo dnf update -y && sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
+sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
 # 删除无用的应用
 sudo dnf remove -y mediawriter libreoffice-*
 # ShellCheck 是一个专门用于分析 Shell 脚本的工具，它能发现语法错误、逻辑隐患、未引用的变量、过时的写法等，而无需运行脚本
@@ -234,52 +273,15 @@ systemctl enable --now dnf-automatic.timer
 # 检查DNF-自动状态：
 # systemctl status dnf-automatic.timer
 
-# 删除官方 Fedora Flatpaks 源
-sudo flatpak remote-delete fedora
-# Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
-# 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
-# 在已有 flathub 远程源的基础上替换 Flatpak 默认的软件源
-# Fedora默认安装了Flatpak，只要配置Flatpak加速镜像即可
-echo "开始配置Flatpak加速镜像..."
-# flatpak remotes --show-details
-# 添加 Flathub 官方仓库
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-# 修改 Flathub 仓库地址为国内镜像
-# 2、中科大 Flatpak 镜像源（处于测试阶段） https://mirrors.ustc.edu.cn/help/flathub.html
-sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
-# 上海交通大学 Flatpak 软件源镜像
-# sudo flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
-sudo flatpak update --appstream
-# 恢复默认值：
-# sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
-# 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
-# xdg-data/themes 是 ~/.local/share/themes 的标准化路径别名（Flatpak 优先识别）
-# :ro 表示只读权限，避免应用误修改主题文件。
-sudo flatpak override --filesystem=xdg-config/gtk-3.0:ro
-sudo flatpak override --filesystem=xdg-config/gtk-4.0:ro
-sudo flatpak override --filesystem=xdg-data/themes:ro
-sudo flatpak override --filesystem=xdg-data/icons:ro
-sudo flatpak override --filesystem=$HOME/.themes:ro
-sudo flatpak override --filesystem=$HOME/.icons:ro
-# https://github.com/kem-a/kiwi-kemma
-# 执行此命令以覆盖 Flatpak 应用的 'xdg-config' 和主题窗口控制按钮：
-flatpak override --user --filesystem=xdg-config/gtk-3.0:ro
-flatpak override --user --filesystem=xdg-config/gtk-4.0:ro
-flatpak override --user --filesystem=xdg-config/environment.d/:ro
-flatpak override --user --filesystem=$HOME/.local/share/gnome-shell/extensions/kiwi@kemma/:ro
-# ------------------------------------------------------------------------------
+
 # 如意玲珑		https://linyaps.org.cn/
 # 如意玲珑官方文档	https://linyaps.org.cn/guide/start/whatis.html
 # 如意玲珑是统信软件自研的开源软件包格式，用于替代 deb、rpm 等包管理工具，实现了应用包管理、分发、容器、集成开发工具等功能。类似 flatpak、snap
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/linglong%3ACI%3Arelease.repo
 sudo dnf config-manager addrepo --from-repofile "https://ci.deepin.com/repo/obs/linglong:/CI:/release/Fedora_43/linglong%3ACI%3Arelease.repo"
+sudo sh -c "echo gpgcheck=0 >> /etc/yum.repos.d/linglong%3ACI%3Arelease.repo"
 sudo dnf update
 sudo dnf install -y linglong-bin linyaps-web-store-installer
-# 方式二：手动下载  rpm	https://linyaps.org.cn/linyaps-appstore
-# cd $HOME/下载 && wget "https://gh-proxy.org/https://github.com/SXFreell/linglong-store/releases/download/2.2.0/linglong-store-2.1.2-1.x86_64.rpm"
-
-         
-
-
 
 # development-tools 是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
 # c-development 是简化C开发环境配置的包组，安装后即可获得编译、调试和构建C程序所需的核心工具。如果你需要开发C程序，安装它或对应的包组是第一步。例如：gcc、gcc-c++
