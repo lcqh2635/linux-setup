@@ -110,7 +110,7 @@ configure_system_gnome_extensions() {
     # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell.panel
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
-    gsettings set org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview true
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview false
     gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
     # 3、概览		以下配置是 ‘概览’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
@@ -161,11 +161,12 @@ configure_system_gnome_extensions() {
     # ------------------------------------------------------------------------------  
 }
 
-# Disable Unredirect
+
 # Hide Top Bar
 # Rounded Corners
 # Rounded Window Corners Reborn
 # Night Theme Switcher
+# Customize IBus
 # Add to Desktop
 # Gtk4 Desktop Icons NG (DING)
 # Bluetooth Battery Meter
@@ -196,8 +197,8 @@ configure_system_gnome_extensions() {
 # Search Light
 # User Avatar In Quick Settings
 # Wifi QR Code
-# Customize IBus
 # Desktop Lyric
+# Disable Unredirect
 # Shortcuts
 # Bing Wallpaper
 # Burn My Windows
