@@ -21,18 +21,6 @@
 # set -o pipefail: 管道中任一命令失败则整个管道失败
 set -euo pipefail
 
-# apt list gnome-shell-extension*
-# apt list gnome-shell-ubuntu-extensions*
-sudo apt install -y \
-gnome-shell-extension-user-theme \
-gnome-shell-extension-alphabetical-grid \
-gnome-shell-extension-auto-move-windows \
-gnome-shell-extension-drive-menu \
-gnome-shell-extension-light-style \
-gnome-shell-extension-workspace-indicator \
-gnome-shell-extension-desktop-icons-ng \
-gnome-shell-extension-prefs
-
 # gnome-extensions 直接使用可以查看扩展的所有命令的作用
 # help      打印帮助
 # version   打印版本
@@ -49,7 +37,6 @@ gnome-shell-extension-prefs
 # install   安装扩展包
 # gnome-extensions help
 # gnome-extensions list	列出可安装的扩展插件
-
 # 列出所有系统级扩展
 # gnome-extensions list --system
 # 查看所有系统级扩展的文件目录
@@ -59,60 +46,19 @@ gnome-shell-extension-prefs
 # 查看所有用户级扩展的文件目录
 # nautilus ~/.local/share/gnome-shell/extensions
 
-
-# 应用默认配置
-apply_system_settings() {
-    print_info "正在应用默认配置..."
-
-    # 系统外观主题和Gnome扩展插件优化
-    # 自定义快捷键优化，Super-管理窗口、Alt-管理工作区
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
-    # 当前工作区内的窗口切换
-    gsettings set org.gnome.desktop.wm.keybindings switch-windows "['<Super>T']"
-    # 窗口在工作区移动
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-last "['<Alt><Super>End']"
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Alt><Super>Left']"
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Alt><Super>Right']"
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-1 "['<Alt><Super>1']"
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-2 "['<Alt><Super>2']"
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-3 "['<Alt><Super>3']"
-    # 隐藏/显示当前工作区的所有窗口
-    gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Alt><Super>h']"
-    # 键盘 F 功能键
-    # gsettings list-recursively org.gnome.settings-daemon.plugins.media-keys
-    # 媒体声音控制
-    gsettings set org.gnome.settings-daemon.plugins.media-keys mic-mute "['F2']"
-    gsettings set org.gnome.settings-daemon.plugins.media-keys volume-down "['F3']"
-    gsettings set org.gnome.settings-daemon.plugins.media-keys volume-up "['F4']"
-    # 弹出 U 盘
-    gsettings set org.gnome.settings-daemon.plugins.media-keys eject "['F5']"
-    # 播放器控制
-    gsettings set org.gnome.settings-daemon.plugins.media-keys next "['F8']"
-    gsettings set org.gnome.settings-daemon.plugins.media-keys play "['F9']"
-    gsettings set org.gnome.settings-daemon.plugins.media-keys previous "['F10']"
-    
-    print_success "默认配置应用完成！"
-}
-
-
-    # AppIndicator and KStatusNotifierItem Support
-    # Auto Move Windows
-    # Blur my Shell
-    # Caffeine
-    # Dash to Dock
-    # Forge
-    # GSConnect
-    # Just Perfection
-    # Light Style
-    # No overview at start-up
-    # Removable Drive Menu
-    # User Themes
-    # Workspace Indicator
+# Dash to Dock
+# User Themes
+# Blur my Shell
+# Just Perfection
+# AppIndicator and KStatusNotifierItem Support
+# Auto Move Windows
+# Caffeine
+# Forge
+# GSConnect
+# Light Style
+# No overview at start-up
+# Removable Drive Menu
+# Workspace Indicator
 # 配置系统级别 Gnome Shell 扩展
 configure_system_gnome_extensions() {
     # dnf list gnome-shell-extension*
@@ -140,81 +86,54 @@ configure_system_gnome_extensions() {
     gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
     gnome-extensions enable light-style@gnome-shell-extensions.gcampax.github.com
     
-    # 递归列出某个 Schema 的键值（例如 org.gnome.shell.extensions.dash-to-dock）
     # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
-    print_info "正在配置Dash to Dock..."
-    # 配置 Dash to Dock (自定义Dock栏)
-    # 取消面板模式，改为类似 MacOS 系统的 Dock 栏模式
-    gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
-    gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
+    # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
     # 智能隐藏 Dock 栏
-    gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
     gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
-    gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
-    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
     gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
     gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
     # 收缩 Dash
     gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
-    # gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'FIXED'
-    gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 1.0
-    # 恢复默认设置
-    # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
-    # 默认主题色/强调色，蓝色
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(153,193,241)'
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(26,95,180)'
-    # 绿色
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(143,240,164)'
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(38,162,105)'
-    # 紫色
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(220,138,221)'
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(97,53,131)'
-    # 白色
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(255,255,255)'
-    # gsettings set org.gnome.shell.extensions.dash-to-dock background-color 'rgb(154,153,150)'
+    gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'DYNAMIC'
     
-    # 配置 Blur My Shell (透明模糊效果)
+    
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell
-    # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.panel
-    # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.applications
-    # 设置自定义模糊效果
+    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell
+    # 1、管线		以下配置是 ‘管线’ 这个菜单项下面的配置内容
     # gsettings get org.gnome.shell.extensions.blur-my-shell pipelines
-    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell pipelines
+    # gsettings reset org.gnome.shell.extensions.blur-my-shell pipelines
     gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline-overview': {'name': <'pipeline overview'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_24286504481826'>, 'params': <@a{sv} {}>}>]>}, 'pipeline-panel-light': {'name': <'pipeline panel light'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_000000000001'>, 'params': <{'radius': <30>, 'brightness': <1>, 'unscaled_radius': <100>}>}>, <{'type': <'corner'>, 'id': <'effect_000000000002'>, 'params': <{'radius': <24>, 'corners_bottom': <false>}>}>, <{'type': <'color'>, 'id': <'effect_11444492989407'>, 'params': <{'color': <(1.0, 1.0, 1.0, 0.20000000000000001)>}>}>, <{'type': <'noise'>, 'id': <'effect_65216760835902'>, 'params': <@a{sv} {}>}>]>}, 'pipeline-panel-dark': {'name': <'pipeline panel dark'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_34582829524533'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_01633318478434'>, 'params': <{'corners_bottom': <false>, 'radius': <24>}>}>, <{'type': <'color'>, 'id': <'effect_61396509891604'>, 'params': <{'color': <(0.0, 0.0, 0.0, 0.20000000000000001)>}>}>, <{'type': <'noise'>, 'id': <'effect_05167466921904'>, 'params': <@a{sv} {}>}>]>}, 'pipeline-dock-light': {'name': <'pipeline dock light'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_69102858487382'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_89248773469157'>, 'params': <{'radius': <24>, 'corners_bottom': <true>}>}>]>}, 'pipeline-dock-dark': {'name': <'pipeline dock dark'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_63269999366132'>, 'params': <{'brightness': <1>, 'unscaled_radius': <100>}>}>, <{'type': <'corner'>, 'id': <'effect_88027249213595'>, 'params': <{'radius': <24>}>}>]>}}"
+    # 2、面板		以下配置是 ‘面板’ 这个菜单项下面的配置内容
+    # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.panel
+    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell.panel
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview true
     gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
+    # 3、概览		以下配置是 ‘概览’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.overview pipeline 'pipeline-overview'
     gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
+    # 4、任务栏		以下配置是 ‘任务栏’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'
     gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 1
-    # 模糊强度（50=中等模糊，过高会显脏）
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications sigma 50
-    # 亮度微调（1.0=原始亮度，建议保持）
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications brightness 1.0
-    # 基础透明度（220/255≈86%，平衡通透与朦胧感）
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications opacity 220
-    # 启用应用程序窗口模糊
+    # 5、应用程序	以下配置是 ‘应用程序’ 这个菜单项下面的配置内容
+    # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.applications
+    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell.applications
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications blur true
-    # 使聚焦窗口不透明
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications sigma 50
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications brightness 1.0
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications opacity 220
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
-    # 禁用在Overview（超级键视图）中模糊（避免卡顿）
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications blur-on-overview false
-    # 不强制所有应用模糊（避免兼容性问题）
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications enable-all false
-    # 应用毛玻璃效果的应用列表
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications whitelist "['org.gnome.Settings', 'org.gnome.Software', 'org.gnome.TextEditor', 'org.gnome.Ptyxis', 'org.gnome.SystemMonitor', 'org.gnome.tweaks', 'org.gnome.Extensions', 'com.mattjakeman.ExtensionManager']"
+    # 6、其它		以下配置是 ‘其它’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false
-    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell
 
-    print_info "正在配置Just Perfection..."
     # Just Perfection（微调 GNOME Shell 的细节，隐藏冗余元素、调整动画速度等）
     # gsettings list-recursively org.gnome.shell.extensions.just-perfection
-    # gsettings set org.gnome.shell.extensions.just-perfection activities-button false
+    gsettings set org.gnome.shell.extensions.just-perfection activities-button false
     gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
     gsettings set org.gnome.shell.extensions.just-perfection world-clock false
     gsettings set org.gnome.shell.extensions.just-perfection weather false
