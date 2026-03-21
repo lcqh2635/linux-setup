@@ -390,8 +390,12 @@ configure_user_gnome_extensions() {
     
     # Custom Command Menu
     # gsettings list-recursively org.gnome.shell.extensions.custom-command-list
-    gsettings set org.gnome.shell.extensions.custom-command-list command2 "('暗色主题', "gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'\ngsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.background picture-uri \"file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg\"\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true", 'face-smile-symbolic', true)"
+gsettings set org.gnome.shell.extensions.custom-command-list command1 "('更新系统', 'ptyxis -- /bin/sh -c \"pkexec dnf upgrade; echo Done - Press enter to exit; read _\"', 'emote-love-symbolic', true)"
+gsettings set org.gnome.shell.extensions.custom-command-list command2 "('亮色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'default'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\", 'emote-love-symbolic', true)"
+gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\", 'emote-love-symbolic', true)"
     # gsettings reset-recursively org.gnome.shell.extensions.custom-command-list
+    
+
     
     print_success "GNOME 扩展启用并配置完成！"
     # ------------------------------------------------------------------------------
@@ -412,23 +416,13 @@ configure_user_gnome_extensions() {
 
 # Custom Command Menu
 gsettings set org.gnome.desktop.interface color-scheme 'default'
-gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
 gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
 gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
-gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'
-gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'
-gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text false
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
 
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
 gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
 gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
 gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
-gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'
-gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'
-gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
