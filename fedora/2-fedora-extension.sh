@@ -96,8 +96,6 @@ configure_system_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
-    gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode 'DYNAMIC'
-    
     
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell
     # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell
