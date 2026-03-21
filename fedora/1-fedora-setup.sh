@@ -411,11 +411,10 @@ EOF
 # ------------------------------------------------------------------------------
 # 通过 dnf 安装 (推荐)
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-java/
-sudo dnf install -y java-25-openjdk maven4 maven4-openjdk25
-# sudo dnf remove -y maven
+sudo dnf install -y java-25-openjdk maven maven4 maven4-openjdk25
 echo "🐍 你刚安装的 java 版本号为：$(java --version)"
 echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
-echo "🐍 你刚安装的 maven 版本号为：$(mvn4 --version)"
+echo "🐍 你刚安装的 maven4 版本号为：$(mvn4 --version)"
 # whereis maven
 # nautilus admin:/usr/share/maven
 # 配置 maven 阿里云 aliyun 加速镜像	https://maven.aliyun.com/mvn/guide
@@ -737,11 +736,6 @@ flatpak install -y flathub dev.skynomads.Seabird
 }
 
 
-
-sudo dnf install -y \
-bottles gnome-boxes gnome-builder gnome-firmware gnome-power-manager
-
-
 # 安装基础应用软件
 install_basic_application_software() {
     # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
@@ -987,7 +981,7 @@ install_gnome_extensions() {
 
 
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
-sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
+sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
 
 
 # 安装 gnome shell 扩展插件
