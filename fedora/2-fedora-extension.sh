@@ -140,7 +140,7 @@ configure_system_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.just-perfection workspace-wrap-around true
     gsettings set org.gnome.shell.extensions.just-perfection window-demands-attention-focus true
     gsettings set org.gnome.shell.extensions.just-perfection startup-status 0
-    gsettings set org.gnome.shell.extensions.just-perfection accent-color-icon true
+    # gsettings set org.gnome.shell.extensions.just-perfection accent-color-icon false
     gsettings set org.gnome.shell.extensions.just-perfection animation 7
     # gsettings reset-recursively org.gnome.shell.extensions.just-perfection
     
@@ -161,9 +161,8 @@ configure_system_gnome_extensions() {
     # ------------------------------------------------------------------------------  
 }
 
-
-# Hide Top Bar
 # Disable Unredirect
+# Hide Top Bar
 # Rounded Corners
 # Rounded Window Corners Reborn
 # Night Theme Switcher
@@ -177,7 +176,7 @@ configure_system_gnome_extensions() {
 # Fedora Linux Update Indicator
 # Privacy Quick Settings
 # Quick Settings Tweaks
-# Show Desktop Button
+# Custom Command Menu
 # Status Area Horizontal Spacing
 # Top Bar Organizer
 # Weather O'Clock
@@ -197,17 +196,14 @@ configure_system_gnome_extensions() {
 # Search Light
 # User Avatar In Quick Settings
 # Wifi QR Code
-# Custom Command Menu
 # Customize IBus
 # Desktop Lyric
-# Pigeon Email Notifier
 # Shortcuts
 # Bing Wallpaper
 # Burn My Windows
 # Kiwi Menu
 # Kiwi is not Apple
 # Weather or Not 
-# Smart Auto Move NG
 # 配置系统级别 Gnome Shell 扩展 
 configure_user_gnome_extensions() {
     # dnf list gnome-shell-extension*
