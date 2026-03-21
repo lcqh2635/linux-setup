@@ -815,24 +815,26 @@ install_gnome_extensions() {
     sudo dnf install -y gettext meson just
     if [ ! -d "$HOME/下载/extensions" ]; then
         mkdir -p ~/下载/extensions && cd ~/下载/extensions
-        git clone https://gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/fthx/appmenu-is-back.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git --depth=1
+        git clone --depth=1 https://gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/fthx/appmenu-is-back.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
         wget https://ddterm.github.io/gnome-shell-extension-ddterm/ddterm@amezin.github.com.shell-extension.zip
-        git clone https://gh-proxy.org/https://github.com/tuberry/desktop-lyric.git --depth=1
-        git clone https://gitlab.com/smedius/desktop-icons-ng.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git --depth=1
-        git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git --depth=1
-        git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git --depth=1
-        git clone https://gh-proxy.org/https://github.com/purejava/fedora-update.git --depth=1
+        git clone --depth=1 https://gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
+        git clone --depth=1 https://gitlab.com/smedius/desktop-icons-ng.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
+        git clone --depth=1 https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git
+        git clone --depth=1 https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
+        git clone --depth=1 https://gitlab.gnome.org/june/top-bar-organizer.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/purejava/fedora-update.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
         cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
         cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
@@ -843,7 +845,7 @@ install_gnome_extensions() {
         cd ~/下载/extensions && zip -FSr custom-command-menu.zip custom-command-menu/* && gnome-extensions install -f custom-command-menu.zip
         cd ~/下载/extensions/Customize-IBus && make install
         cd ~/下载/extensions && gnome-extensions install -f ddterm@amezin.github.com.shell-extension.zip
-        cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
+        cd ~/下载/extensions/disable-unredirect && make install
         cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
         cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
         cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
@@ -851,7 +853,9 @@ install_gnome_extensions() {
         cd ~/下载/extensions/rounded-window-corners && just install
         cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
         cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+        cd ~/下载/extensions/top-bar-organizer && npm i && ./package.sh && gnome-extensions install -f top-bar-organizer@julian.gse.jsts.xyz.shell-extension.zip
         cd ~/下载/extensions && zip -FSr fedora-update.zip fedora-update/* && gnome-extensions install -f fedora-update.zip
+        cd ~/下载/extensions/weather-oclock && make install
         # 系统级别构建安装，默认 --prefix=/usr/local
         # meson setup build -Dtarget=system && meson install -C build
     fi
@@ -1023,6 +1027,15 @@ gsettings set org.gnome.shell.extensions.custom-command-list command1 "('更新�
 gsettings set org.gnome.shell.extensions.custom-command-list command2 "('亮色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'default'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\", 'emote-love-symbolic', true)"
 gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\", 'emote-love-symbolic', true)"
     # gsettings reset-recursively org.gnome.shell.extensions.custom-command-list
+    
+    # Top Bar Organizer
+    # gsettings list-recursively org.gnome.shell.extensions.top-bar-organizer
+    gsettings set org.gnome.shell.extensions.top-bar-organizer left-box-order "['ArcMenu', 'apps-menu', 'places-menu', 'vitalsMenu', 'appmenu-indicator']"
+    # gsettings set org.gnome.shell.extensions.top-bar-organizer center-box-order "['dateMenu']"
+    gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['workspace-indicator', 'flag', 'FedoraUpdateIndicator', 'Show Desktop Button Indicator', 'ddterm', 'copyous@boerdereinar.dev', 'lockkeys', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
+    # gsettings set org.gnome.shell.extensions.top-bar-organizer hide "[]"
+    # gsettings set org.gnome.shell.extensions.top-bar-organizer show "[]"
+    # gsettings reset-recursively org.gnome.shell.extensions.top-bar-organizer
     
     # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
     # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
