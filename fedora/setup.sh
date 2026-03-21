@@ -125,8 +125,11 @@ configure_basics_gsettings() {
     # 预设工作区名称
     gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
 
+     # 确保目标目录存在
     # nautilus ~/.local/share/backgrounds/
-    if [ ! -d "~/.local/share/backgrounds" ]; then
+    if [ ! -d "$HOME/.local/share/backgrounds" ]; then
+        log_info "正在创建目录: ~/.local/share/backgrounds"
+        # ls ~/.local/share/backgrounds
         mkdir -vp ~/.local/share/backgrounds && cd ~/.local/share/backgrounds
         wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
         wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
@@ -202,7 +205,7 @@ configure_repos_and_dnf() {
     # 查看所有仓库
     # dnf repolist --all
     # 禁用仓库
-    sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
+    # sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
     # 在 DNF 5 中，彻底移除第三方仓库的最标准方法依然是手动删除对应的 .repo 文件，下列会打印与每个 Yum 仓库关联的仓库 ID 列表
     # grep -E "^\[.*]" /etc/yum.repos.d/*
     # 删除仓库文件
@@ -582,7 +585,7 @@ configure_flatpak_and_install_app() {
     log_info "正在配置 Flatpak 国内镜像源 (使用 USTC 镜像)..."
     
     # 删除官方 Fedora Flatpaks 源
-    sudo flatpak remote-delete fedora
+    # sudo flatpak remote-delete fedora
     # sudo flatpak remote-add --if-not-exists --title=Fedora fedora oci+https://registry.fedoraproject.org
     # Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
     # 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
@@ -652,13 +655,14 @@ configure_flatpak_and_install_app() {
     flatpak install -y flathub re.sonny.Playhouse
     # Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
     flatpak install -y flathub com.usebottles.bottles
-    # Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
-    flatpak install -y flathub org.gnome.Builder
     flatpak install -y flathub com.qq.QQ
     flatpak install -y flathub com.tencent.WeChat
     flatpak install -y flathub com.github.marhkb.Pods
     flatpak install -y flathub dev.skynomads.Seabird
     # OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
+
+    # 安装一些应用
+    # sudo dnf install -y bottles gnome-builder 
 
     log_success "Flatpak 应用安装完成。"
 }
@@ -740,10 +744,10 @@ install_jetbrains_toolbox() {
     # 找到解压后的目录并运行
     TOOLBOX_DIR=$(find "$HOME/.apps" -maxdepth 1 -type d -name "jetbrains-toolbox-*" | head -1)
     if [ -n "$TOOLBOX_DIR" ]; then
-        chmod +x "$TOOLBOX_DIR/jetbrains-toolbox"
+        chmod +x "$TOOLBOX_DIR/bin/jetbrains-toolbox"
         log_info "启动 JetBrains Toolbox..."
         # 在后台运行
-        "$TOOLBOX_DIR/jetbrains-toolbox" &
+        "$TOOLBOX_DIR/bin/jetbrains-toolbox" &
         log_success "JetBrains Toolbox 已启动。请按照界面提示完成后续配置。"
         log_warn "注意：本脚本不包含自动激活破解补丁，请使用正版授权或学生认证。"
     else
@@ -807,38 +811,45 @@ install_gnome_extensions() {
     # 查看所有用户级扩展的文件目录
     # nautilus ~/.local/share/gnome-shell/extensions
     sudo dnf install -y gettext meson just
-    mkdir -p ~/下载/extensions && cd ~/下载/extensions
-    git clone https://gitlab.com/smedius/desktop-icons-ng.git --depth=1
-    git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git --depth=1
-    git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/fthx/appmenu-is-back.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/purejava/fedora-update.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/tuberry/desktop-lyric.git --depth=1
-    cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
-    cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
-    cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
-    cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
-    cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
-    cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
-    cd ~/下载/extensions/rounded-window-corners && just install
-    cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
-    cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
-    cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
-    cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    cd ~/下载/extensions/Customize-IBus && make install
-    cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
-    # 系统级别构建安装，默认 --prefix=/usr/local
-    # meson setup build -Dtarget=system && meson install -C build
+    if [ ! -d "$HOME/下载/extensions" ]; then
+        mkdir -p ~/下载/extensions && cd ~/下载/extensions
+        git clone https://gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/fthx/appmenu-is-back.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/tuberry/desktop-lyric.git --depth=1
+        git clone https://gitlab.com/smedius/desktop-icons-ng.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git --depth=1
+        git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git --depth=1
+        git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git --depth=1
+        git clone https://gh-proxy.org/https://github.com/purejava/fedora-update.git --depth=1
+        
+        cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
+        cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
+        cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
+        cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
+        cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
+        cd ~/下载/extensions/CoverflowAltTab && make all
+        cd ~/下载/extensions && zip -FSr custom-command-menu.zip custom-command-menu/* && gnome-extensions install -f custom-command-menu.zip
+        cd ~/下载/extensions/Customize-IBus && make install
+        cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
+        cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
+        cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
+        cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
+        cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
+        cd ~/下载/extensions/rounded-window-corners && just install
+        cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+        cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
+        cd ~/下载/extensions && zip -FSr fedora-update.zip fedora-update/* && gnome-extensions install -f fedora-update.zip
+         # 系统级别构建安装，默认 --prefix=/usr/local
+        # meson setup build -Dtarget=system && meson install -C build
+    fi
     
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
     for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
@@ -1218,8 +1229,11 @@ main() {
 
     # 5. Flatpak 应用
     configure_flatpak_and_install_app
+    
+    # 6. 安装 Gnome Shell 扩展
+    install_gnome_extensions
 
-    # 6. 主题美化 (可选)
+    # 7. 主题美化 (可选)
     if confirm_action "是否安装 WhiteSur 主题并进行美化？"; then
         install_theme_whitesur
         apply_theme_settings
