@@ -113,6 +113,43 @@ configure_basics_gsettings() {
 
 
 # ------------------------------------------------------------------------------
+# 删除官方 Fedora Flatpaks 源
+sudo flatpak remote-delete fedora
+# sudo flatpak remote-add --if-not-exists --title=Fedora fedora oci+https://registry.fedoraproject.org
+# Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
+# 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
+# 在已有 flathub 远程源的基础上替换 Flatpak 默认的软件源
+# Fedora默认安装了Flatpak，只要配置Flatpak加速镜像即可
+echo "开始配置Flatpak加速镜像..."
+# flatpak remotes --show-details
+# 添加 Flathub 官方仓库
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+# 修改 Flathub 仓库地址为国内镜像
+# 2、中科大 Flatpak 镜像源（处于测试阶段） https://mirrors.ustc.edu.cn/help/flathub.html
+sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
+# 上海交通大学 Flatpak 软件源镜像
+# sudo flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
+# sudo flatpak update --appstream
+# 恢复默认值：
+# sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
+# 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
+# xdg-data/themes 是 ~/.local/share/themes 的标准化路径别名（Flatpak 优先识别）
+# :ro 表示只读权限，避免应用误修改主题文件。
+sudo flatpak override --filesystem=xdg-config/gtk-3.0:ro
+sudo flatpak override --filesystem=xdg-config/gtk-4.0:ro
+sudo flatpak override --filesystem=xdg-data/themes:ro
+sudo flatpak override --filesystem=xdg-data/icons:ro
+sudo flatpak override --filesystem=$HOME/.themes:ro
+sudo flatpak override --filesystem=$HOME/.icons:ro
+
+# https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
+# 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
+# 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
+# 当前的Fedora版本使用DNF5，最简洁的更改方式是使用 dnf config-manager setopt，而不是先在编辑器中打开/etc/dnf/dnf.conf。
+# 这样可以保持更改的可重复性，清晰显示当前运行时的值，并且方便之后降低max_parallel_downloads或关闭fastestmirror=true。
+# https://mirrormanager.fedoraproject.org/
+# https://dnf-plugins-core.readthedocs.io/en/latest/
+# https://github.com/rpm-software-management/dnf5
 # 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
 # Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
 # 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
@@ -149,35 +186,6 @@ sudo dnf clean all
 sudo dnf makecache
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
 sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
-
-# 删除官方 Fedora Flatpaks 源
-sudo flatpak remote-delete fedora
-# sudo flatpak remote-add --if-not-exists --title=Fedora fedora oci+https://registry.fedoraproject.org
-# Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
-# 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
-# 在已有 flathub 远程源的基础上替换 Flatpak 默认的软件源
-# Fedora默认安装了Flatpak，只要配置Flatpak加速镜像即可
-echo "开始配置Flatpak加速镜像..."
-# flatpak remotes --show-details
-# 添加 Flathub 官方仓库
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-# 修改 Flathub 仓库地址为国内镜像
-# 2、中科大 Flatpak 镜像源（处于测试阶段） https://mirrors.ustc.edu.cn/help/flathub.html
-sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
-# 上海交通大学 Flatpak 软件源镜像
-# sudo flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
-sudo flatpak update --appstream
-# 恢复默认值：
-# sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
-# 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
-# xdg-data/themes 是 ~/.local/share/themes 的标准化路径别名（Flatpak 优先识别）
-# :ro 表示只读权限，避免应用误修改主题文件。
-sudo flatpak override --filesystem=xdg-config/gtk-3.0:ro
-sudo flatpak override --filesystem=xdg-config/gtk-4.0:ro
-sudo flatpak override --filesystem=xdg-data/themes:ro
-sudo flatpak override --filesystem=xdg-data/icons:ro
-sudo flatpak override --filesystem=$HOME/.themes:ro
-sudo flatpak override --filesystem=$HOME/.icons:ro
 # ------------------------------------------------------------------------------
 
 # 配置固定加速镜像源
@@ -209,10 +217,12 @@ configure_fixed_mirror() {
              -e 's|^#baseurl=http://download1.rpmfusion.org|baseurl=https://mirrors.ustc.edu.cn/rpmfusion|g' \
              -i.bak \
              /etc/yum.repos.d/rpmfusion*.repo
-    # 修改完成后，清除并重建缓存：
+    # 删除文件后，必须清理 DNF 缓存以生效
     sudo dnf clean all
-    # 更新本地缓存，即可使用所选择的软件源镜像
+    # 重建 DNF 缓存
     sudo dnf makecache
+    # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
+    sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
 }
 
 # 还原上述固定加速镜像源配置
@@ -223,31 +233,6 @@ reset_fixed_mirror() {
     # 还原上述 RPM Fusion 修改
     # 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
     for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
-}
-
-
-# 如何在Fedora Linux上提高DNF速度
-configure_dnf_acceleration() {
-    # https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
-    # 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
-    # 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
-    # 当前的Fedora版本使用DNF5，最简洁的更改方式是使用 dnf config-manager setopt，而不是先在编辑器中打开/etc/dnf/dnf.conf。
-    # 这样可以保持更改的可重复性，清晰显示当前运行时的值，并且方便之后降低max_parallel_downloads或关闭fastestmirror=true。
-    # https://mirrormanager.fedoraproject.org/
-    # https://dnf-plugins-core.readthedocs.io/en/latest/
-    # https://github.com/rpm-software-management/dnf5
-    sudo dnf install -y dnf5 dnf-plugins-core
-    # 先从安全刷新开始，这样你可以用当前的元数据对比后续运行。--assumeno 标志会预览交易并在 DNF 安装任何东西前退出
-    sudo dnf upgrade --refresh --assumeno
-    # 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
-    # Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
-    # 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
-    sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
-    # 现在验证当前运行时的值，而不仅仅是检查文件内容：
-    dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
-    # 执行一次 DNF 操作（如检查更新），观察输出信息。如果配置成功，你会看到类似以下的提示，表明它正在检测镜像速度：
-    sudo dnf check-update
-    # ls /etc/dnf && cat /etc/dnf/dnf.conf
 }
 
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
