@@ -267,6 +267,17 @@ flatpak override --user --filesystem=xdg-config/gtk-4.0:ro
 flatpak override --user --filesystem=xdg-config/environment.d/:ro
 flatpak override --user --filesystem=$HOME/.local/share/gnome-shell/extensions/kiwi@kemma/:ro
 # ------------------------------------------------------------------------------
+# 如意玲珑		https://linyaps.org.cn/
+# 如意玲珑官方文档	https://linyaps.org.cn/guide/start/whatis.html
+# 如意玲珑是统信软件自研的开源软件包格式，用于替代 deb、rpm 等包管理工具，实现了应用包管理、分发、容器、集成开发工具等功能。类似 flatpak、snap
+sudo dnf config-manager addrepo --from-repofile "https://ci.deepin.com/repo/obs/linglong:/CI:/release/Fedora_43/linglong%3ACI%3Arelease.repo"
+sudo dnf update
+sudo dnf install -y linglong-bin linyaps-web-store-installer
+# 方式二：手动下载  rpm	https://linyaps.org.cn/linyaps-appstore
+# cd $HOME/下载 && wget "https://gh-proxy.org/https://github.com/SXFreell/linglong-store/releases/download/2.2.0/linglong-store-2.1.2-1.x86_64.rpm"
+
+         
+
 
 
 # development-tools 是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
