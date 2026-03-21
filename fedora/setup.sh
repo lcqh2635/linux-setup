@@ -900,11 +900,6 @@ install_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.auto-move-windows application-list "['jetbrains-toolbox.desktop:1', 'jetbrains-idea-62993215-707e-404d-9a7c-b2e595f35fa6.desktop:1', 'jetbrains-rustrover-150f2c1b-2bd9-4306-97e7-2bc711731347.desktop:1', 'jetbrains-webstorm-438e488a-1597-484e-b6ea-e9935bebb250.desktop:1', 'jetbrains-goland-d6242613-2f2e-4847-a243-19dc05529fca.desktop:1', 'jetbrains-datagrip-d81f105e-144e-4ef3-943d-1171bda2c629.desktop:1', 'jetbrains-pycharm-c8b885ec-b50e-4a8a-9408-cba329de5d43.desktop:1', 'jetbrains-studio-1a3645b2-82e4-4794-b038-c5c084909e0d.desktop:1', 'com.sublimehq.SublimeText.desktop:1', 'org.gnome.Ptyxis.desktop:1', 're.sonny.Playhouse.desktop:1', 'me.iepure.devtoolbox.desktop:1', 'io.github.mightycreak.Diffuse.desktop:1', 'com.github.marhkb.Pods.desktop:1', 'dev.skynomads.Seabird.desktop:1', 'qemu.desktop:1', 'org.gnome.Builder.desktop:1', 'org.gnome.SystemMonitor.desktop:1', 'org.mozilla.firefox.desktop:2', 'com.google.Chrome.desktop:2', 'org.gnome.Epiphany.desktop:2', 'org.gnome.TextEditor.desktop:2', 'io.github.alainm23.planify.desktop:2', 'org.gnome.gitlab.somas.Apostrophe.desktop:2', 'Clash Verge.desktop:2', 'v2rayn.desktop:2', 'md.obsidian.Obsidian.desktop:2', 'io.typora.Typora.desktop:2', 'org.gnome.Papers.desktop:2', 'com.qq.QQ.desktop:3', 'com.github.gmg137.netease-cloud-music-gtk.desktop:3', 'com.github.neithern.g4music.desktop:3']"
     # gsettings reset-recursively org.gnome.shell.extensions.auto-move-windows
     
-    # Background Logo
-    # gsettings list-recursively org.fedorahosted.background-logo-extension
-    gsettings set org.fedorahosted.background-logo-extension logo-always-visible true
-    # gsettings reset-recursively org.fedorahosted.background-logo-extension
-    
     # Blur My Shell
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell
     # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell
@@ -936,6 +931,18 @@ install_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications whitelist "['org.gnome.Settings', 'org.gnome.Software', 'org.gnome.TextEditor', 'org.gnome.Ptyxis', 'org.gnome.SystemMonitor', 'org.gnome.tweaks', 'org.gnome.Extensions', 'com.mattjakeman.ExtensionManager']"
     # 6、其它		以下配置是 ‘其它’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false
+    
+    # Background Logo
+    # gsettings list-recursively org.fedorahosted.background-logo-extension
+    gsettings set org.fedorahosted.background-logo-extension logo-always-visible true
+    # gsettings reset-recursively org.fedorahosted.background-logo-extension
+    
+    # Forge
+    # gsettings list-recursively org.gnome.shell.extensions.forge
+    # 默认不启用窗口平铺模式
+    gsettings set org.gnome.shell.extensions.forge tiling-mode-enabled false
+    gsettings set org.gnome.shell.extensions.forge focus-border-toggle false
+    # gsettings reset-recursively org.gnome.shell.extensions.forge
     
     # 配置 Hide Top Bar
     # 递归列出某个 Schema 的键值
@@ -1178,6 +1185,53 @@ set_theme_example() {
     gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
     gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
     gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
+}
+
+set_theme_example() {
+    # 启用系统 GNOME 扩展
+    # 列出所有系统级扩展
+    # gnome-extensions list --system
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable dash-to-dock@micxgx.gmail.com
+    gnome-extensions enable blur-my-shell@aunetx
+    gnome-extensions enable just-perfection-desktop@just-perfection
+    gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
+    gnome-extensions enable auto-move-windows@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable caffeine@patapon.info
+    gnome-extensions enable no-overview@fthx
+    gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable light-style@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable places-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable apps-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable background-logo@fedorahosted.org
+    gnome-extensions enable gsconnect@andyholmes.github.io
+    gnome-extensions enable forge@jmmaranan.com
+    
+    # 用户 GNOME 扩展
+    # 列出所有用户级扩展
+    # gnome-extensions list --user
+    gnome-extensions enable AlphabeticalAppGrid@stuarthayhurst
+    gnome-extensions enable disable-unredirect@exeos
+    gnome-extensions enable hidetopbar@mathieu.bidon.ca
+    gnome-extensions enable Rounded_Corners@lennart-k
+    gnome-extensions enable rounded-window-corners@fxgn
+    gnome-extensions enable add-to-desktop@tommimon.github.com
+    gnome-extensions enable gtk4-ding@smedius.gitlab.com
+    gnome-extensions enable appmenu-is-back@fthx
+    gnome-extensions enable Bluetooth-Battery-Meter@maniacx.github.com
+    gnome-extensions enable customize-ibus@hollowman.ml
+    gnome-extensions enable clipboard-indicator@tudmotu.com
+    gnome-extensions enable compiz-alike-magic-lamp-effect@hermes83.github.com
+    gnome-extensions enable CoverflowAltTab@palatis.blogspot.com
+    gnome-extensions enable ddterm@amezin.github.com
+    gnome-extensions enable nightthemeswitcher@romainvigier.fr
+    gnome-extensions enable quick-settings-tweaks@qwreey
+    gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
+    gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
+    gnome-extensions enable custom-command-list@storageb.github.com
+    gnome-extensions enable update-extension@purejava.org
+    gnome-extensions enable weatheroclock@CleoMenezesJr.github.io
 }
 
 # ------------------------------------------------------------------------------
