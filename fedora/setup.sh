@@ -753,6 +753,7 @@ install_jetbrains_toolbox() {
     else
         log_error "解压 JetBrains Toolbox 失败。"
     fi
+    rm jetbra-*.zip
     
     log_info "正在安装 jetbra 工具x..."
     # https://3.jetbra.in/
@@ -763,6 +764,7 @@ install_jetbrains_toolbox() {
     # nautilus ~/.jetbra
     # 自动配置  jetbrains 代码编辑器 vmoptions
     ~/.jetbra/scripts/install.sh
+    rm jetbrains-toolbox*
 }
 
 # 安装 gnome shell 扩展插件
@@ -850,9 +852,10 @@ install_gnome_extensions() {
         cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
         cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
         cd ~/下载/extensions && zip -FSr fedora-update.zip fedora-update/* && gnome-extensions install -f fedora-update.zip
-         # 系统级别构建安装，默认 --prefix=/usr/local
+        # 系统级别构建安装，默认 --prefix=/usr/local
         # meson setup build -Dtarget=system && meson install -C build
     fi
+    rm ~/下载/extensions
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
     for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
         EXT_ID=$(basename "$EXT_DIR")
@@ -1109,8 +1112,8 @@ install_theme_whitesur() {
 
     # 应用自定义背景
     sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-noon.jpg"
-    cd ..
-
+    rm "$THEME_DIR"
+    
     log_success "WhiteSur 主题安装完成。请在 GNOME Tweaks 中手动选择主题。"
 }
 
