@@ -281,7 +281,11 @@ systemctl enable --now dnf-automatic.timer
 sudo dnf config-manager addrepo --from-repofile "https://ci.deepin.com/repo/obs/linglong:/CI:/release/Fedora_43/linglong%3ACI%3Arelease.repo"
 sudo sh -c "echo gpgcheck=0 >> /etc/yum.repos.d/linglong%3ACI%3Arelease.repo"
 sudo dnf update
+# 安装后可通过 ‘网页版应用商店 https://store.linyaps.org.cn/’ 进行安装，但不会安装 ‘客户端应用商店’	
 sudo dnf install -y linglong-bin linyaps-web-store-installer
+# 安装意玲珑客户端应用商店	https://linyaps.org.cn/linyaps-appstore
+curl -fsSL https://gitee.com/hanplus/linglong-installer/releases/download/latest/linglong-store-installer.sh | LLI_PREFER_PKEXEC=1 bash            
+
 
 # development-tools 是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
 # c-development 是简化C开发环境配置的包组，安装后即可获得编译、调试和构建C程序所需的核心工具。如果你需要开发C程序，安装它或对应的包组是第一步。例如：gcc、gcc-c++
