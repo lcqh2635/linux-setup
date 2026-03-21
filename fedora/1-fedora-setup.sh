@@ -7,7 +7,7 @@
 # 版本：2.0.0
 # 使用方法：chmod +x 1-fedora-setup.sh && ./1-fedora-setup.sh
 # (请勿直接使用 sudo 运行此脚本，脚本内部会自动提权需要 root 的操作)
-# 仓库克隆：cd ~/下载 && git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
+# 仓库克隆：cd ~/下载 && git clone --depth=1 https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
 # 仓库提交：cd ~/文档/linux-setup && git add . && git commit -m 'backup' && git push
 # ==============================================================================
 
