@@ -783,8 +783,6 @@ install_gnome_extensions() {
     # 查看所有系统级扩展的文件目录
     # nautilus admin:/usr/share/gnome-shell/extensions
     sudo dnf remove -y \
-    gnome-shell-extension-apps-menu \
-    gnome-shell-extension-places-menu \
     gnome-shell-extension-window-list \
     gnome-shell-extension-launch-new-instance
     sudo dnf install -y \
@@ -883,7 +881,7 @@ install_gnome_extensions() {
     
     # Just Perfection（微调 GNOME Shell 的细节，隐藏冗余元素、调整动画速度等）
     # gsettings list-recursively org.gnome.shell.extensions.just-perfection
-    gsettings set org.gnome.shell.extensions.just-perfection activities-button false
+    # gsettings set org.gnome.shell.extensions.just-perfection activities-button false
     gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
     gsettings set org.gnome.shell.extensions.just-perfection world-clock false
     gsettings set org.gnome.shell.extensions.just-perfection weather false
@@ -907,6 +905,7 @@ install_gnome_extensions() {
     gsettings set org.fedorahosted.background-logo-extension logo-always-visible true
     # gsettings reset-recursively org.fedorahosted.background-logo-extension
     
+    # Blur My Shell
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell
     # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell
     # 1、管线		以下配置是 ‘管线’ 这个菜单项下面的配置内容
@@ -921,7 +920,6 @@ install_gnome_extensions() {
     # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell.panel
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
     gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
-    gsettings set org.gnome.shell.extensions.blur-my-shell.panel unblur-in-overview false
     gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
     # 3、概览		以下配置是 ‘概览’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
