@@ -33,6 +33,7 @@ set -euo pipefail
 
 # ------------------------------------------------------------------------------
 # Gnome 官方网站：	https://www.gnome.org/zh-CN/
+# Fedora Linux 用户文档	https://docs.fedoraproject.org/zh_Hans/fedora/latest/
 # Fedora 使用文档：	https://docs.fedoraproject.org/zh_CN/docs/
 # Fedora 快速上手：	https://docs.fedoraproject.org/zh_Hans/quick-docs/
 # Fedora 用户社区：	https://discussion.fedoraproject.org/
