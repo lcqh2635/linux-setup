@@ -667,58 +667,6 @@ configure_flatpak_and_install_app() {
     log_success "Flatpak 应用安装完成。"
 }
 
-# VPN 相关软件和订阅来源
-# https://gh-proxy.com/
-# https://github.akams.cn/
-# https://ghproxylist.com/
-# https://www.freeclashnode.com/
-install_vpn() {
-    # 进入到下载目录
-    cd ~/下载
-    # https://v2rayn.co/
-    # https://github.com/2dust/v2rayN/releases
-    # 使用教程	https://v2rayn.co/v2rayn-tutorial/
-    # 1、点击顶部菜单栏的 “订阅分组”，选择 “订阅分组设置”，在弹出的窗口中点击 "添加"，
-    # 2、添加订阅节点完成后回到主界面，点击 “订阅分组” -> “更新全部订阅 (不通过代理)” 操作完成后，你应该能看到列表中出现了一排节点
-    # 3、开启代理与模式选择。这是最关键的一步，决定了电脑是否已经处于代理加速状态
-    	# 3.1、选择节点。 在节点列表中，点击上方的 “网络测速图标” 进行 “一键多线程测试延迟和速度”，选择网速最好的节点并将其设为活动，当节点的别名变色或显示“活动”状态时，表示已选中
-    	# 3.2、设置系统代理。在软件界面的最底部图标栏，找到以下三项关键设置：
-    		# 系统代理：将其设置为 自动配置系统代理。此时底部图标会变为红色
-    		# 路由：将其设置为 绕过大陆。这可以确保访问百度、淘宝等国内网站时不走代理，访问 YouTube、Google 时才加速
-    # 4、测试网络。打开浏览器，尝试访问 Google。如果能正常打开，恭喜，配置已成功
-    # 5、v2rayN 高级设置说明：
-    # TUN 模式，在软件底部可以找到 TUN 模式开关
-    	# 作用：接管整机流量。对于一些不遵循系统代理的浏览器插件、游戏或特定软件非常有用
-    	# 建议：普通网页浏览不需要开启，仅在某些软件无法正常代理时开启
-    # 核心选择：v2rayN 支持切换 Xray-core、sing-box 等核心。目前大部分订阅链接都支持 Xray，保持默认即可
-    wget "https://gh-proxy.org/https://github.com/2dust/v2rayN/releases/download/7.18.0/v2rayN-linux-rhel-64.rpm"
-    sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
-    wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge-2.4.6-1.x86_64.rpm"
-    sudo dnf install -y ./Clash.Verge-2.4.6-1.x86_64.rpm
-    # https://github.com/hiddify/hiddify-app/blob/main/README_cn.md
-    # 一款基于 Sing-box 通用代理工具的跨平台代理客户端。Hiddify 提供了较全面的代理功能，例如自动选择节点、TUN 模式、使用远程配置文件等。Hiddify 无广告，并且代码开源。
-    # 它为大家自由访问互联网提供了一个支持多种协议的、安全且私密的工具。多种订阅链接和配置文件格式支持： Sing-box、V2ray、Clash、Clash meta
-    # Hiddify 使用教程 https://hiddify.la/tutorial/
-    # 免费通用机场节点仓库  https://github.com/mksshare/mksshare.github.io
-    	# https://pPiPDy.mcsslk.xyz/fa998be69a450c433133472d2ddd7a68
-    	# https://woDF6n.tosslk.xyz/2c58cc7fb6edb08f1b88e0ce07f03f78
-    # 对于 AppImage 格式应用的安装，先打开 AppImage 安装管理器 Gear Lever 这个软件 flatpak run it.mijorus.gearlever 配置 AppImage 安装目录为 ~/.apps 然后点击 + 添加下面的 AppImage 应用
-    wget "https://gh-proxy.org/https://github.com/hiddify/hiddify-app/releases/download/v4.1.1/Hiddify-Linux-x64-AppImage.AppImage"
-    
-    # 如意玲珑		https://linyaps.org.cn/
-    # 如意玲珑官方文档	https://linyaps.org.cn/guide/start/whatis.html
-    # 如意玲珑是统信软件自研的开源软件包格式，用于替代 deb、rpm 等包管理工具，实现了应用包管理、分发、容器、集成开发工具等功能。类似 flatpak、snap
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/linglong%3ACI%3Arelease.repo
-    sudo dnf config-manager addrepo --from-repofile "https://ci.deepin.com/repo/obs/linglong:/CI:/release/Fedora_43/linglong%3ACI%3Arelease.repo"
-    sudo sh -c "echo gpgcheck=0 >> /etc/yum.repos.d/linglong%3ACI%3Arelease.repo"
-    sudo dnf update
-    # 安装后可通过 ‘网页版应用商店 https://store.linyaps.org.cn/’ 进行安装，但不会安装 ‘客户端应用商店’	
-    sudo dnf install -y linglong-bin linyaps-web-store-installer
-    # 安装意玲珑客户端应用商店	https://linyaps.org.cn/linyaps-appstore 
-    cd $HOME/下载 && wget "https://gh-proxy.org/https://github.com/SXFreell/linglong-store/releases/download/2.2.0/linglong-store-2.1.2-1.x86_64.rpm"
-    sudo dnf install -y ./linglong-store-2.1.2-1.x86_64.rpm
-}
-
 # ------------------------------------------------------------------------------
 # 模块 7: JetBrains 工具箱 (官方安装)
 # ------------------------------------------------------------------------------
@@ -765,6 +713,73 @@ install_jetbrains_toolbox() {
     # 自动配置  jetbrains 代码编辑器 vmoptions
     ~/.jetbra/scripts/install.sh
     rm jetbrains-toolbox*
+}
+
+# VPN 相关软件和订阅来源
+# https://gh-proxy.com/
+# https://github.akams.cn/
+# https://xiake.pro/
+# https://ghproxylist.com/
+# https://www.freeclashnode.com/
+install_vpn() {
+    # 进入到下载目录
+    cd ~/下载
+    # https://v2rayn.co/
+    # https://github.com/2dust/v2rayN/releases
+    # 使用教程	https://v2rayn.co/v2rayn-tutorial/
+    # 1、点击顶部菜单栏的 “订阅分组”，选择 “订阅分组设置”，在弹出的窗口中点击 "添加"，
+    # 2、添加订阅节点完成后回到主界面，点击 “订阅分组” -> “更新全部订阅 (不通过代理)” 操作完成后，你应该能看到列表中出现了一排节点
+    # 3、开启代理与模式选择。这是最关键的一步，决定了电脑是否已经处于代理加速状态
+    	# 3.1、选择节点。 在节点列表中，点击上方的 “网络测速图标” 进行 “一键多线程测试延迟和速度”，选择网速最好的节点并将其设为活动，当节点的别名变色或显示“活动”状态时，表示已选中
+    	# 3.2、设置系统代理。在软件界面的最底部图标栏，找到以下三项关键设置：
+    		# 系统代理：将其设置为 自动配置系统代理。此时底部图标会变为红色
+    		# 路由：将其设置为 绕过大陆。这可以确保访问百度、淘宝等国内网站时不走代理，访问 YouTube、Google 时才加速
+    # 4、测试网络。打开浏览器，尝试访问 Google。如果能正常打开，恭喜，配置已成功
+    # 5、v2rayN 高级设置说明：
+    # TUN 模式，在软件底部可以找到 TUN 模式开关
+    	# 作用：接管整机流量。对于一些不遵循系统代理的浏览器插件、游戏或特定软件非常有用
+    	# 建议：普通网页浏览不需要开启，仅在某些软件无法正常代理时开启
+    # 核心选择：v2rayN 支持切换 Xray-core、sing-box 等核心。目前大部分订阅链接都支持 Xray，保持默认即可
+    wget "$(curl -s https://api.github.com/repos/2dust/v2rayN/releases/latest | grep -o 'https://github.com/2dust/v2rayN/releases/download/[^"]*v2rayN-linux-rhel-64\.rpm' | head -n 1 | sed 's|https://github.com|https://gh-proxy.org/https://github.com|')"
+    sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
+    wget "$(curl -s https://api.github.com/repos/clash-verge-rev/clash-verge-rev/releases/latest | grep -o 'https://github.com/clash-verge-rev/clash-verge-rev/releases/download/[^"]*x86_64\.rpm' | head -n 1 | sed 's|https://github.com|https://gh-proxy.org/https://github.com|')"
+    sudo dnf install -y ./Clash.Verge-*.x86_64.rpm
+    # https://github.com/hiddify/hiddify-app/blob/main/README_cn.md
+    mkdir -vp ~/.apps/appimages && cd ~/.apps/appimages
+    # 一款基于 Sing-box 通用代理工具的跨平台代理客户端。Hiddify 提供了较全面的代理功能，例如自动选择节点、TUN 模式、使用远程配置文件等。Hiddify 无广告，并且代码开源。
+    # 它为大家自由访问互联网提供了一个支持多种协议的、安全且私密的工具。多种订阅链接和配置文件格式支持： Sing-box、V2ray、Clash、Clash meta
+    # Hiddify 使用教程 https://hiddify.la/tutorial/
+    # 免费通用机场节点仓库  https://github.com/mksshare/mksshare.github.io
+    	# https://pPiPDy.mcsslk.xyz/fa998be69a450c433133472d2ddd7a68
+    	# https://woDF6n.tosslk.xyz/2c58cc7fb6edb08f1b88e0ce07f03f78
+    # 对于 AppImage 格式应用的安装，先打开 AppImage 安装管理器 Gear Lever 这个软件 flatpak run it.mijorus.gearlever 配置 AppImage 安装目录为 ~/.apps 然后点击 + 添加下面的 AppImage 应用
+    wget "$(curl -s https://api.github.com/repos/hiddify/hiddify-app/releases/latest | grep -o 'https://github.com/hiddify/hiddify-app/releases/download/[^"]*Linux-x64.*\.AppImage' | head -n 1 | sed 's|https://github.com|https://gh-proxy.org/https://github.com|')"
+    chmod a+x Hiddify-Linux-x64-AppImage.AppImage
+    # 1. 赋予执行权限
+    chmod +x Hiddify-Linux-x64-*.AppImage
+    # 2. 运行程序
+    ./Hiddify-Linux-x64-*.AppImage
+    # https://docs.apifox.com/7682527m0#%E4%BA%8C%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4
+    wget https://file-assets.apifox.com/download/Apifox-linux-latest.zip
+    unzip Apifox-linux-latest.zip
+    chmod a+x Apifox.AppImage
+    ./Apifox.AppImage
+    
+    wget "$(curl -s https://api.github.com/repos/Eugeny/tabby/releases/latest | grep -o 'https://github.com/Eugeny/tabby/releases/download/[^"]*linux-x64\.rpm' | head -n 1 | sed 's|https://github.com|https://gh-proxy.org/https://github.com|')"
+
+    
+    # 如意玲珑		https://linyaps.org.cn/
+    # 如意玲珑官方文档	https://linyaps.org.cn/guide/start/whatis.html
+    # 如意玲珑是统信软件自研的开源软件包格式，用于替代 deb、rpm 等包管理工具，实现了应用包管理、分发、容器、集成开发工具等功能。类似 flatpak、snap
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/linglong%3ACI%3Arelease.repo
+    sudo dnf config-manager addrepo --from-repofile "https://ci.deepin.com/repo/obs/linglong:/CI:/release/Fedora_43/linglong%3ACI%3Arelease.repo"
+    sudo sh -c "echo gpgcheck=0 >> /etc/yum.repos.d/linglong%3ACI%3Arelease.repo"
+    sudo dnf update
+    # 安装后可通过 ‘网页版应用商店 https://store.linyaps.org.cn/’ 进行安装，但不会安装 ‘客户端应用商店’	
+    sudo dnf install -y linglong-bin linyaps-web-store-installer
+    # 安装意玲珑客户端应用商店	https://linyaps.org.cn/linyaps-appstore 
+    cd $HOME/下载 && wget "https://gh-proxy.org/https://github.com/SXFreell/linglong-store/releases/download/2.2.0/linglong-store-2.1.2-1.x86_64.rpm"
+    sudo dnf install -y ./linglong-store-2.1.2-1.x86_64.rpm
 }
 
 # 安装 gnome shell 扩展插件
@@ -814,6 +829,7 @@ install_gnome_extensions() {
     if [ ! -d "$HOME/下载/extensions" ]; then
         mkdir -p ~/下载/extensions && cd ~/下载/extensions
         git clone --depth=1 https://gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git
+        git clone --depth=1 https://gh-proxy.org/https://github.com/stuarthayhurst/alphabetical-grid-extension.git
         git clone --depth=1 https://gh-proxy.org/https://github.com/fthx/appmenu-is-back.git
         git clone --depth=1 https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
         git clone --depth=1 https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
@@ -834,6 +850,7 @@ install_gnome_extensions() {
         git clone --depth=1 https://gh-proxy.org/https://github.com/purejava/fedora-update.git
         git clone --depth=1 https://gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
+        cd ~/下载/extensions/alphabetical-grid-extension && make build && make install
         cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
         cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
         cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
@@ -870,35 +887,15 @@ install_gnome_extensions() {
     done
     glib-compile-schemas ~/.local/share/glib-2.0/schemas/
 
-    # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
-    # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
-    gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
-    gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
-    gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
-    gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
-    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
-    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
-    
-    # Just Perfection（微调 GNOME Shell 的细节，隐藏冗余元素、调整动画速度等）
-    # gsettings list-recursively org.gnome.shell.extensions.just-perfection
-    # gsettings set org.gnome.shell.extensions.just-perfection activities-button false
-    gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
-    gsettings set org.gnome.shell.extensions.just-perfection world-clock false
-    gsettings set org.gnome.shell.extensions.just-perfection weather false
-    gsettings set org.gnome.shell.extensions.just-perfection events-button false
-    # 概览中工作区切换区缩略图，此处设置为隐藏
-    gsettings set org.gnome.shell.extensions.just-perfection workspace false
-    gsettings set org.gnome.shell.extensions.just-perfection workspace-wrap-around true
-    gsettings set org.gnome.shell.extensions.just-perfection window-demands-attention-focus true
-    gsettings set org.gnome.shell.extensions.just-perfection startup-status 0
-    # gsettings set org.gnome.shell.extensions.just-perfection accent-color-icon false
-    gsettings set org.gnome.shell.extensions.just-perfection animation 7
-    # gsettings reset-recursively org.gnome.shell.extensions.just-perfection
-    
     # Auto Move Windows
     # gsettings list-recursively org.gnome.shell.extensions.auto-move-windows
     gsettings set org.gnome.shell.extensions.auto-move-windows application-list "['jetbrains-toolbox.desktop:1', 'jetbrains-idea-62993215-707e-404d-9a7c-b2e595f35fa6.desktop:1', 'jetbrains-rustrover-150f2c1b-2bd9-4306-97e7-2bc711731347.desktop:1', 'jetbrains-webstorm-438e488a-1597-484e-b6ea-e9935bebb250.desktop:1', 'jetbrains-goland-d6242613-2f2e-4847-a243-19dc05529fca.desktop:1', 'jetbrains-datagrip-d81f105e-144e-4ef3-943d-1171bda2c629.desktop:1', 'jetbrains-pycharm-c8b885ec-b50e-4a8a-9408-cba329de5d43.desktop:1', 'jetbrains-studio-1a3645b2-82e4-4794-b038-c5c084909e0d.desktop:1', 'com.sublimehq.SublimeText.desktop:1', 'org.gnome.Ptyxis.desktop:1', 're.sonny.Playhouse.desktop:1', 'me.iepure.devtoolbox.desktop:1', 'io.github.mightycreak.Diffuse.desktop:1', 'com.github.marhkb.Pods.desktop:1', 'dev.skynomads.Seabird.desktop:1', 'qemu.desktop:1', 'org.gnome.Builder.desktop:1', 'org.gnome.SystemMonitor.desktop:1', 'org.mozilla.firefox.desktop:2', 'com.google.Chrome.desktop:2', 'org.gnome.Epiphany.desktop:2', 'org.gnome.TextEditor.desktop:2', 'io.github.alainm23.planify.desktop:2', 'org.gnome.gitlab.somas.Apostrophe.desktop:2', 'Clash Verge.desktop:2', 'v2rayn.desktop:2', 'md.obsidian.Obsidian.desktop:2', 'io.typora.Typora.desktop:2', 'org.gnome.Papers.desktop:2', 'com.qq.QQ.desktop:3', 'com.github.gmg137.netease-cloud-music-gtk.desktop:3', 'com.github.neithern.g4music.desktop:3']"
     # gsettings reset-recursively org.gnome.shell.extensions.auto-move-windows
+
+    # Background Logo
+    # gsettings list-recursively org.fedorahosted.background-logo-extension
+    gsettings set org.fedorahosted.background-logo-extension logo-always-visible true
+    # gsettings reset-recursively org.fedorahosted.background-logo-extension
     
     # Blur My Shell
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell
@@ -931,11 +928,16 @@ install_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications whitelist "['org.gnome.Settings', 'org.gnome.Software', 'org.gnome.TextEditor', 'org.gnome.Ptyxis', 'org.gnome.SystemMonitor', 'org.gnome.tweaks', 'org.gnome.Extensions', 'com.mattjakeman.ExtensionManager']"
     # 6、其它		以下配置是 ‘其它’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false
-    
-    # Background Logo
-    # gsettings list-recursively org.fedorahosted.background-logo-extension
-    gsettings set org.fedorahosted.background-logo-extension logo-always-visible true
-    # gsettings reset-recursively org.fedorahosted.background-logo-extension
+
+    # Dash To Dock
+    # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
+    # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
+    gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
+    gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+    gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+    gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
     
     # Forge
     # gsettings list-recursively org.gnome.shell.extensions.forge
@@ -943,6 +945,79 @@ install_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.forge tiling-mode-enabled false
     gsettings set org.gnome.shell.extensions.forge focus-border-toggle false
     # gsettings reset-recursively org.gnome.shell.extensions.forge
+    
+    # Just Perfection
+    # gsettings list-recursively org.gnome.shell.extensions.just-perfection
+    # gsettings set org.gnome.shell.extensions.just-perfection activities-button false
+    gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
+    gsettings set org.gnome.shell.extensions.just-perfection world-clock false
+    gsettings set org.gnome.shell.extensions.just-perfection weather false
+    gsettings set org.gnome.shell.extensions.just-perfection events-button false
+    # 概览中工作区切换区缩略图，此处设置为隐藏
+    gsettings set org.gnome.shell.extensions.just-perfection workspace false
+    gsettings set org.gnome.shell.extensions.just-perfection workspace-wrap-around true
+    gsettings set org.gnome.shell.extensions.just-perfection window-demands-attention-focus true
+    gsettings set org.gnome.shell.extensions.just-perfection startup-status 0
+    # gsettings set org.gnome.shell.extensions.just-perfection accent-color-icon false
+    gsettings set org.gnome.shell.extensions.just-perfection animation 7
+    # gsettings reset-recursively org.gnome.shell.extensions.just-perfection
+    
+    
+    # Coverflow Alt-Tab
+    # 递归列出某个 Schema 的键值
+    # gsettings list-recursively org.gnome.shell.extensions.coverflowalttab
+    # gsettings set org.gnome.shell.extensions.coverflowalttab switcher-looping-method 'Flip Stack'
+    gsettings set org.gnome.shell.extensions.coverflowalttab switcher-looping-method 'Carousel'
+    gsettings set org.gnome.shell.extensions.coverflowalttab hide-panel false
+    # 设置背景黯淡因素，越大越暗
+    gsettings set org.gnome.shell.extensions.coverflowalttab dim-factor 0.0
+    gsettings set org.gnome.shell.extensions.coverflowalttab animation-time 0.5
+    # gsettings get org.gnome.shell.extensions.coverflowalttab easing-function
+    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quad'
+    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-cubic'
+    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quart'
+    gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quint'
+    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-sine'
+    # gsettings set org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio 0.75
+    # gsettings get org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
+    # gsettings reset org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
+    # 恢复默认设置
+    # gsettings reset-recursively org.gnome.shell.extensions.coverflowalttab
+    
+    # Custom Command Menu
+    # gsettings list-recursively org.gnome.shell.extensions.custom-command-list
+gsettings set org.gnome.shell.extensions.custom-command-list command1 "('更新系统', 'ptyxis -- /bin/sh -c \"pkexec dnf upgrade; echo Done - Press enter to exit; read _\"', 'emote-love-symbolic', true)"
+gsettings set org.gnome.shell.extensions.custom-command-list command2 "('亮色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'default'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\", 'emote-love-symbolic', true)"
+gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\", 'emote-love-symbolic', true)"
+    # gsettings reset-recursively org.gnome.shell.extensions.custom-command-list
+    
+    # Customize-IBus
+    # gsettings list-recursively org.gnome.shell.extensions.customize-ibus
+    gsettings set org.gnome.shell.extensions.customize-ibus input-indicator-only-on-toggle true
+    gsettings set org.gnome.shell.extensions.customize-ibus use-candidate-box-right-click true
+    gsettings set org.gnome.shell.extensions.customize-ibus use-popup-animation true
+    gsettings set org.gnome.shell.extensions.customize-ibus enable-orientation true
+    gsettings set org.gnome.shell.extensions.customize-ibus use-candidate-reposition true
+    gsettings set org.gnome.shell.extensions.customize-ibus use-candidate-scroll true
+    gsettings set org.gnome.shell.extensions.customize-ibus menu-ibus-preference true
+    # gsettings reset-recursively org.gnome.shell.extensions.customize-ibus
+    
+    # ddterm，默认的切换快捷键 F12
+    # gsettings list-recursively com.github.amezin.ddterm
+    gsettings set com.github.amezin.ddterm background-opacity 1.0
+    gsettings set com.github.amezin.ddterm hide-animation-duration 0.3
+    gsettings set com.github.amezin.ddterm show-animation-duration 0.2
+    # gsettings set com.github.amezin.ddterm window-size 0.6
+    gsettings set com.github.amezin.ddterm hide-when-focus-lost true
+    gsettings set com.github.amezin.ddterm hide-window-on-esc true
+    # gsettings reset-recursively com.github.amezin.ddterm
+    
+    # Gtk4 Desktop Icons NG
+    # gsettings list-recursively org.gnome.shell.extensions.gtk4-ding
+    gsettings set org.gnome.shell.extensions.gtk4-ding show-home false
+    gsettings set org.gnome.shell.extensions.gtk4-ding show-trash false
+    gsettings set org.gnome.shell.extensions.gtk4-ding show-volumes false
+    # gsettings reset-recursively org.gnome.shell.extensions.gtk4-ding
     
     # 配置 Hide Top Bar
     # 递归列出某个 Schema 的键值
@@ -970,50 +1045,6 @@ install_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunset "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'"
     # gsettings reset-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
     
-    # Gtk4 Desktop Icons NG
-    # gsettings list-recursively org.gnome.shell.extensions.gtk4-ding
-    gsettings set org.gnome.shell.extensions.gtk4-ding show-home false
-    gsettings set org.gnome.shell.extensions.gtk4-ding show-trash false
-    gsettings set org.gnome.shell.extensions.gtk4-ding show-volumes false
-    # gsettings reset-recursively org.gnome.shell.extensions.gtk4-ding
-    
-    # Clipboard Indicator
-    # gsettings list-recursively org.gnome.shell.extensions.clipboard-indicator
-    gsettings set org.gnome.shell.extensions.clipboard-indicator history-size 10
-    gsettings set org.gnome.shell.extensions.clipboard-indicator cache-images false
-    # gsettings reset-recursively org.gnome.shell.extensions.clipboard-indicator
-    
-    # Coverflow Alt-Tab
-    # 递归列出某个 Schema 的键值
-    # gsettings list-recursively org.gnome.shell.extensions.coverflowalttab
-    # gsettings set org.gnome.shell.extensions.coverflowalttab switcher-looping-method 'Flip Stack'
-    gsettings set org.gnome.shell.extensions.coverflowalttab switcher-looping-method 'Carousel'
-    gsettings set org.gnome.shell.extensions.coverflowalttab hide-panel false
-    # 设置背景黯淡因素，越大越暗
-    gsettings set org.gnome.shell.extensions.coverflowalttab dim-factor 0.0
-    gsettings set org.gnome.shell.extensions.coverflowalttab animation-time 0.5
-    # gsettings get org.gnome.shell.extensions.coverflowalttab easing-function
-    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quad'
-    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-cubic'
-    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quart'
-    gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quint'
-    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-sine'
-    # gsettings set org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio 0.75
-    # gsettings get org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
-    # gsettings reset org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
-    # 恢复默认设置
-    # gsettings reset-recursively org.gnome.shell.extensions.coverflowalttab
-    
-    # ddterm，默认的切换快捷键 F12
-    # gsettings list-recursively com.github.amezin.ddterm
-    gsettings set com.github.amezin.ddterm background-opacity 1.0
-    gsettings set com.github.amezin.ddterm hide-animation-duration 0.3
-    gsettings set com.github.amezin.ddterm show-animation-duration 0.2
-    # gsettings set com.github.amezin.ddterm window-size 0.6
-    gsettings set com.github.amezin.ddterm hide-when-focus-lost true
-    gsettings set com.github.amezin.ddterm hide-window-on-esc true
-    # gsettings reset-recursively com.github.amezin.ddterm
-    
     # Quick Settings Tweaks
     # 控制 GNOME 顶部面板快捷设置菜单（Quick Settings）的弹出样式和动画效果
     # gsettings list-recursively org.gnome.shell.extensions.quick-settings-tweaks
@@ -1026,25 +1057,65 @@ install_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.status-area-horizontal-spacing hpadding 5
     # gsettings reset-recursively org.gnome.shell.extensions.status-area-horizontal-spacing
     
-    # Custom Command Menu
-    # gsettings list-recursively org.gnome.shell.extensions.custom-command-list
-gsettings set org.gnome.shell.extensions.custom-command-list command1 "('更新系统', 'ptyxis -- /bin/sh -c \"pkexec dnf upgrade; echo Done - Press enter to exit; read _\"', 'emote-love-symbolic', true)"
-gsettings set org.gnome.shell.extensions.custom-command-list command2 "('亮色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'default'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\", 'emote-love-symbolic', true)"
-gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\", 'emote-love-symbolic', true)"
-    # gsettings reset-recursively org.gnome.shell.extensions.custom-command-list
-    
     # Top Bar Organizer
     # gsettings list-recursively org.gnome.shell.extensions.top-bar-organizer
     gsettings set org.gnome.shell.extensions.top-bar-organizer left-box-order "['activities', 'apps-menu', 'places-menu', 'command-menu', 'appmenu-indicator']"
     gsettings set org.gnome.shell.extensions.top-bar-organizer center-box-order "['dateMenu']"
     gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['appindicator-kstatusnotifieritem-toolbox', 'workspace-indicator', 'FedoraUpdateIndicator', 'ddterm', 'clipboardIndicator', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
     # gsettings reset-recursively org.gnome.shell.extensions.top-bar-organizer
-    
+   
     # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
     # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
     # gnome-session-quit --logout --no-prompt
     # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
     # gnome-session-quit --logout
+}
+
+set_theme_example() {
+    # 启用系统 GNOME 扩展
+    # 列出所有系统级扩展
+    # gnome-extensions list --system
+    gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
+    gnome-extensions enable apps-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable auto-move-windows@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable background-logo@fedorahosted.org
+    gnome-extensions enable blur-my-shell@aunetx
+    gnome-extensions enable caffeine@patapon.info
+    gnome-extensions enable dash-to-dock@micxgx.gmail.com
+    gnome-extensions enable forge@jmmaranan.com
+    gnome-extensions enable gsconnect@andyholmes.github.io
+    gnome-extensions enable just-perfection-desktop@just-perfection
+    gnome-extensions enable light-style@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable no-overview@fthx
+    gnome-extensions enable places-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
+    
+    # 用户 GNOME 扩展
+    # 列出所有用户级扩展
+    # gnome-extensions list --user
+    gnome-extensions enable add-to-desktop@tommimon.github.com
+    gnome-extensions enable AlphabeticalAppGrid@stuarthayhurst
+    gnome-extensions enable appmenu-is-back@fthx
+    gnome-extensions enable Bluetooth-Battery-Meter@maniacx.github.com
+    gnome-extensions enable clipboard-indicator@tudmotu.com
+    gnome-extensions enable compiz-alike-magic-lamp-effect@hermes83.github.com
+    gnome-extensions enable CoverflowAltTab@palatis.blogspot.com
+    gnome-extensions enable custom-command-list@storageb.github.com
+    gnome-extensions enable customize-ibus@hollowman.ml
+    gnome-extensions enable ddterm@amezin.github.com
+    gnome-extensions enable disable-unredirect@exeos
+    gnome-extensions enable update-extension@purejava.org
+    gnome-extensions enable gtk4-ding@smedius.gitlab.com
+    gnome-extensions enable hidetopbar@mathieu.bidon.ca
+    gnome-extensions enable nightthemeswitcher@romainvigier.fr
+    gnome-extensions enable quick-settings-tweaks@qwreey
+    gnome-extensions enable Rounded_Corners@lennart-k
+    gnome-extensions enable rounded-window-corners@fxgn
+    gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
+    gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
+    gnome-extensions enable weatheroclock@CleoMenezesJr.github.io
 }
 
 # ------------------------------------------------------------------------------
@@ -1053,36 +1124,6 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
 install_theme_whitesur() {
     # 安装 Ubuntu 的声音主题
     sudo dnf install -y yaru-sound-theme
-
-    # dnf list *fonts*
-    # Noto Fonts（思源黑体/宋体 的谷歌版本）
-    # Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
-    # Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
-    # JetBrains Mono JetBrains 公司专门为 IDE 设计的字体。字母宽度大，容易区分 1、l、I，默认支持连字符，非常耐看。
-    # 系统界面（中文）	Noto Sans CJK SC	谷歌思源黑体，字库全，笔画均衡，与 Inter 风格协调
-    # 文档阅读/写作		Noto Serif CJK SC	思源宋体，适合长时间阅读，衬线带来轻松的纸质感
-    # 编程/终端		JetBrains Mono		字母区分度高，支持连字，视觉疲劳度低
-    # fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
-    # Noto Sans CJK SC （思源黑体——简体中文）
-    # Noto Serif CJK SC （思源宋体——简体中文）
-    sudo dnf install -y \
-    google-noto-sans-cjk-fonts \
-    google-noto-serif-cjk-fonts \
-    adobe-source-han-sans-cn-fonts \
-    adobe-source-han-serif-cn-fonts \
-    jetbrains-mono-fonts
-    # 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
-    gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
-    # 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
-    gsettings set org.gnome.desktop.interface document-font-name 'Noto Serif CJK SC Regular 11'
-    # 设置等宽字体，影响范围：终端、代码编辑器
-    gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono Regular 11'
-    # 设置窗口标题栏字体，影响范围：所有应用程序窗口顶部的标题文字
-    gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC Bold 11'
-    # 抗锯齿：rggb（LCD 显示器常用）或 grayscale
-    gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
-    # 微调：full（较好）或 slight
-    gsettings set org.gnome.desktop.interface font-hinting 'slight'
 
     log_info "正在下载并安装 WhiteSur 主题..."
 
@@ -1153,6 +1194,36 @@ uninstall_theme() {
 
 # 重置系统字体配置
 reset_font() {
+    # dnf list *fonts*
+    # Noto Fonts（思源黑体/宋体 的谷歌版本）
+    # Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
+    # Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
+    # JetBrains Mono JetBrains 公司专门为 IDE 设计的字体。字母宽度大，容易区分 1、l、I，默认支持连字符，非常耐看。
+    # 系统界面（中文）	Noto Sans CJK SC	谷歌思源黑体，字库全，笔画均衡，与 Inter 风格协调
+    # 文档阅读/写作		Noto Serif CJK SC	思源宋体，适合长时间阅读，衬线带来轻松的纸质感
+    # 编程/终端		JetBrains Mono		字母区分度高，支持连字，视觉疲劳度低
+    # fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
+    # Noto Sans CJK SC （思源黑体——简体中文）
+    # Noto Serif CJK SC （思源宋体——简体中文）
+    sudo dnf install -y \
+    google-noto-sans-cjk-fonts \
+    google-noto-serif-cjk-fonts \
+    adobe-source-han-sans-cn-fonts \
+    adobe-source-han-serif-cn-fonts \
+    jetbrains-mono-fonts
+    # 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
+    gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
+    # 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
+    gsettings set org.gnome.desktop.interface document-font-name 'Noto Serif CJK SC Regular 11'
+    # 设置等宽字体，影响范围：终端、代码编辑器
+    gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono Regular 11'
+    # 设置窗口标题栏字体，影响范围：所有应用程序窗口顶部的标题文字
+    gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC Bold 11'
+    # 抗锯齿：rggb（LCD 显示器常用）或 grayscale
+    gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
+    # 微调：full（较好）或 slight
+    gsettings set org.gnome.desktop.interface font-hinting 'slight'
+
     gsettings reset org.gnome.desktop.interface font-name
     gsettings reset org.gnome.desktop.interface document-font-name
     gsettings reset org.gnome.desktop.interface monospace-font-name
@@ -1185,53 +1256,6 @@ set_theme_example() {
     gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
     gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
     gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
-}
-
-set_theme_example() {
-    # 启用系统 GNOME 扩展
-    # 列出所有系统级扩展
-    # gnome-extensions list --system
-    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable dash-to-dock@micxgx.gmail.com
-    gnome-extensions enable blur-my-shell@aunetx
-    gnome-extensions enable just-perfection-desktop@just-perfection
-    gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
-    gnome-extensions enable auto-move-windows@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable caffeine@patapon.info
-    gnome-extensions enable no-overview@fthx
-    gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable light-style@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable places-menu@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable apps-menu@gnome-shell-extensions.gcampax.github.com
-    gnome-extensions enable background-logo@fedorahosted.org
-    gnome-extensions enable gsconnect@andyholmes.github.io
-    gnome-extensions enable forge@jmmaranan.com
-    
-    # 用户 GNOME 扩展
-    # 列出所有用户级扩展
-    # gnome-extensions list --user
-    gnome-extensions enable AlphabeticalAppGrid@stuarthayhurst
-    gnome-extensions enable disable-unredirect@exeos
-    gnome-extensions enable hidetopbar@mathieu.bidon.ca
-    gnome-extensions enable Rounded_Corners@lennart-k
-    gnome-extensions enable rounded-window-corners@fxgn
-    gnome-extensions enable add-to-desktop@tommimon.github.com
-    gnome-extensions enable gtk4-ding@smedius.gitlab.com
-    gnome-extensions enable appmenu-is-back@fthx
-    gnome-extensions enable Bluetooth-Battery-Meter@maniacx.github.com
-    gnome-extensions enable customize-ibus@hollowman.ml
-    gnome-extensions enable clipboard-indicator@tudmotu.com
-    gnome-extensions enable compiz-alike-magic-lamp-effect@hermes83.github.com
-    gnome-extensions enable CoverflowAltTab@palatis.blogspot.com
-    gnome-extensions enable ddterm@amezin.github.com
-    gnome-extensions enable nightthemeswitcher@romainvigier.fr
-    gnome-extensions enable quick-settings-tweaks@qwreey
-    gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
-    gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
-    gnome-extensions enable custom-command-list@storageb.github.com
-    gnome-extensions enable update-extension@purejava.org
-    gnome-extensions enable weatheroclock@CleoMenezesJr.github.io
 }
 
 # ------------------------------------------------------------------------------
