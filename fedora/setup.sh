@@ -11,16 +11,6 @@
 # 仓库提交：cd ~/文档/linux-setup && git add . && git commit -m 'backup' && git push
 # ==============================================================================
 
-
-# ------------------------------------------------------------------------------
-# 安全与规范设置
-# set -e: 遇到错误立即退出，防止错误级联
-# set -u: 使用未定义变量时报错，避免隐式空值
-# set -o pipefail: 管道中任一命令失败则整个管道失败
-# ------------------------------------------------------------------------------
-set -euo pipefail
-
-
 # ------------------------------------------------------------------------------
 # Fedora 操作系统 ISO 下载网址：
 # https://fedoraproject.org/zh-Hans/
@@ -30,7 +20,6 @@ set -euo pipefail
 # https://kojipkgs.fedoraproject.org/compose/
 # ------------------------------------------------------------------------------
 
-
 # ------------------------------------------------------------------------------
 # Gnome 官方网站：	https://www.gnome.org/zh-CN/
 # Fedora Linux 用户文档	https://docs.fedoraproject.org/zh_Hans/fedora/latest/
@@ -39,6 +28,13 @@ set -euo pipefail
 # Fedora 用户社区：	https://discussion.fedoraproject.org/
 # ------------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# 安全与规范设置
+# set -e: 遇到错误立即退出，防止错误级联
+# set -u: 使用未定义变量时报错，避免隐式空值
+# set -o pipefail: 管道中任一命令失败则整个管道失败
+# ------------------------------------------------------------------------------
+set -euo pipefail
 
 
 # 定义颜色输出
@@ -67,7 +63,6 @@ HOME_DIR="/home/${CURRENT_USER}"
 # ------------------------------------------------------------------------------
 # 辅助函数
 # ------------------------------------------------------------------------------
-
 # 检查命令是否存在
 check_command() {
     command -v "$1" >/dev/null 2>&1
@@ -586,12 +581,16 @@ configure_flatpak_and_install_app() {
     
     # 删除官方 Fedora Flatpaks 源
     # sudo flatpak remote-delete fedora
+    # 禁用 fedora 仓库
+    flatpak remote-modify --disable fedora
     # sudo flatpak remote-add --if-not-exists --title=Fedora fedora oci+https://registry.fedoraproject.org
     # Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
     # 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
     # 在已有 flathub 远程源的基础上替换 Flatpak 默认的软件源
     # Fedora默认安装了Flatpak，只要配置Flatpak加速镜像即可
     # flatpak remotes --show-details
+    # 禁用 flathub 仓库
+    # flatpak remote-modify --disable flathub
     # 添加 Flathub 官方仓库
     flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     # 修改 Flathub 仓库地址为国内镜像源 (使用 USTC 镜像)
