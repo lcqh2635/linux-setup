@@ -827,27 +827,28 @@ install_gnome_extensions() {
     sudo dnf install -y gettext meson just
     if [ ! -d "$HOME/下载/extensions" ]; then
         mkdir -p ~/下载/extensions && cd ~/下载/extensions
-        git clone --depth=1 https://gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/stuarthayhurst/alphabetical-grid-extension.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/fthx/appmenu-is-back.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/stuarthayhurst/alphabetical-grid-extension.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/fthx/appmenu-is-back.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
         wget https://ddterm.github.io/gnome-shell-extension-ddterm/ddterm@amezin.github.com.shell-extension.zip
-        git clone --depth=1 https://gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
         git clone --depth=1 https://gitlab.com/smedius/desktop-icons-ng.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/Aryan20/Logomenu.git
         git clone --depth=1 https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git
         git clone --depth=1 https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
         git clone --depth=1 https://gitlab.gnome.org/june/top-bar-organizer.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/purejava/fedora-update.git
-        git clone --depth=1 https://gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/purejava/fedora-update.git
+        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
         cd ~/下载/extensions/alphabetical-grid-extension && make build && make install
         cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
@@ -862,6 +863,7 @@ install_gnome_extensions() {
         cd ~/下载/extensions/disable-unredirect && make install
         cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
         cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
+        cd ~/下载/extensions/Logomenu && make install
         cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
         cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
         cd ~/下载/extensions/rounded-window-corners && just install
@@ -947,7 +949,7 @@ install_gnome_extensions() {
     
     # Just Perfection
     # gsettings list-recursively org.gnome.shell.extensions.just-perfection
-    # gsettings set org.gnome.shell.extensions.just-perfection activities-button false
+    gsettings set org.gnome.shell.extensions.just-perfection activities-button false
     gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
     gsettings set org.gnome.shell.extensions.just-perfection world-clock false
     gsettings set org.gnome.shell.extensions.just-perfection weather false
@@ -980,7 +982,6 @@ install_gnome_extensions() {
     # gsettings set org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio 0.75
     # gsettings get org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
     # gsettings reset org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
-    # 恢复默认设置
     # gsettings reset-recursively org.gnome.shell.extensions.coverflowalttab
     
     # Custom Command Menu
@@ -999,6 +1000,7 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
     gsettings set org.gnome.shell.extensions.customize-ibus use-candidate-reposition true
     gsettings set org.gnome.shell.extensions.customize-ibus use-candidate-scroll true
     gsettings set org.gnome.shell.extensions.customize-ibus menu-ibus-preference true
+    gsettings set org.gnome.shell.extensions.customize-ibus enable-auto-switch false
     # gsettings reset-recursively org.gnome.shell.extensions.customize-ibus
     
     # ddterm，默认的切换快捷键 F12
@@ -1027,8 +1029,13 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
     gsettings set org.gnome.shell.extensions.hidetopbar animation-time-overview 0.5
     # 窗口被激活时不要总是显示 panel
     gsettings set org.gnome.shell.extensions.hidetopbar enable-active-window false
-    # 恢复默认设置
     # gsettings reset-recursively org.gnome.shell.extensions.hidetopbar
+    
+    # Logo Menu
+    # gsettings list-recursively org.gnome.shell.extensions.logo-menu
+    gsettings set org.gnome.shell.extensions.logo-menu menu-button-icon-image 1
+    gsettings set org.gnome.shell.extensions.logo-menu menu-button-icon-size 20
+    # gsettings reset-recursively org.gnome.shell.extensions.logo-menu
     
     # Night Theme Switcher
     # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.color-scheme
@@ -1058,9 +1065,9 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
     
     # Top Bar Organizer
     # gsettings list-recursively org.gnome.shell.extensions.top-bar-organizer
-    gsettings set org.gnome.shell.extensions.top-bar-organizer left-box-order "['activities', 'apps-menu', 'places-menu', 'command-menu', 'appmenu-indicator']"
+    gsettings set org.gnome.shell.extensions.top-bar-organizer left-box-order "['LogoMenu', 'apps-menu', 'places-menu', 'command-menu', 'appmenu-indicator']"
     gsettings set org.gnome.shell.extensions.top-bar-organizer center-box-order "['dateMenu']"
-    gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['appindicator-kstatusnotifieritem-toolbox', 'workspace-indicator', 'FedoraUpdateIndicator', 'ddterm', 'clipboardIndicator', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
+    gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['workspace-indicator', 'FedoraUpdateIndicator', 'ddterm', 'clipboardIndicator', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
     # gsettings reset-recursively org.gnome.shell.extensions.top-bar-organizer
    
     # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
@@ -1108,6 +1115,7 @@ set_theme_example() {
     gnome-extensions enable update-extension@purejava.org
     gnome-extensions enable gtk4-ding@smedius.gitlab.com
     gnome-extensions enable hidetopbar@mathieu.bidon.ca
+    gnome-extensions enable logomenu@aryan_k
     gnome-extensions enable nightthemeswitcher@romainvigier.fr
     gnome-extensions enable quick-settings-tweaks@qwreey
     gnome-extensions enable Rounded_Corners@lennart-k
