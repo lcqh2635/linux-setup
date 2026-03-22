@@ -723,6 +723,10 @@ install_jetbrains_toolbox() {
 install_vpn() {
     # 进入到下载目录
     cd ~/下载
+    # Github 加速工具
+    # https://github.com/docmirror/dev-sidecar
+    # https://github.com/docmirror/dev-sidecar/releases
+    
     # https://v2rayn.co/
     # https://github.com/2dust/v2rayN/releases
     # 使用教程	https://v2rayn.co/v2rayn-tutorial/
@@ -739,9 +743,9 @@ install_vpn() {
     	# 作用：接管整机流量。对于一些不遵循系统代理的浏览器插件、游戏或特定软件非常有用
     	# 建议：普通网页浏览不需要开启，仅在某些软件无法正常代理时开启
     # 核心选择：v2rayN 支持切换 Xray-core、sing-box 等核心。目前大部分订阅链接都支持 Xray，保持默认即可
-    wget "$(curl -s https://api.github.com/repos/2dust/v2rayN/releases/latest | grep -o 'https://github.com/2dust/v2rayN/releases/download/[^"]*v2rayN-linux-rhel-64\.rpm' | head -n 1 | sed 's|https://github.com|https://gh-proxy.org/https://github.com|')"
+    wget "$(curl -s https://api.github.com/repos/2dust/v2rayN/releases/latest | grep -o 'https://github.com/2dust/v2rayN/releases/download/[^"]*v2rayN-linux-rhel-64\.rpm' | head -n 1 | sed 's|https://github.com|https://hk.gh-proxy.org/https://github.com|')"
     sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
-    wget "$(curl -s https://api.github.com/repos/clash-verge-rev/clash-verge-rev/releases/latest | grep -o 'https://github.com/clash-verge-rev/clash-verge-rev/releases/download/[^"]*x86_64\.rpm' | head -n 1 | sed 's|https://github.com|https://gh-proxy.org/https://github.com|')"
+    wget "$(curl -s https://api.github.com/repos/clash-verge-rev/clash-verge-rev/releases/latest | grep -o 'https://github.com/clash-verge-rev/clash-verge-rev/releases/download/[^"]*x86_64\.rpm' | head -n 1 | sed 's|https://github.com|https://hk.gh-proxy.org/https://github.com|')"
     sudo dnf install -y ./Clash.Verge-*.x86_64.rpm
     # https://github.com/hiddify/hiddify-app/blob/main/README_cn.md
     mkdir -vp ~/.apps/appimages && cd ~/.apps/appimages
@@ -752,7 +756,7 @@ install_vpn() {
     	# https://pPiPDy.mcsslk.xyz/fa998be69a450c433133472d2ddd7a68
     	# https://woDF6n.tosslk.xyz/2c58cc7fb6edb08f1b88e0ce07f03f78
     # 对于 AppImage 格式应用的安装，先打开 AppImage 安装管理器 Gear Lever 这个软件 flatpak run it.mijorus.gearlever 配置 AppImage 安装目录为 ~/.apps 然后点击 + 添加下面的 AppImage 应用
-    wget "$(curl -s https://api.github.com/repos/hiddify/hiddify-app/releases/latest | grep -o 'https://github.com/hiddify/hiddify-app/releases/download/[^"]*Linux-x64.*\.AppImage' | head -n 1 | sed 's|https://github.com|https://gh-proxy.org/https://github.com|')"
+    wget "$(curl -s https://api.github.com/repos/hiddify/hiddify-app/releases/latest | grep -o 'https://github.com/hiddify/hiddify-app/releases/download/[^"]*Linux-x64.*\.AppImage' | head -n 1 | sed 's|https://github.com|https://hk.gh-proxy.org/https://github.com|')"
     chmod a+x Hiddify-Linux-x64-AppImage.AppImage
     # 1. 赋予执行权限
     chmod +x Hiddify-Linux-x64-*.AppImage
@@ -764,9 +768,10 @@ install_vpn() {
     chmod a+x Apifox.AppImage
     ./Apifox.AppImage
     
-    wget "$(curl -s https://api.github.com/repos/Eugeny/tabby/releases/latest | grep -o 'https://github.com/Eugeny/tabby/releases/download/[^"]*linux-x64\.rpm' | head -n 1 | sed 's|https://github.com|https://gh-proxy.org/https://github.com|')"
+    wget "$(curl -s https://api.github.com/repos/Eugeny/tabby/releases/latest | grep -o 'https://github.com/Eugeny/tabby/releases/download/[^"]*linux-x64\.rpm' | head -n 1 | sed 's|https://github.com|https://hk.gh-proxy.org/https://github.com|')"
+    sudo dnf install -y ./tabby-*-linux-x64.rpm
 
-    
+    # 国内软件优先使用该软件商店
     # 如意玲珑		https://linyaps.org.cn/
     # 如意玲珑官方文档	https://linyaps.org.cn/guide/start/whatis.html
     # 如意玲珑是统信软件自研的开源软件包格式，用于替代 deb、rpm 等包管理工具，实现了应用包管理、分发、容器、集成开发工具等功能。类似 flatpak、snap
@@ -777,8 +782,8 @@ install_vpn() {
     # 安装后可通过 ‘网页版应用商店 https://store.linyaps.org.cn/’ 进行安装，但不会安装 ‘客户端应用商店’	
     sudo dnf install -y linglong-bin linyaps-web-store-installer
     # 安装意玲珑客户端应用商店	https://linyaps.org.cn/linyaps-appstore 
-    cd $HOME/下载 && wget "https://gh-proxy.org/https://github.com/SXFreell/linglong-store/releases/download/2.2.0/linglong-store-2.1.2-1.x86_64.rpm"
-    sudo dnf install -y ./linglong-store-2.1.2-1.x86_64.rpm
+    wget "$(curl -s https://api.github.com/repos/SXFreell/linglong-store/releases/latest | grep -o 'https://github.com/SXFreell/linglong-store/releases/download/[^"]*x86_64\.rpm' | head -n 1 | sed 's|https://github.com|https://hk.gh-proxy.org/https://github.com|')"
+    sudo dnf install -y ./linglong-store-*.x86_64.rpm
 }
 
 # 安装 gnome shell 扩展插件
@@ -827,28 +832,28 @@ install_gnome_extensions() {
     sudo dnf install -y gettext meson just
     if [ ! -d "$HOME/下载/extensions" ]; then
         mkdir -p ~/下载/extensions && cd ~/下载/extensions
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/stuarthayhurst/alphabetical-grid-extension.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/fthx/appmenu-is-back.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
-        wget https://ddterm.github.io/gnome-shell-extension-ddterm/ddterm@amezin.github.com.shell-extension.zip
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/stuarthayhurst/alphabetical-grid-extension.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/fthx/appmenu-is-back.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/ddterm/gnome-shell-extension-ddterm.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
         git clone --depth=1 https://gitlab.com/smedius/desktop-icons-ng.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/Aryan20/Logomenu.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Aryan20/Logomenu.git
         git clone --depth=1 https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git
         git clone --depth=1 https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
         git clone --depth=1 https://gitlab.gnome.org/june/top-bar-organizer.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/purejava/fedora-update.git
-        git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/purejava/fedora-update.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
         cd ~/下载/extensions/alphabetical-grid-extension && make build && make install
         cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
@@ -859,7 +864,7 @@ install_gnome_extensions() {
         cd ~/下载/extensions/CoverflowAltTab && make all
         cd ~/下载/extensions && zip -FSr custom-command-menu.zip custom-command-menu/* && gnome-extensions install -f custom-command-menu.zip
         cd ~/下载/extensions/Customize-IBus && make install
-        cd ~/下载/extensions && gnome-extensions install -f ddterm@amezin.github.com.shell-extension.zip
+        cd ~/下载/extensions/gnome-shell-extension-ddterm && meson setup build-dir && ninja -C build-dir bundle && ninja -C build-dir user-install
         cd ~/下载/extensions/disable-unredirect && make install
         cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
         cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
@@ -1140,9 +1145,9 @@ install_theme_whitesur() {
 
     # 克隆主题仓库 (使用浅克隆加速)
     REPOS=(
-        "https://github.com/vinceliuice/WhiteSur-cursors.git"
-        "https://github.com/vinceliuice/WhiteSur-icon-theme.git"
-        "https://github.com/vinceliuice/WhiteSur-gtk-theme.git"
+        "https://hk.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-cursors.git"
+        "https://hk.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-icon-theme.git"
+        "https://hk.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-gtk-theme.git"
     )
 
     for repo in "${REPOS[@]}"; do
