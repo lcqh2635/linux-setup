@@ -834,12 +834,16 @@ install_gnome_extensions() {
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/ddterm/gnome-shell-extension-ddterm.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/marcinjahn/gnome-do-not-disturb-while-screen-sharing-or-recording-extension.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/purejava/fedora-update.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Schneegans/Fly-Pie.git
         git clone --depth=1 https://gitlab.com/Czarlie/gnome-fuzzy-app-search.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/gTile/gTile.git
         git clone --depth=1 https://gitlab.com/smedius/desktop-icons-ng.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Aryan20/Logomenu.git
         git clone --depth=1 https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/paperwm/PaperWM.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/stuarthayhurst/privacy-menu-extension.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/d-go/quick-settings-avatar.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git
@@ -851,6 +855,7 @@ install_gnome_extensions() {
         git clone --depth=1 https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
         git clone --depth=1 https://gitlab.gnome.org/june/top-bar-organizer.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
+        
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
         cd ~/下载/extensions/alphabetical-grid-extension && make build && make install
         cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
@@ -862,12 +867,16 @@ install_gnome_extensions() {
         cd ~/下载/extensions/Customize-IBus && make install
         cd ~/下载/extensions/gnome-shell-extension-ddterm && meson setup build-dir && ninja -C build-dir bundle && ninja -C build-dir user-install
         cd ~/下载/extensions/disable-unredirect && make install
+        cd ~/下载/extensions/gnome-do-not-disturb-while-screen-sharing-or-recording-extension && npm i && npm run build && npm run linkdist
         cd ~/下载/extensions && zip -FSr fedora-update.zip fedora-update/* && gnome-extensions install -f fedora-update.zip
+        cd ~/下载/extensions/Fly-Pie && make install
         cd ~/下载/extensions/gnome-fuzzy-app-search && make install
+        cd ~/下载/extensions/gTile && npm ci && npm run build:dist && npm run install:extension
         cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
         cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
         cd ~/下载/extensions/Logomenu && make install
         cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
+        cd ~/下载/extensions/PaperWM && make install
         cd ~/下载/extensions/privacy-menu-extension && make build && make install
         cd ~/下载/extensions && zip -FSr quick-settings-avatar.zip quick-settings-avatar/* && gnome-extensions install -f quick-settings-avatar.zip
         cd ~/下载/extensions/quick-settings-tweaks && npm i && TARGET=dev ./install.sh create-release && gnome-extensions install -f target/quick-settings-tweaks@qwreey.shell-extension.zip
@@ -1072,7 +1081,7 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
     # gsettings list-recursively org.gnome.shell.extensions.top-bar-organizer
     gsettings set org.gnome.shell.extensions.top-bar-organizer left-box-order "['LogoMenu', 'apps-menu', 'places-menu', 'command-menu', 'appmenu-indicator']"
     gsettings set org.gnome.shell.extensions.top-bar-organizer center-box-order "['dateMenu']"
-    gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['workspace-indicator', 'FedoraUpdateIndicator', 'ddterm', 'clipboardIndicator', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
+    gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['workspace-indicator', 'FedoraUpdateIndicator', 'ddterm', 'clipboardIndicator', 'gTile@vibou', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
     # gsettings reset-recursively org.gnome.shell.extensions.top-bar-organizer
    
     # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
@@ -1131,13 +1140,16 @@ set_theme_example() {
     # Customize IBus
     # ddterm
     # Disable Unredirect
+    # Do Not Disturb While Screen Sharing Or Recording
     # Fedora Linux Update Indicator
-    # Extension List
+    # Fly-Pie
     # GNOME Fuzzy App Search
+    # gTile
     # Gtk4 Desktop Icons NG (DING)
     # Hide Top Bar
     # Logo Menu
     # Night Theme Switcher
+    # PaperWM
     # Privacy Quick Settings
     # User Avatar In Quick Settings
     # Quick Settings Tweaks
@@ -1145,27 +1157,9 @@ set_theme_example() {
     # Rounded Window Corners Reborn
     # Search Light
     # Screencast extra Feature
-    # Smart Auto Move NG
     # Status Area Horizontal Spacing
     # Top Bar Organizer
     # Weather O'Clock
-
-# Battery Health Charging
-# Bing Wallpaper
-# Burn My Windows
-# CHC-E (Custom Hot Corners - Extended)
-# Compiz windows effect
-# Fly-Pie
-# PaperWM
-# Do Not Disturb While Screen Sharing Or Recording
-# gTile
-# In Picture
-# Lock Keys
-# Lunar Calendar 农历
-# Screen word translate
-# Shortcuts
-# Kiwi Menu
-# Kiwi is not Apple
     # 列出所有用户级扩展
     # gnome-extensions list --user
     gnome-extensions enable add-to-desktop@tommimon.github.com
@@ -1197,6 +1191,18 @@ set_theme_example() {
     gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
     gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
     gnome-extensions enable weatheroclock@CleoMenezesJr.github.io
+    
+    # Battery Health Charging
+    # Bing Wallpaper
+    # Burn My Windows
+    # CHC-E (Custom Hot Corners - Extended)
+    # Compiz windows effect
+    # In Picture
+    # Lunar Calendar 农历
+    # Shortcuts
+    # Smart Auto Move NG
+    # Kiwi Menu
+    # Kiwi is not Apple
 }
 
 # ------------------------------------------------------------------------------
