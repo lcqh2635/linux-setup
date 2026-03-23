@@ -200,7 +200,7 @@ configure_repos_and_dnf() {
     # 查看所有仓库
     # dnf repolist --all
     # 禁用仓库
-    # sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
+    sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
     # 在 DNF 5 中，彻底移除第三方仓库的最标准方法依然是手动删除对应的 .repo 文件，下列会打印与每个 Yum 仓库关联的仓库 ID 列表
     # grep -E "^\[.*]" /etc/yum.repos.d/*
     # 删除仓库文件
@@ -239,7 +239,6 @@ configure_repos_and_dnf() {
              -e 's|^#baseurl=http://download1.rpmfusion.org|baseurl=https://mirrors.ustc.edu.cn/rpmfusion|g' \
              -i.bak \
              /etc/yum.repos.d/rpmfusion*.repo
-    
     # 5、删除文件后，必须清理 DNF 缓存以生效，同时重建 DNF 缓存
     log_info "正在清理 DNF 缓存并重建 DNF 缓存..."
     sudo dnf clean all
@@ -247,9 +246,6 @@ configure_repos_and_dnf() {
     # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
     log_info "正在更新系统并清理无用包..."
     sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
-    # 移除预装但不常用的软件
-    log_info "移除预装的冗余软件..."
-    sudo dnf remove -y mediawriter libreoffice-* || true
 
     log_success "软件源与 DNF 配置完成。"
 }
@@ -298,6 +294,7 @@ install_dev_tools() {
     # dnf group list				# 查看可用的软件包组
     # dnf group info development-tools		# 查看软件包组的信息
     # dnf group info c-development		# 查看软件包组的信息
+    sudo dnf group remove -y libreoffice
     sudo dnf group install -y development-tools c-development rpm-development-tools
     # 安装虚拟化基础
     sudo dnf group install -y --with-optional virtualization
@@ -312,12 +309,8 @@ install_dev_tools() {
     sudo dnf install -y mozilla-openh264 mozilla-ublock-origin
     # 之后，您需要打开 Firefox，转到菜单 → 附加组件 → 插件 并启用 OpenH264 插件。
     # 您可以在此页面 https://mozilla.github.io/webrtc-landing/pc_test.html 上对您的 H.264 是否在 RTC 中工作进行简单测试（检查需要 H.264 视频）
-
     # 常用命令行工具
-    sudo dnf install -y \
-        git wget curl unzip p7zip \
-        fastfetch wl-clipboard
-
+    sudo dnf install -y fastfetch wl-clipboard
     # Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
     # https://tauri.app/zh-cn/start/prerequisites/#linux
     sudo dnf check-update
@@ -352,7 +345,6 @@ configure_languages() {
         # npm list -g --depth=0
         # 执行更新命令，更新所有可更新的全局包
         # npm update -g
-        npm install -g bun
         # 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
         # bun - 现代的 JavaScript 运行时和包管理器
         # https://www.npmjs.com/package/bun
@@ -450,8 +442,9 @@ mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis
     # 配置 crates.io 国内中科大 ustc 加速镜像源	 https://mirrors.ustc.edu.cn/help/crates.io-index.html
     # 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
     # 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新
-    export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
-    export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
+    echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup' >> ~/.bash_profile
+    echo 'export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup' >> ~/.bash_profile
+    source ~/.bash_profile
     log_info "开始安装 Rust 环境..."
     # cat ~/.bash_profile
     # 使用官方安装脚本
@@ -459,30 +452,30 @@ mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis
     # 使用阿里云安装脚本
     curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
     # 激活 Rust 环境
-    source "$HOME/.cargo/env"
+    . "$HOME/.cargo/env"
     # rustup update
     # 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
     # 配置 Cargo 镜像
-    mkdir -p $HOME/.cargo
+    mkdir -vp "$HOME/.cargo"
 # cat $HOME/.cargo/config.toml
 # tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | tee $HOME/.cargo/config.toml
-# 配置 Cargo 国内加速镜像源，可选：ustc、aliyun、tuna 此处默认选择 ustc
+# 配置 Cargo 国内加速镜像源，可选：aliyun、ustc、tuna 此处默认选择 aliyun
 # 使用稀疏协议（sparse）减少元数据下载量，大幅加速
 [source.crates-io]
-replace-with = 'ustc'
-
-# ustc 中科大 crates.io 镜像 	https://mirrors.ustc.edu.cn/help/crates.io-index.html
-[source.ustc]
-registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
-[registries.ustc]
-index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+replace-with = 'aliyun'
 
 # aliyun 阿里云 crates.io 镜像	https://developer.aliyun.com/mirror/rustup 
 [source.aliyun]
 registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
 [registries.aliyun]
 index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+
+# ustc 中科大 crates.io 镜像 	https://mirrors.ustc.edu.cn/help/crates.io-index.html
+[source.ustc]
+registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+[registries.ustc]
+index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
         log_info "Rust 已安装: $(rustc --version)"
     fi
@@ -838,47 +831,65 @@ install_gnome_extensions() {
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/dsheeler/CoverflowAltTab.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/ddterm/gnome-shell-extension-ddterm.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/purejava/fedora-update.git
+        git clone --depth=1 https://gitlab.com/Czarlie/gnome-fuzzy-app-search.git
         git clone --depth=1 https://gitlab.com/smedius/desktop-icons-ng.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/Aryan20/Logomenu.git
         git clone --depth=1 https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/stuarthayhurst/privacy-menu-extension.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/d-go/quick-settings-avatar.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/qwreey/quick-settings-tweaks.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/WSID/gnome-shell-screencast-extra-feature.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/icedman/search-light.git
+        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/ChrisLauinger77/gnome-shell-extension-SmartAutoMoveNG.git
         git clone --depth=1 https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
         git clone --depth=1 https://gitlab.gnome.org/june/top-bar-organizer.git
-        git clone --depth=1 https://hk.gh-proxy.org/https://github.com/purejava/fedora-update.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
+        git clone --depth=1 https://gitlab.gnome.org/glerro/gnome-shell-extension-wifiqrcode.git
+        
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
         cd ~/下载/extensions/alphabetical-grid-extension && make build && make install
         cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
         cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
         cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
         cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
-        cd ~/下载/extensions/quick-settings-tweaks && npm i && TARGET=dev ./install.sh create-release && gnome-extensions install -f target/quick-settings-tweaks@qwreey.shell-extension.zip
         cd ~/下载/extensions/CoverflowAltTab && make all
         cd ~/下载/extensions && zip -FSr custom-command-menu.zip custom-command-menu/* && gnome-extensions install -f custom-command-menu.zip
         cd ~/下载/extensions/Customize-IBus && make install
         cd ~/下载/extensions/gnome-shell-extension-ddterm && meson setup build-dir && ninja -C build-dir bundle && ninja -C build-dir user-install
         cd ~/下载/extensions/disable-unredirect && make install
+        cd ~/下载/extensions && zip -FSr fedora-update.zip fedora-update/* && gnome-extensions install -f fedora-update.zip
+        cd ~/下载/extensions/gnome-fuzzy-app-search && make install
         cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
         cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
         cd ~/下载/extensions/Logomenu && make install
         cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
+        cd ~/下载/extensions/privacy-menu-extension && make build && make install
+        cd ~/下载/extensions && zip -FSr quick-settings-avatar.zip quick-settings-avatar/* && gnome-extensions install -f quick-settings-avatar.zip
+        cd ~/下载/extensions/quick-settings-tweaks && npm i && TARGET=dev ./install.sh create-release && gnome-extensions install -f target/quick-settings-tweaks@qwreey.shell-extension.zip
         cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
         cd ~/下载/extensions/rounded-window-corners && just install
+        cd ~/下载/extensions/gnome-shell-screencast-extra-feature && ./build.sh && gnome-extensions install -f screencast.extra.feature@wissle.me.shell-extension.zip
+        cd ~/下载/extensions/search-light && make
+        cd ~/下载/extensions/gnome-shell-extension-SmartAutoMoveNG && ./smartautomoveng.sh install
         cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-        cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
         cd ~/下载/extensions/top-bar-organizer && npm i && ./package.sh && gnome-extensions install -f top-bar-organizer@julian.gse.jsts.xyz.shell-extension.zip
-        cd ~/下载/extensions && zip -FSr fedora-update.zip fedora-update/* && gnome-extensions install -f fedora-update.zip
         cd ~/下载/extensions/weather-oclock && make install
-        # 系统级别构建安装，默认 --prefix=/usr/local
-        # meson setup build -Dtarget=system && meson install -C build
+        cd ~/下载/extensions/gnome-shell-extension-wifiqrcode && meson setup --prefix=$HOME/.local _build && meson install -C _build
+        
+        gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
+          --method org.gnome.Shell.Extensions.InstallRemoteExtension 'extension-list@tu.berry'
+        gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
+          --method org.gnome.Shell.Extensions.InstallRemoteExtension 'desktop-lyric@tuberry'
+        
     fi
     rm ~/下载/extensions
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
@@ -1040,6 +1051,7 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
     # gsettings list-recursively org.gnome.shell.extensions.logo-menu
     gsettings set org.gnome.shell.extensions.logo-menu menu-button-icon-image 1
     gsettings set org.gnome.shell.extensions.logo-menu menu-button-icon-size 20
+    gsettings set org.gnome.shell.extensions.logo-menu show-activities-button false
     # gsettings reset-recursively org.gnome.shell.extensions.logo-menu
     
     # Night Theme Switcher
@@ -1084,6 +1096,22 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
 
 set_theme_example() {
     # 启用系统 GNOME 扩展
+    # AppIndicator and KStatusNotifierItem Support
+    # Apps Menu
+    # Auto Move Windows
+    # Background Logo
+    # Blur my Shell
+    # Caffeine
+    # Dash to Dock
+    # Forge
+    # GSConnect
+    # Just Perfection
+    # Light Style
+    # No overview at start-up
+    # Places Status Indicator
+    # Removable Drive Menu
+    # User Themes
+    # Workspace Indicator
     # 列出所有系统级扩展
     # gnome-extensions list --system
     gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
@@ -1104,6 +1132,54 @@ set_theme_example() {
     gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
     
     # 用户 GNOME 扩展
+    # Add to Desktop
+    # Alphabetical App Grid
+    # App menu is back
+    # Bluetooth Battery Meter
+    # Clipboard Indicator
+    # Compiz alike magic lamp effect
+    # Coverflow Alt-Tab
+    # Custom Command Menu
+    # Customize IBus
+    # ddterm
+    # Desktop Lyric
+    # Disable Unredirect
+    # Fedora Linux Update Indicator
+    # Extension List
+    # GNOME Fuzzy App Search
+    # Gtk4 Desktop Icons NG (DING)
+    # Hide Top Bar
+    # Logo Menu
+    # Night Theme Switcher
+    # Privacy Quick Settings
+    # User Avatar In Quick Settings
+    # Quick Settings Tweaks
+    # Rounded Corners
+    # Rounded Window Corners Reborn
+    # Search Light
+    # Screencast extra Feature
+    # Smart Auto Move NG
+    # Status Area Horizontal Spacing
+    # Top Bar Organizer
+    # Weather O'Clock
+    # Wifi QR Code
+
+# Battery Health Charging
+# Bing Wallpaper
+# Burn My Windows
+# CHC-E (Custom Hot Corners - Extended)
+# Compiz windows effect
+# Fly-Pie
+# PaperWM
+# Do Not Disturb While Screen Sharing Or Recording
+# gTile
+# In Picture
+# Lock Keys
+# Lunar Calendar 农历
+# Screen word translate
+# Shortcuts
+# Kiwi Menu
+# Kiwi is not Apple
     # 列出所有用户级扩展
     # gnome-extensions list --user
     gnome-extensions enable add-to-desktop@tommimon.github.com
@@ -1116,18 +1192,26 @@ set_theme_example() {
     gnome-extensions enable custom-command-list@storageb.github.com
     gnome-extensions enable customize-ibus@hollowman.ml
     gnome-extensions enable ddterm@amezin.github.com
+    gnome-extensions enable desktop-lyric@tuberry
     gnome-extensions enable disable-unredirect@exeos
     gnome-extensions enable update-extension@purejava.org
+    gnome-extensions enable extension-list@tu.berry
+    gnome-extensions enable gnome-fuzzy-app-search@gnome-shell-extensions.Czarlie.gitlab.com
     gnome-extensions enable gtk4-ding@smedius.gitlab.com
     gnome-extensions enable hidetopbar@mathieu.bidon.ca
     gnome-extensions enable logomenu@aryan_k
     gnome-extensions enable nightthemeswitcher@romainvigier.fr
+    gnome-extensions enable PrivacyMenu@stuarthayhurst
+    gnome-extensions enable quick-settings-avatar@d-go
     gnome-extensions enable quick-settings-tweaks@qwreey
     gnome-extensions enable Rounded_Corners@lennart-k
     gnome-extensions enable rounded-window-corners@fxgn
+    gnome-extensions enable screencast.extra.feature@wissle.me
+    gnome-extensions enable search-light@icedman.github.com
     gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
     gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
     gnome-extensions enable weatheroclock@CleoMenezesJr.github.io
+    gnome-extensions enable wifiqrcode@glerro.pm.me
 }
 
 # ------------------------------------------------------------------------------
