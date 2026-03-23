@@ -647,8 +647,6 @@ configure_flatpak_and_install_app() {
     flatpak install -y flathub re.sonny.Playhouse
     # Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
     flatpak install -y flathub com.usebottles.bottles
-    flatpak install -y flathub com.qq.QQ
-    flatpak install -y flathub com.tencent.WeChat
     flatpak install -y flathub com.github.marhkb.Pods
     flatpak install -y flathub dev.skynomads.Seabird
     # OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
@@ -853,8 +851,6 @@ install_gnome_extensions() {
         git clone --depth=1 https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
         git clone --depth=1 https://gitlab.gnome.org/june/top-bar-organizer.git
         git clone --depth=1 https://hk.gh-proxy.org/https://github.com/CleoMenezesJr/weather-oclock.git
-        git clone --depth=1 https://gitlab.gnome.org/glerro/gnome-shell-extension-wifiqrcode.git
-        
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip
         cd ~/下载/extensions/alphabetical-grid-extension && make build && make install
         cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
@@ -883,13 +879,6 @@ install_gnome_extensions() {
         cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
         cd ~/下载/extensions/top-bar-organizer && npm i && ./package.sh && gnome-extensions install -f top-bar-organizer@julian.gse.jsts.xyz.shell-extension.zip
         cd ~/下载/extensions/weather-oclock && make install
-        cd ~/下载/extensions/gnome-shell-extension-wifiqrcode && meson setup --prefix=$HOME/.local _build && meson install -C _build
-        
-        gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
-          --method org.gnome.Shell.Extensions.InstallRemoteExtension 'extension-list@tu.berry'
-        gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell \
-          --method org.gnome.Shell.Extensions.InstallRemoteExtension 'desktop-lyric@tuberry'
-        
     fi
     rm ~/下载/extensions
     # 解决用户 Gnome 扩展无法使用 gsettings 的问题
@@ -983,21 +972,13 @@ install_gnome_extensions() {
     # Coverflow Alt-Tab
     # 递归列出某个 Schema 的键值
     # gsettings list-recursively org.gnome.shell.extensions.coverflowalttab
-    # gsettings set org.gnome.shell.extensions.coverflowalttab switcher-looping-method 'Flip Stack'
     gsettings set org.gnome.shell.extensions.coverflowalttab switcher-looping-method 'Carousel'
     gsettings set org.gnome.shell.extensions.coverflowalttab hide-panel false
     # 设置背景黯淡因素，越大越暗
     gsettings set org.gnome.shell.extensions.coverflowalttab dim-factor 0.0
     gsettings set org.gnome.shell.extensions.coverflowalttab animation-time 0.5
-    # gsettings get org.gnome.shell.extensions.coverflowalttab easing-function
-    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quad'
-    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-cubic'
-    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quart'
-    gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quint'
-    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-sine'
-    # gsettings set org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio 0.75
-    # gsettings get org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
-    # gsettings reset org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio
+    # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quint'
+    gsettings set org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio 0.7
     # gsettings reset-recursively org.gnome.shell.extensions.coverflowalttab
     
     # Custom Command Menu
@@ -1022,8 +1003,8 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
     # ddterm，默认的切换快捷键 F12
     # gsettings list-recursively com.github.amezin.ddterm
     gsettings set com.github.amezin.ddterm background-opacity 1.0
-    gsettings set com.github.amezin.ddterm hide-animation-duration 0.3
-    gsettings set com.github.amezin.ddterm show-animation-duration 0.2
+    gsettings set com.github.amezin.ddterm show-animation-duration 0.3
+    gsettings set com.github.amezin.ddterm hide-animation-duration 0.2
     # gsettings set com.github.amezin.ddterm window-size 0.6
     gsettings set com.github.amezin.ddterm hide-when-focus-lost true
     gsettings set com.github.amezin.ddterm hide-window-on-esc true
@@ -1074,6 +1055,13 @@ gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色�
     # 启用或禁用 覆盖式菜单样式（即快捷设置面板以独立浮层形式弹出，而非传统的下拉样式）。
     gsettings set org.gnome.shell.extensions.quick-settings-tweaks overlay-menu-enabled true
     # gsettings reset-recursively org.gnome.shell.extensions.quick-settings-tweaks
+    
+    # Search Light
+    # gsettings list-recursively org.gnome.shell.extensions.search-light
+    gsettings set org.gnome.shell.extensions.search-light shortcut-search "['<Super>s']"
+    gsettings set org.gnome.shell.extensions.search-light border-radius 6
+    gsettings set org.gnome.shell.extensions.search-light blur-background true
+    # gsettings reset-recursively org.gnome.shell.extensions.search-light
     
     # Status Area Horizontal Spacing
     # gsettings list-recursively org.gnome.shell.extensions.status-area-horizontal-spacing
@@ -1142,7 +1130,6 @@ set_theme_example() {
     # Custom Command Menu
     # Customize IBus
     # ddterm
-    # Desktop Lyric
     # Disable Unredirect
     # Fedora Linux Update Indicator
     # Extension List
@@ -1162,7 +1149,6 @@ set_theme_example() {
     # Status Area Horizontal Spacing
     # Top Bar Organizer
     # Weather O'Clock
-    # Wifi QR Code
 
 # Battery Health Charging
 # Bing Wallpaper
@@ -1211,7 +1197,6 @@ set_theme_example() {
     gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
     gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
     gnome-extensions enable weatheroclock@CleoMenezesJr.github.io
-    gnome-extensions enable wifiqrcode@glerro.pm.me
 }
 
 # ------------------------------------------------------------------------------
