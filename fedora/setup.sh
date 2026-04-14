@@ -429,9 +429,11 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
         gnome-browser-connector \
         libadwaita-demo timeshift
     # sudo dnf install -y gnome-builder
-    gsettings set org.gnome.builder projects-directory "$HOME/编程/Gnome"
+    # gsettings set org.gnome.builder projects-directory "$HOME/编程/Gnome"
+    
+    
     # 安装游戏平台
-    # sudo dnf install -y lutris steam
+    # sudo dnf install -y wine dxvk-native lutris steam
     
     # https://developer.aliyun.com/mirror/google-chrome
     sudo dnf install -y google-chrome-stable
@@ -477,6 +479,54 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
     # 开启会话并显示图形界面：
     waydroid session start
     waydroid show-full-ui
+
+    # Fedora 44 安装后指南
+    # https://github.com/devangshekhawat/Fedora-44-Post-Install-Guide
+    # 1、RPM Fusion & Terra
+    # Fedora 默认禁用了大量免费和非免费的 .rpm 软件包的仓库。如果您想使用 Steam、Discord 等非免费软件和一些多媒体编解码器等，请按照此方法操作。一般来说，建议这样做以获取许多主流有用程序的使用权限
+    # 通过将以下内容粘贴到终端中启用第三方仓库：
+    sudo dnf install -y --nogpgcheck \
+    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    # 对于Terra:
+    sudo dnf install -y --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
+    # 此外，在安装的同时，请安装app-stream元数据：
+    sudo dnf group upgrade core
+    sudo dnf group install core
+    # 2、更新系统并重启
+    sudo dnf update -y && reboot
+    # 3、固件，如果你的系统支持通过lvfs进行固件更新，请通过以下方式更新你的设备固件：
+    sudo fwupdmgr refresh --force
+    # 列出有可用更新的设备
+    sudo fwupdmgr get-devices
+    # 获取可用更新列表
+    sudo fwupdmgr get-updates
+    sudo fwupdmgr update
+    # 4、媒体编解码器，安装这些以获得正确的多媒体播放
+    sudo dnf group install multimedia
+    # 切换到完整的 ffmpeg
+    sudo dnf swap 'ffmpeg-free' 'ffmpeg' --allowerasing
+    # 安装 gstreamer 组件。如果你使用 Gnome Videos 和其他依赖应用程序，则需要安装。sudo dnf group install -y sound-and-video 安装有用的声音和视频补充包。
+    sudo dnf upgrade @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
+    # 安装有用的声音和视频补充软件包
+    sudo dnf group install -y sound-and-video
+    # 5、硬件视频加速，通过将渲染分配给dGPU/iGPU，有助于在在线观看视频时减少CPU的负载。这在增加笔记本电脑的电池续航方面非常有帮助
+    # 使用 VA-API 进行硬件视频解码
+    sudo dnf install -y ffmpeg-libs libva libva-utils
+    # Intel，如果你安装了上述软件包后拥有较新的英特尔芯片组（第五代及以上），请执行：
+    sudo dnf swap libva-intel-media-driver intel-media-driver --allowerasing
+    sudo dnf install libva-intel-driver
+    # AMD，对于英特尔集成显卡，无需执行此操作。Mesa 驱动程序是为 AMD 显卡设计的，由于法律问题，AMD显卡在F38的fedora仓库中不再支持h264/h245。
+    sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
+    sudo dnf swap mesa-va-drivers.i686 mesa-va-drivers-freeworld.i686
+    # 6、OpenH264 for Firefox
+    sudo dnf install -y openh264 gstreamer1-plugin-openh264 mozilla-openh264
+    sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
+    # 7、设置主机名
+    hostnamectl set-hostname YOUR_HOSTNAME
+    # 8、优化，以下建议可以帮助您从系统中榨取一点更多的性能
+    # 禁用 NetworkManager-wait-online.service 禁用它可以使启动时间减少至少 ~15秒-20秒：
+    sudo systemctl disable NetworkManager-wait-online.service
 
     log_success "软件源与 DNF 配置完成。"
 }
