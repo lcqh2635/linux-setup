@@ -63,6 +63,10 @@ flatpak uninstall --unused -y
 # flatpak search *theme*
 
 
+# GNOME 扩展负责更新扩展、配置扩展偏好以及移除或禁用不需要的扩展
+flatpak install -y flathub org.gnome.Extensions
+# 浏览并安装GNOME Shell扩展以定制你的桌面
+flatpak install -y flathub com.mattjakeman.ExtensionManager
 # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
 flatpak install -y flathub io.github.kolunmi.Bazaar
 # Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
@@ -71,6 +75,12 @@ flatpak install -y flathub com.github.tchx84.Flatseal
 flatpak install -y flathub io.github.flattool.Warehouse
 # 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
 flatpak install -y flathub io.github.giantpinkrobots.flatsweep
+# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
+flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了！Impression 是热衷于发行的用户和普通电脑用户都非常有用的工具
+flatpak install -y flathub io.gitlab.adhami3310.Impression
+# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
+flatpak install -y flathub de.haeckerfelix.Fragments
 # 快速、私密且安全的网页浏览器
 flatpak install -y flathub org.mozilla.firefox
 # Zen 是浏览网页的最佳方式。设计精美，注重隐私，功能丰富。我们关心的是您的体验，而不是您的数据。
@@ -81,24 +91,14 @@ flatpak install -y flathub com.microsoft.Edge
 flatpak install -y flathub com.google.Chrome
 # Brave 致力于通过为用户提供更安全、更快速、更好的浏览体验来修复网络，同时通过一个基于注意力的奖励生态系统，扩大对内容创作者的支持
 flatpak install -y flathub com.brave.Browser
-# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
-flatpak install -y flathub io.github.realmazharhussain.GdmSettings
-# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了！Impression 是热衷于发行的用户和普通电脑用户都非常有用的工具
-flatpak install -y flathub io.gitlab.adhami3310.Impression
-# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
-flatpak install -y flathub de.haeckerfelix.Fragments
 # LibreOffice 是一个强大的办公套件。它简洁的界面和功能丰富的工具帮助你释放创造力并提高生产力
 flatpak install -y flathub org.libreoffice.LibreOffice
-# GNOME 扩展负责更新扩展、配置扩展偏好以及移除或禁用不需要的扩展
-flatpak install -y flathub org.gnome.Extensions
-# 浏览并安装GNOME Shell扩展以定制你的桌面
-flatpak install -y flathub com.mattjakeman.ExtensionManager
 # Manuals 索引您的开发者手册，并提供强大的浏览和搜索功能。它支持许多与 GTK 平台集成的库所使用的 devhelp 文档格式。
 flatpak install -y flathub org.gnome.Manuals
 # GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
 flatpak install -y flathub org.gnome.Epiphany
 # File Roller 是一款用于打开、创建和修改归档和压缩归档文件的 GNOME 应用程序
-flatpak install -y flathub org.gnome.FileRoller
+# flatpak install -y flathub org.gnome.FileRoller
 # 选择一个作系统，让Box在虚拟机中下载并安装
 flatpak install -y flathub org.gnome.Boxes
 # Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
@@ -125,6 +125,8 @@ flatpak install -y flathub ca.desrt.dconf-editor
 flatpak install -y flathub io.github.alainm23.planify
 # 用干净、无干扰的标记删除编辑器专注于你的写作
 flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+# 开源 Notion 替代品，AppFlowy 是一个注重隐私的开源工作空间，用于您的笔记、任务、数据库等
+flatpak install -y flathub io.appflowy.AppFlowy
 # Obsidian 是一个强大的知识库，运行在本地纯文本 Markdown 文件文件夹之上
 flatpak install -y flathub md.obsidian.Obsidian
 # 一款极简的Markdown阅读与写作应用
@@ -191,15 +193,25 @@ flatpak install -y flathub re.sonny.Workbench
 flatpak install -y flathub com.getpostman.Postman
 # Apifox = Postman + Swagger + Mock + JMeter
 flatpak install -y flathub com.apifox.Apifox
+# 在 Fedora 上的  Flatpak 仓库 jetbrains 等应用 中缺少 最小化/最大化 按钮解决方案
+# https://github.com/flathub/com.jetbrains.Rider/issues/115
 # 推荐使用字体：Noto Sans CJK SC Medium
 flatpak install -y flathub com.jetbrains.IntelliJ-IDEA-Ultimate
+# flatpak run --command=gsettings com.jetbrains.IntelliJ-IDEA-Ultimate set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.WebStorm
+# flatpak run --command=gsettings com.jetbrains.WebStorm set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.RustRover
+# flatpak run --command=gsettings com.jetbrains.RustRover set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.DataGrip
+# flatpak run --command=gsettings com.jetbrains.DataGrip set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.CLion
+# flatpak run --command=gsettings com.jetbrains.CLion set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.GoLand
+# flatpak run --command=gsettings com.jetbrains.GoLand set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.PyCharm-Professional
+# flatpak run --command=gsettings com.jetbrains.PyCharm-Professional set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.google.AndroidStudio
+# flatpak run --command=gsettings com.google.AndroidStudio set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.visualstudio.code
 flatpak install -y flathub com.vscodium.codium
 flatpak install -y flathub dev.zed.Zed
