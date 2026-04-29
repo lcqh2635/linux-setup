@@ -30,6 +30,7 @@
 # Fedora 快速上手：	https://docs.fedoraproject.org/zh_Hans/quick-docs/
 # Fedora 用户社区：	https://discussion.fedoraproject.org/
 # Gnome 官方网站：	https://www.gnome.org/zh-CN/
+# https://www.techpowerup.com/
 # https://pkgs.org/
 # https://fedora.pkgs.org/
 # 使用 DNF 系统插件升级 Fedora Linux	https://docs.fedoraproject.org/en-US/quick-docs/upgrading-fedora-offline/
@@ -131,6 +132,8 @@ configure_basics_gsettings() {
     log_info "正在配置 GNOME 桌面基础设置..."
     cd ~/下载
 
+    # 显示登出菜单
+    gsettings set org.gnome.shell always-show-log-out true
     # 设置强调色为蓝色
     gsettings set org.gnome.desktop.interface accent-color 'blue'
     # 设置新窗口居中显示
@@ -173,10 +176,13 @@ configure_basics_gsettings() {
 
     # Nautilus 设置
     # gsettings list-recursively org.gnome.nautilus.preferences
+    gsettings set org.gnome.nautilus.preferences date-time-format 'detailed'
     gsettings set org.gnome.nautilus.preferences default-sort-order 'type'
+    gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
     gsettings set org.gnome.nautilus.preferences show-delete-permanently true
     
     gsettings set org.gnome.Ptyxis interface-style 'system'
+    gsettings set org.gnome.shell.weather automatic-location true
     # 设置天气位置
     gsettings set org.gnome.Weather locations "[<(uint32 2, <('Shenzhen', 'ZGSZ', false, [(0.39357174632472131, 1.9914206765255298)], @a(dd) [])>)>]"
 
@@ -195,9 +201,11 @@ configure_basics_gsettings() {
     gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
     gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
     gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
+    # gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>Right']"
     # Alt + Super 移动当前工作取得窗口到左右其他工作区
     gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
     gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
+    # gsettings list-recursively org.gnome.shell.keybindings
 
     if [ ! -d "$HOME/下载/linux-setup" ]; then
         git config --global user.name "lcqh2635"
@@ -296,7 +304,7 @@ configure_repos_and_dnf() {
     # 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
     # Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
     # 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
-    # sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
+    # sudo dnf config-manager setopt max_parallel_downloads=6 fastestmirror=True
     # 如果下面配置使用了固定的阿里云加速镜像，则不要配置 fastestmirror=True
     sudo dnf config-manager setopt max_parallel_downloads=10
     sudo dnf config-manager setopt fastestmirror=False
@@ -392,7 +400,7 @@ configure_repos_and_dnf() {
 sudo dnf install -y --nogpgcheck \
      	https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
      	https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-sudo sed -e 's!^metalink=!#metalink=!g' \
+    sudo sed -e 's!^metalink=!#metalink=!g' \
          -e 's!^mirrorlist=!#mirrorlist=!g' \
          -e 's!^#baseurl=!baseurl=!g' \
          -e 's!https\?://download1\.rpmfusion\.org/!https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/!g' \
@@ -426,10 +434,12 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
     
     log_info "正在安装常用软件包..."
     sudo dnf install -y gnome-tweaks \
-        gnome-browser-connector \
+        gnome-browser-connector gnome-extensions-app \
         libadwaita-demo timeshift
-    # sudo dnf install -y gnome-builder
-    # gsettings set org.gnome.builder projects-directory "$HOME/编程/Gnome"
+    
+    sudo dnf install -y evolution epiphany
+    sudo dnf install -y gnome-builder
+    gsettings set org.gnome.builder projects-directory "$HOME/编程/Gnome"
     
     
     # 安装游戏平台
@@ -447,12 +457,19 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
     # Android Type：Android with Google Apps
     sudo dnf install -y waydroid
     # sudo dnf reinstall -y waydroid
+    # sudo dnf remove -y waydroid
+    # sudo dnf clean all && sudo dnf makecache && sudo dnf autoremove -y
     # 安装后，如果没有自动启动，你应该启动 waydroid-container 服务：
     sudo systemctl enable --now waydroid-container
     systemctl status waydroid-container --no-pager
     # waydroid init --help
+    
+    # 方法一：使用 waydroid 命令安装（推荐）
     # 初始化 Waydroid 容器环境并下载 Android 系统镜像，使用官方默认的镜像，基于 Android 13
     # https://sourceforge.net/projects/waydroid-atv/
+    # https://sourceforge.net/projects/waydroid/files/images/
+    # https://sourceforge.net/projects/waydroid/files/images/system/
+    # https://sourceforge.net/projects/waydroid/files/images/vendor/
     sudo waydroid init -f \
       -c https://ota.waydro.id/system \
       -v https://ota.waydro.id/vendor \
@@ -462,6 +479,7 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
     # https://github.com/WayDroid-ATV?q=&type=all&language=&sort=stargazers
     # 为 Waydroid 准备的 Android 13/14/15/16 版本
     # https://github.com/WayDroid-ATV/waydroid-builds/releases
+    # https://sourceforge.net/projects/waydroid-atv/files/images/
     sudo waydroid init -f \
       -c https://waydroid-atv.github.io/ota/a16/system \
       -v https://waydroid-atv.github.io/ota/a16/vendor \
@@ -469,6 +487,11 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
       -s GAPPS
     # 为 Waydroid 构建的 Android TV 版本
     # https://github.com/WayDroid-ATV/waydroid-androidtv-builds
+    # https://github.com/WayDroid-ATV/waydroid-androidtv-builds/releases/
+    # https://sourceforge.net/projects/waydroid-atv/files/images/system/
+    # https://sourceforge.net/projects/waydroid-atv/files/images/vendor/
+    # https://sourceforge.net/projects/waydroid-atv/files/images/system/waydroid_tv_x86_64/lineage-23.0-20260403-GAPPS-waydroid_tv_x86_64-system.zip/download
+    # https://sourceforge.net/projects/waydroid-atv/files/images/vendor/waydroid_tv_x86_64/lineage-23.0-20260403-MAINLINE-waydroid_tv_x86_64-vendor.zip/download
     sudo waydroid init -f \
       -c https://waydroid-atv.github.io/ota/a16-tv/system \
       -v https://waydroid-atv.github.io/ota/a16-tv/vendor \
@@ -476,9 +499,29 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
       -s GAPPS
     # 使用 Waydroid 下载镜像
     sudo waydroid upgrade
+    # nautilus admin:/var/lib/waydroid/images
+    
+    # 方法二：手动下载和安装
+    # https://sourceforge.net/projects/waydroid-atv/files/images/system/
+    # https://sourceforge.net/projects/waydroid-atv/files/images/vendor/
+    # nautilus admin:/etc/waydroid/images/
+    # nautilus admin:/etc/waydroid-extra/images/
+    sudo mkdir -p /etc/waydroid-extra/images/
+    sudo cp system.img /etc/waydroid-extra/images/system.img
+    sudo cp vendor.img /etc/waydroid-extra/images/vendor.img
+    sudo waydroid init -f
+    
     # 开启会话并显示图形界面：
+    waydroid session stop
     waydroid session start
     waydroid show-full-ui
+    waydroid log
+    waydroid status
+    # sudo cat /var/lib/waydroid/lxc/waydroid/config
+    # sudo sed -i 's/^lxc\.arch *= *.*/lxc.arch = x86_64/' /var/lib/waydroid/lxc/waydroid/config
+    sudo systemctl restart waydroid-container
+    waydroid session start
+    
 
     # Fedora 44 安装后指南
     # https://github.com/devangshekhawat/Fedora-44-Post-Install-Guide
@@ -491,8 +534,8 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
     # 对于Terra:
     sudo dnf install -y --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
     # 此外，在安装的同时，请安装app-stream元数据：
-    sudo dnf group upgrade core
-    sudo dnf group install core
+    sudo dnf group upgrade -y core
+    sudo dnf group install -y core
     # 2、更新系统并重启
     sudo dnf update -y && reboot
     # 3、固件，如果你的系统支持通过lvfs进行固件更新，请通过以下方式更新你的设备固件：
@@ -503,11 +546,11 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
     sudo fwupdmgr get-updates
     sudo fwupdmgr update
     # 4、媒体编解码器，安装这些以获得正确的多媒体播放
-    sudo dnf group install multimedia
+    sudo dnf group install -y multimedia
     # 切换到完整的 ffmpeg
-    sudo dnf swap 'ffmpeg-free' 'ffmpeg' --allowerasing
+    sudo dnf swap -y 'ffmpeg-free' 'ffmpeg' --allowerasing
     # 安装 gstreamer 组件。如果你使用 Gnome Videos 和其他依赖应用程序，则需要安装。sudo dnf group install -y sound-and-video 安装有用的声音和视频补充包。
-    sudo dnf upgrade @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
+    sudo dnf upgrade -y @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
     # 安装有用的声音和视频补充软件包
     sudo dnf group install -y sound-and-video
     # 5、硬件视频加速，通过将渲染分配给dGPU/iGPU，有助于在在线观看视频时减少CPU的负载。这在增加笔记本电脑的电池续航方面非常有帮助
@@ -517,8 +560,8 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
     sudo dnf swap libva-intel-media-driver intel-media-driver --allowerasing
     sudo dnf install libva-intel-driver
     # AMD，对于英特尔集成显卡，无需执行此操作。Mesa 驱动程序是为 AMD 显卡设计的，由于法律问题，AMD显卡在F38的fedora仓库中不再支持h264/h245。
-    sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
-    sudo dnf swap mesa-va-drivers.i686 mesa-va-drivers-freeworld.i686
+    sudo dnf swap -y mesa-va-drivers mesa-va-drivers-freeworld
+    sudo dnf swap -y mesa-va-drivers.i686 mesa-va-drivers-freeworld.i686
     # 6、OpenH264 for Firefox
     sudo dnf install -y openh264 gstreamer1-plugin-openh264 mozilla-openh264
     sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
@@ -527,6 +570,8 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
     # 8、优化，以下建议可以帮助您从系统中榨取一点更多的性能
     # 禁用 NetworkManager-wait-online.service 禁用它可以使启动时间减少至少 ~15秒-20秒：
     sudo systemctl disable NetworkManager-wait-online.service
+    # sudo systemctl enable --now NetworkManager-wait-online.service
+    # systemctl status NetworkManager-wait-online.service --no-pager
 
     log_success "软件源与 DNF 配置完成。"
 }
@@ -804,10 +849,47 @@ sudo dnf check-update
 sudo dnf install -y zen-browser
 
 
+# https://copr.fedorainfracloud.org/coprs/oak443/clash-verge-rev/
+# https://copr.fedorainfracloud.org/coprs/oak443/clash-verge-rev/build/10251225/
+# https://github.com/oak443/fedora-copr/blob/main/clash-verge-rev/clash-verge-rev.spec
+# https://github.com/oak443/fedora-copr/blob/main/.github/workflows/auto_update.yml
+sudo dnf copr enable oak443/clash-verge-rev
+sudo dnf check-update
+sudo dnf install -y clash-verge-rev
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:oak443:clash-verge-rev.repo
+sudo rpm --import https://download.copr.fedorainfracloud.org/results/oak443/clash-verge-rev/pubkey.gpg
+sudo dnf config-manager addrepo \
+  --id=vscode \
+  --save-filename=vscode.repo \
+  --set=name='Clash Verge Rev $releasever - $basearch' \
+  --set=baseurl='https://download.copr.fedorainfracloud.org/results/oak443/clash-verge-rev/fedora-$releasever-$basearch/' \
+  --set=enabled=1 \
+  --set=countme=1 \
+  --set=enabled_metadata=1 \
+  --set=metadata_expire=7d \
+  --set=type=rpm-md \
+  --set=gpgcheck=1 \
+  --set=gpgkey="https://download.copr.fedorainfracloud.org/results/oak443/clash-verge-rev/pubkey.gpg" \
+  --set=repo_gpgcheck=0 \
+  --set=skip_if_unavailable=True \
+  --overwrite
+
+# https://dldir1v6.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.27_260401_x86_64_01.rpm
 
 # https://www.onlyoffice.com/zh
 # https://linuxcapable.com/install-onlyoffice-on-fedora-linux/
 # curl -L -o onlyoffice-desktopeditors.x86_64.rpm https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors.x86_64.rpm
+
+# 一个可滚动平铺的Wayland合成器。
+# https://danklinux.com/
+# https://github.com/niri-wm/niri
+# https://docs.akass.cn/niri/Getting-Started.html
+
+
+# 🩵 一个免费的、开源的应用商店，用于GitHub发布 — 一键浏览、发现和安装应用。
+# 由 Kotlin 和 Compose Multiplatform 为 Android 和桌面（Linux、MacOS、Windows）提供支持。
+# https://github.com/OpenHub-Store/GitHub-Store/releases
+
 
 }
 
@@ -834,34 +916,52 @@ system_update_and_cleanup() {
 # ------------------------------------------------------------------------------
 install_dev_tools() {
     log_info "正在安装基础开发工具链..."
+    
     # 基础工具组
-    # development-tools 	是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
-    # c-development		是简化C开发环境配置的包组，安装后即可获得编译、调试和构建C程序所需的核心工具。如果你需要开发C程序，安装它或对应的包组是第一步。例如：gcc、gcc-c++
-    # rpm-development-tools	是专门用于 RPM 包开发 的工具集，适合软件打包、维护或发布 RPM 格式的软件。例如：rpm-build、rpmdevtools
-    # dnf group install 			# 旨在为开发者提供一个基础的开发环境，而无需手动安装每个工具。
-    # dnf group list				# 查看可用的软件包组
-    # dnf group list --installed		# 查看已安装的软件包组
-    # dnf group info development-tools		# 查看软件包组的信息
-    # dnf group info c-development		# 查看软件包组的信息
-    sudo dnf group install -y rpm-development-tools
+    # development-tools 		是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
+    # c-development			是简化C开发环境配置的包组，安装后即可获得编译、调试和构建C程序所需的核心工具。如果你需要开发C程序，安装它或对应的包组是第一步。例如：gcc、gcc-c++
+    # rpm-development-tools		是专门用于 RPM 包开发 的工具集，适合软件打包、维护或发布 RPM 格式的软件。例如：rpm-build、rpmdevtools
+    # dnf group install			旨在为开发者提供一个基础的开发环境，而无需手动安装每个工具。
+    # dnf group list			查看可用的软件包组
+    # dnf group list --installed	查看已安装的软件包组
+    
+    # 查看软件包组的信息
+    # dnf group info development-tools
+    # sudo dnf group remove -y development-tools
     sudo dnf group install -y development-tools
-    sudo dnf group install -y c-development
+    # dnf group info c-development
+    # sudo dnf group remove -y c-development
+    sudo dnf group install -y --with-optional c-development
+    # dnf group info rpm-development-tools
+    # sudo dnf group remove -y rpm-development-tools
+    sudo dnf group install -y --with-optional rpm-development-tools
     # 安装虚拟化基础
     # https://docs.fedoraproject.org/zh_Hans/quick-docs/virtualization-getting-started/
     # dnf group info virtualization
+    # sudo dnf group remove -y virtualization
     sudo dnf group install -y --with-optional virtualization
+    # dnf group info container-management
+    # sudo dnf group remove -y container-management
+    sudo dnf group install -y --with-optional container-management
+    # dnf group info libreoffice
+    # sudo dnf group remove -y libreoffice
+    sudo dnf group install -y --with-optional libreoffice
+    # dnf group info vlc
+    # sudo dnf group remove -y vlc
+    sudo dnf group install -y --with-optional vlc
     # 安装多媒体编解码器 https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-plugins-for-playing-movies-and-music/
     # multimedia 包组提供了一套完整的音视频处理工具链，适合普通用户或开发者处理多媒体任务。例如：gstreamer1-plugin-* 以包含 gstreamer1-plugin-openh264 等
     # 作为 Fedora 用户和系统管理员，您可以使用这些步骤来安装额外的多媒体插件，使您能够播放各种视频和音频类型。 
     # 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件
+    # dnf group info multimedia
     sudo dnf group install -y --with-optional multimedia
+    # dnf group info sound-and-video
+    # sudo dnf group remove -y sound-and-video
+    sudo dnf group install -y sound-and-video
+    # office window-managers system-tools
     
-    # sudo dnf group install -y --with-optional vlc
-    # sudo dnf group remove -y vlc
-    
-    # sudo dnf group install -y --with-optional libreoffice
-    # sudo dnf group remove -y libreoffice
     # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
+    # dnf list mozilla-*
     # dnf list --available \*openh264\*
     # 从 fedora-cisco-openh264 存储库安	dnf list gstreamer1-plugin-*
     sudo dnf install -y mozilla-openh264 mozilla-ublock-origin
@@ -897,7 +997,7 @@ install_dev_tools() {
     # vulkaninfo | grep "GPU"
     
     # 常用命令行工具
-    sudo dnf install -y fastfetch wl-clipboard
+    sudo dnf install -y fastfetch wl-clipboard clapper gtk4 cmake meson just
     # Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
     # https://tauri.app/zh-cn/start/prerequisites/#linux
     sudo dnf check-update
@@ -909,7 +1009,8 @@ install_dev_tools() {
     
     # 为了让扩展程序能够最佳运行，您需要安装以下依赖项：
     # https://github.com/lukasgierth/fedora-packages/blob/main/tools-misc/gnome-shell-extension-copyous
-    sudo dnf install -y libgda libgda-sqlite
+    # sudo dnf install -y libgda libgda-sqlite
+    
     log_success "基础开发工具安装完成。"
 }
 
@@ -1072,7 +1173,7 @@ EOF
     sudo dnf install -y podman podman-compose
     # 启用用户级 socket
     systemctl --user enable --now podman.socket
-    # systemctl --user status podman
+    # systemctl --user status podman --no-pager
     # https://github.com/containers/podman/blob/cea9340242f3f6cf41f20fb0b6239aa3db5decd6/docs/tutorials/socket_activation.md
     # cat /usr/lib/systemd/user/podman.socket
     # ls $XDG_RUNTIME_DIR/podman/podman.sock
@@ -1262,7 +1363,6 @@ install_gnome_extensions() {
     gnome-shell-extension-launch-new-instance
     sudo dnf install -y \
     gnome-shell-extension-appindicator \
-    gnome-shell-extension-apps-menu \
     gnome-shell-extension-auto-move-windows \
     gnome-shell-extension-background-logo \
     gnome-shell-extension-blur-my-shell \
@@ -1272,10 +1372,7 @@ install_gnome_extensions() {
     gnome-shell-extension-gsconnect \
     gnome-shell-extension-just-perfection \
     gnome-shell-extension-light-style \
-    gnome-shell-extension-no-overview \
-    gnome-shell-extension-places-menu \
     gnome-shell-extension-drive-menu \
-    gnome-shell-extension-system-monitor \
     gnome-shell-extension-user-theme \
     gnome-shell-extension-workspace-indicator
     
@@ -1309,15 +1406,16 @@ install_gnome_extensions() {
     gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
     # 4、任务栏		以下配置是 ‘任务栏’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 1
+    
     # 5、应用程序	以下配置是 ‘应用程序’ 这个菜单项下面的配置内容
     # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.applications
     # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell.applications
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications blur true
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications sigma 50
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications brightness 1.0
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications opacity 220
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications opacity 255
     gsettings set org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
-    gsettings set org.gnome.shell.extensions.blur-my-shell.applications whitelist "['org.gnome.Settings', 'org.gnome.Nautilus', 'org.gnome.Software', 'org.gnome.TextEditor', 'org.gnome.Ptyxis', 'org.gnome.SystemMonitor', 'org.gnome.tweaks', 'org.gnome.Extensions', 'org.gnome.Shell.Extensions', 'org.gnome.SystemMonitor', 'org.gnome.Yelp', 'org.gnome.Tour', 'org.gnome.Maps', 'org.gnome.Gtranslator', 'org.gnome.Firmware', 'org.gnome.Calculator', 'org.gnome.Contacts', 'org.gnome.Calendar', 'org.gnome.clocks', 'org.gnome.Loupe', 'org.gnome.Papers', 'org.gnome.Decibels', 'org.gnome.font-viewer', 'org.gnome.Showtime', 'org.gnome.Weather', 'org.gnome.Builder', 'org.gnome.SimpleScan', 'org.gnome.Characters', 'org.gnome.baobab', 'org.gnome.Logs', 'org.gnome.Snapshot', 'org.gnome.gitlab.somas.Apostrophe', 'io.github.kolunmi.Bazaar', 'io.github.giantpinkrobots.flatsweep', 'io.github.realmazharhussain.GdmSettings', 'io.gitlab.adhami3310.Impression', 'io.github.alainm23.planify', 'io.github.sitraorg.sitra', 'io.github.flattool.Warehouse', 'com.github.tchx84.Flatseal', 'com.github.neithern.g4music', 'com.github.marhkb.Pods', 'it.mijorus.gearlever', 'com.usebottles.bottles', 'com.mattjakeman.ExtensionManager', 'org.freedesktop.MalcontentControl', 're.sonny.Playhouse', 'page.tesk.Refine', 'dev.skynomads.Seabird', 'v2rayN', 'com.gitee.gmg137.NeteaseCloudMusicGtk4', 'jetbrains-toolbox', 'Timeshift-gtk']"
+    # gsettings set org.gnome.shell.extensions.blur-my-shell.applications whitelist "['org.gnome.Settings', 'org.gnome.Nautilus', 'org.gnome.Software', 'org.gnome.TextEditor', 'org.gnome.Ptyxis', 'org.gnome.SystemMonitor', 'org.gnome.tweaks', 'org.gnome.Extensions', 'org.gnome.Shell.Extensions', 'org.gnome.SystemMonitor', 'org.gnome.Yelp', 'org.gnome.Tour', 'org.gnome.Maps', 'org.gnome.Gtranslator', 'org.gnome.Firmware', 'org.gnome.Calculator', 'org.gnome.Contacts', 'org.gnome.Calendar', 'org.gnome.clocks', 'org.gnome.Loupe', 'org.gnome.Papers', 'org.gnome.Decibels', 'org.gnome.font-viewer', 'org.gnome.Showtime', 'org.gnome.Weather', 'org.gnome.Builder', 'org.gnome.SimpleScan', 'org.gnome.Characters', 'org.gnome.baobab', 'org.gnome.Logs', 'org.gnome.Snapshot', 'org.gnome.gitlab.somas.Apostrophe', 'io.github.kolunmi.Bazaar', 'io.github.giantpinkrobots.flatsweep', 'io.github.realmazharhussain.GdmSettings', 'io.gitlab.adhami3310.Impression', 'io.github.alainm23.planify', 'io.github.sitraorg.sitra', 'io.github.flattool.Warehouse', 'com.github.tchx84.Flatseal', 'com.github.neithern.g4music', 'com.github.marhkb.Pods', 'it.mijorus.gearlever', 'com.usebottles.bottles', 'com.mattjakeman.ExtensionManager', 'org.freedesktop.MalcontentControl', 're.sonny.Playhouse', 'page.tesk.Refine', 'dev.skynomads.Seabird', 'v2rayN', 'com.gitee.gmg137.NeteaseCloudMusicGtk4', 'jetbrains-toolbox', 'Timeshift-gtk']"
     # 6、其它		以下配置是 ‘其它’ 这个菜单项下面的配置内容
     gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false
     
@@ -1325,6 +1423,7 @@ install_gnome_extensions() {
     # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
     # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
     gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
+    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
     gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
     gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
     gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
@@ -1340,7 +1439,7 @@ install_gnome_extensions() {
     
     # Just Perfection
     # gsettings list-recursively org.gnome.shell.extensions.just-perfection
-    gsettings set org.gnome.shell.extensions.just-perfection activities-button false
+    # gsettings set org.gnome.shell.extensions.just-perfection activities-button false
     gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
     gsettings set org.gnome.shell.extensions.just-perfection world-clock false
     gsettings set org.gnome.shell.extensions.just-perfection weather false
@@ -1635,6 +1734,7 @@ set_theme_example() {
     gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
     # 列出所有系统级扩展
     # gnome-extensions list --system
+    # dnf list gnome-shell-extension*
     
     # 启用用户 GNOME 扩展
     # Add to Desktop
@@ -1699,6 +1799,8 @@ set_theme_example() {
     # 列出所有用户级扩展
     # gnome-extensions list --user
     
+    # ArcMenu
+    # Vitals
     # Bedtime Mode
     # Battery Health Charging
     # Bing Wallpaper
@@ -1723,6 +1825,27 @@ set_theme_example() {
     # Accent icons theme
     # Accent user theme
     # Accent gtk theme
+    # Custom Command Toggle
+    # Custom Command Menu
+    # Window Desaturation
+    # Live Lock Screen
+    # Show Desktop Button
+    # Extension List
+    # Quick Settings Audio Panel
+    # RebootToUEFI
+    # Application Hotkeys
+    # Battery Power Mode Indicator
+    # Edit Desktop Files
+    # Applications Overview Tooltip
+    # Desktop Lyric
+    
+    # 这是一款专为 GNOME Shell 设计的动态壁纸扩展
+    # https://github.com/jeffshee/gnome-ext-hanabi
+    git clone --depth=1 https://github.com/jeffshee/gnome-ext-hanabi.git
+    git clone --depth=1 https://github.com/ayasa520/gnome-ext-hanabi.git
+    https://github.com/ayasa520/gnome-ext-hanabi/blob/master/docs/fedora-41.md
+    cd gnome-ext-hanabi && ./run.sh install
+    
     
     # gnome-extensions 直接使用可以查看扩展的所有命令的作用
     # gnome-extensions help
@@ -1826,6 +1949,62 @@ set_theme_example() {
 # 模块 6: 主题与美化 (WhiteSur)
 # ------------------------------------------------------------------------------
 install_theme_whitesur() {
+    # https://github.com/topics/macos-tahoe
+    # https://github.com/kayozxo/GNOME-macOS-Tahoe
+    # https://github.com/taj-ny/kwin-effects-forceblur
+    
+    # 帮助新手和专家一起轻松自动化构建终极 macOS 虚拟机，由 KVM 驱动。现在支持 macOS Tahoe
+    # https://github.com/Coopydood/ultimate-macOS-KVM
+    
+    
+    # MacTahoe-icon-theme 内包含 MacTahoe cursors theme，执行命令时，两种主题会一并安装
+    # https://www.opendesktop.org/p/2299216/
+    # https://github.com/vinceliuice/MacTahoe-icon-theme
+    # https://github.com/vinceliuice/MacTahoe-icon-theme/tree/main/cursors
+    # git clone --depth=1 https://github.com/vinceliuice/MacTahoe-icon-theme.git
+    # sudo ./install.sh -d /usr/share/icons -t all -b
+    sudo ./install.sh -d /usr/share/icons -t default -b
+    # sudo ./install.sh -r
+    # nautilus admin:/usr/share/icons
+    # sudo rm -rf /usr/share/icons/MacTahoe*
+    
+    # MacTahoe-gtk-theme 内包含 MacTahoe wallpapers，但需要手动额外安装
+    # https://www.gnome-look.org/p/2299211
+    # https://github.com/vinceliuice/MacTahoe-gtk-theme
+    # git clone --depth=1 https://github.com/vinceliuice/MacTahoe-gtk-theme.git
+    # 使用 ACL 访问控制列表
+    sudo dnf install acl
+    # 赋予当前用户对系统指定目录的读写权限：
+    sudo setfacl -R -m u:$USER:rw /usr/share/themes
+    # nautilus ~/.config/gtk-4.0
+    # nautilus admin:/usr/share/themes
+    # sudo rm -rf /usr/share/themes/MacTahoe*
+    ./install.sh -o solid -t all -b -l
+    ./install.sh -t all -l --shell -i fedora -h smaller --round
+    sudo cp -r ~/.themes/MacTahoe* /usr/share/themes/
+    rm -rf ~/.themes
+    # ./tweaks.sh -f monterey
+    # sudo ./tweaks.sh -g -i fedora -b default
+    sudo flatpak override --filesystem=xdg-config/gtk-3.0
+    sudo flatpak override --filesystem=xdg-config/gtk-4.0
+    ./tweaks.sh -F
+    # MacTahoe-Dark-solid-blue
+    gsettings set org.gnome.shell.extensions.user-theme name 'MacTahoe-Dark-solid-blue'
+    gsettings set org.gnome.desktop.interface gtk-theme 'MacTahoe-Dark-solid-blue'
+    gsettings set org.gnome.desktop.wm.preferences theme 'MacTahoe-Dark-solid-blue'
+    # nautilus ~/.local/share/gnome-background-properties
+    # mkdir -vp ~/.local/share/gnome-background-properties
+    # ./wallpaper/install-gnome-backgrounds.sh
+    
+    # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
+    # gnome-session-quit --logout
+
+
+    # https://github.com/EliverLara/Space
+    # https://www.gnome-look.org/p/2131750
+    # gsettings set org.gnome.desktop.interface gtk-theme "Space"
+    # gsettings set org.gnome.desktop.wm.preferences theme "Space"
+
     THEME_DIR="$HOME/下载/WhiteSur-themes"
     if [ ! -d "$THEME_DIR" ]; then
         log_info "正在下载并安装 WhiteSur 主题..."
@@ -1844,12 +2023,14 @@ install_theme_whitesur() {
                 git clone --depth=1 "$repo"
             fi
         done
+        # git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git
         # 安装光标
         cd WhiteSur-cursors && sudo ./install.sh && cd ..
         gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
         # 安装图标
         # cd WhiteSur-icon-theme && ./install.sh && cd ..
-        cd WhiteSur-icon-theme && sudo ./install.sh -d /usr/share/icons -t all -b && cd ..
+        # cd WhiteSur-icon-theme && sudo ./install.sh -d /usr/share/icons -t all && cd ..
+        cd WhiteSur-icon-theme && sudo ./install.sh -d /usr/share/icons -t all && cd ..
         # -d --dest 指定主题目的地目录（默认：$HOME/.local/share/icons）
         # -t --theme 指定主题颜色变体 [默认/紫色/粉色/红色/橙色/黄色/绿色/灰色/all]（默认：蓝色 blue）
         # -b --bold 安装加粗面板图标版本
@@ -1862,7 +2043,9 @@ install_theme_whitesur() {
         sed -i 's/0\.96/1/g' WhiteSur-gtk-theme/src/sass/_colors.scss
         # 安装 GTK 主题
         cd WhiteSur-gtk-theme
+        ./install.sh -l -o solid
         # nautilus ~/.config/gtk-4.0
+        # 
         # Fix for libadwaita (not perfect)
         # https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/913
         # 白天：	ln -fs $HOME/.config/gtk-4.0/gtk-Light.css $HOME/.config/gtk-4.0/gtk.css
@@ -1871,8 +2054,10 @@ install_theme_whitesur() {
         # ./install.sh -l -c dark        # Default is the dark theme for libadwaita
         # ./install.sh -l -c light       # install light theme for libadwaita
         # 将 /usr/share/themes 及其子文件的所有权都交给了你的用户账户
-        ./install.sh -o solid -l
-        ./install.sh -o solid -t all -l -c light
+        # nautilus admin:/usr/share/themes
+        ./install.sh -l -c dark -o solid && sudo ./install.sh -d /usr/share/themes -o solid -t all && cd ..
+        # ./install.sh -l -c light && sudo ./install.sh -d /usr/share/themes -o solid -t all && cd ..
+        
         gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
         gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
         gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
@@ -2234,6 +2419,15 @@ install_vpn() {
         sudo dnf install -y ./Clash.Verge-*.x86_64.rpm
     fi
     
+    # 🩵 一个免费的、开源的应用商店，用于 GitHub 发布 — 一键浏览、发现和安装应用。
+    # 由 Kotlin 和 Compose Multiplatform 为 Android 和桌面（Linux、MacOS、Windows）提供支持。
+    # https://github.com/OpenHub-Store/GitHub-Store
+    wget "$(curl -s https://api.github.com/repos/OpenHub-Store/GitHub-Store/releases/latest | \
+        grep -o 'https://github.com/OpenHub-Store/GitHub-Store/releases/download/[^"]*x86_64\.rpm' | \
+        head -n 2 | \
+        sed "s|https://github.com|https://edgeone.gh-proxy.org/https://github.com|")"
+    sudo dnf install -y ./GitHub-Store-*.x86_64.rpm
+    
     # https://github.com/hiddify/hiddify-app/blob/main/README_cn.md
     # 一款基于 Sing-box 通用代理工具的跨平台代理客户端。Hiddify 提供了较全面的代理功能，例如自动选择节点、TUN 模式、使用远程配置文件等。Hiddify 无广告，并且代码开源。
     # 它为大家自由访问互联网提供了一个支持多种协议的、安全且私密的工具。多种订阅链接和配置文件格式支持： Sing-box、V2ray、Clash、Clash meta
@@ -2331,7 +2525,10 @@ install_vpn() {
     flatpak install -y flathub com.github.marhkb.Pods
     # flatpak install -y flathub dev.skynomads.Seabird
     # Thunderbird 是一款免费且开源的电子邮件、新闻源、聊天和日历客户端
-flatpak install -y flathub org.mozilla.Thunderbird
+    flatpak install -y flathub org.mozilla.Thunderbird
+
+    # 设置 Dock 栏应用图标
+    gsettings set org.gnome.shell favorite-apps "['org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.TextEditor.desktop', 'org.gnome.Ptyxis.desktop', 'org.gnome.Settings.desktop', 'org.gnome.SystemMonitor.desktop', 'com.microsoft.Edge.desktop', 'org.gnome.tweaks.desktop']"
 
 
     log_success "Flatpak 应用安装完成。"
