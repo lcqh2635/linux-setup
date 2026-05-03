@@ -1038,7 +1038,7 @@ configure_languages() {
         # 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
         # bun - 现代的 JavaScript 运行时和包管理器
         # https://www.npmjs.com/package/bun
-        npm install -g bun
+        npm install -g bun typescript
         # bun create vite my-vue-app --template vue-ts
         # bun 自行升级	bun upgrade
         # bun run config --help
@@ -1375,6 +1375,32 @@ install_gnome_extensions() {
     gnome-shell-extension-drive-menu \
     gnome-shell-extension-user-theme \
     gnome-shell-extension-workspace-indicator
+    
+    # https://github.com/lcqh2635/gnome-shell-extensions
+    sudo dnf copr enable lcqh2635/gnome-shell-extensions
+    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:lcqh2635:gnome-shell-extensions.repo
+    sudo dnf install -y \
+    gnome-shell-extension-add-to-desktop.noarch \
+    gnome-shell-extension-alphabetical-grid.noarch \
+    gnome-shell-extension-appmenu-is-back.noarch \
+    gnome-shell-extension-clipboard-indicator.noarch \
+    gnome-shell-extension-compiz-magic.noarch \
+    gnome-shell-extension-coverflow-alt-tab.noarch \
+    gnome-shell-extension-customize-ibus.noarch \
+    gnome-shell-extension-ddterm.noarch \
+    gnome-shell-extension-desktop-icons-ng.noarch \
+    gnome-shell-extension-disable-unredirect.noarch \
+    gnome-shell-extension-hide-top-bar.noarch \
+    gnome-shell-extension-night-theme-switcher.noarch \
+    gnome-shell-extension-quick-settings-tweaks.noarch \
+    gnome-shell-extension-rounded-screen-corners.noarch \
+    gnome-shell-extension-rounded-window-corners.noarch \
+    gnome-shell-extension-screencast-extra-feature.noarch \
+    gnome-shell-extension-search-light.noarch \
+    gnome-shell-extension-status-area-horizontal-spacing.noarch \
+    gnome-shell-extension-top-bar-organizer.noarch \
+    gnome-shell-extension-vitals.noarch \
+    gnome-shell-extension-weather-oclock.noarch
     
     # Auto Move Windows
     # gsettings list-recursively org.gnome.shell.extensions.auto-move-windows

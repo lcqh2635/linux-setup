@@ -1,0 +1,63 @@
+# =====================================================
+# 适配环境：IDEA 2025.2 / JDK 25 / Ryzen 6800H / 32GB 内存
+# 开发场景：SpringBoot / SpringCloud / Vue3 / TS / Vite
+# Linux: Fedora 43 (Wayland)
+# GC策略：G1（IDEA官方最稳定、最适合UI程序）
+# =====================================================
+
+# ---------------------------
+# 内存分配（为索引 & 前端项目调优）
+# ---------------------------
+-Xms2g
+-Xmx6g
+
+# 编译缓存，提升 Kotlin / 字节码代理性能
+-XX:ReservedCodeCacheSize=1024m
+
+# Metaspace（Spring 项目较大）
+-XX:MaxMetaspaceSize=1024m
+
+# ---------------------------
+# GC（JDK 25 + IDEA 官方推荐）
+# ---------------------------
+-XX:+UseG1GC
+-XX:+ParallelRefProcEnabled
+-XX:MaxGCPauseMillis=150
+-XX:+AlwaysPreTouch
+
+# Ryzen 在 Linux 下的内存访问优化
+-XX:+UseNUMA
+-XX:G1HeapRegionSize=16m
+
+# 字符串优化（JDK25 兼容且收益明显）
+-XX:+UseStringDeduplication
+-XX:+OptimizeStringConcat
+
+# ---------------------------
+# IDEA 自身行为加强
+# ---------------------------
+-Dfile.encoding=UTF-8
+-Dsun.io.useCanonCaches=false
+-Djdk.attach.allowAttachSelf=true
+-Djdk.module.illegalAccess.silent=true
+-XX:-OmitStackTraceInFastThrow
+-ea
+
+# ---------------------------
+# 错误 & Dump
+# ---------------------------
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log
+-XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof
+
+# ---------------------------
+# 提升 ASM / Kotlin / IDEA 插件兼容性
+# ---------------------------
+--add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
+--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
+
+# ---------------------------
+# 破解 JetBrains 激活
+# ---------------------------
+-javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
+

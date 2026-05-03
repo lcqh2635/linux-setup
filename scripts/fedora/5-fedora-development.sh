@@ -139,7 +139,8 @@ source ~/.bash_profile
 curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
 # 激活 Rust 环境
 . "$HOME/.cargo/env"
-
+# 使用官方命令卸载（推荐）
+# rustup self uninstall
 # rustup update
 # 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
 

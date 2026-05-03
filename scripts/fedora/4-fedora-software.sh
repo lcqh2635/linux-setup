@@ -197,11 +197,11 @@ flatpak install -y flathub com.apifox.Apifox
 # https://github.com/flathub/com.jetbrains.Rider/issues/115
 # 推荐使用字体：Noto Sans CJK SC Medium
 flatpak install -y flathub com.jetbrains.IntelliJ-IDEA-Ultimate
-# flatpak run --command=gsettings com.jetbrains.IntelliJ-IDEA-Ultimate set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+flatpak run --command=gsettings com.jetbrains.IntelliJ-IDEA-Ultimate set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.WebStorm
-# flatpak run --command=gsettings com.jetbrains.WebStorm set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+flatpak run --command=gsettings com.jetbrains.WebStorm set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.RustRover
-# flatpak run --command=gsettings com.jetbrains.RustRover set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+flatpak run --command=gsettings com.jetbrains.RustRover set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.DataGrip
 # flatpak run --command=gsettings com.jetbrains.DataGrip set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.CLion
@@ -216,6 +216,12 @@ flatpak install -y flathub com.visualstudio.code
 flatpak install -y flathub com.vscodium.codium
 flatpak install -y flathub dev.zed.Zed
 flatpak install -y flathub io.neovim.nvim
+# Flatpak 应用中文字体显示成方块问题解决
+# https://forum.archlinuxcn.org/t/topic/13594/3
+# https://blog.hookind.space/posts/202504100842.html
+mkdir -vp ~/.config/fontconfig/conf.d
+cp /etc/fonts/conf.d/*.conf ~/.config/fontconfig/conf.d/
+flatpak override --user --filesystem="xdg-config/fontconfig:ro" your.flatpak.app
 
 
 

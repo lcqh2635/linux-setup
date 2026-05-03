@@ -1,0 +1,190 @@
+{
+  "main": {
+    "id": "b586c32cb87a38a4",
+    "type": "split",
+    "children": [
+      {
+        "id": "04df0f3f4ef9874f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "09bed669f10571c8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "%setup 和 %autosetup 的区别是什么？.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "%setup 和 %autosetup 的区别是什么？"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "de8024843fbfa405",
+    "type": "split",
+    "children": [
+      {
+        "id": "cf66196fe738cd3f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5c9dd89ddcff94e0",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "8142009913d53e2a",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "0fcc65b09bcfc459",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "d14485aa5bd6dacd",
+    "type": "split",
+    "children": [
+      {
+        "id": "cef9afccc36525d4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bfdfbb12a6cd83ea",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "一个标准的 RPM Spec 文件说明与参考.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "一个标准的 RPM Spec 文件说明与参考 的反向链接列表"
+            }
+          },
+          {
+            "id": "ed8029406ce6d0c6",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "一个标准的 RPM Spec 文件说明与参考.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "一个标准的 RPM Spec 文件说明与参考 的出链列表"
+            }
+          },
+          {
+            "id": "8e9bf1011bda0774",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "a88226acf0678999",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "18dd9c564ede35fd",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "一个标准的 RPM Spec 文件说明与参考.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "一个标准的 RPM Spec 文件说明与参考 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "09bed669f10571c8",
+  "lastOpenFiles": [
+    "一个标准的 RPM Spec 文件说明与参考.md"
+  ]
+}

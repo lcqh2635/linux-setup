@@ -1,0 +1,181 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# ==============================================================================
+# 🧩 多机开发环境标准模板（Spring Boot + PostgreSQL + Redis）
+# 环境：Fedora + libvirt + Debian 13 (trixie)
+# 特性：
+#   - DRY 原则：公共脚本提取
+#   - 角色分离：App / DB / Cache 按需安装
+#   - 机器互通：/etc/hosts 自动解析
+#   - 国内加速：APT + Podman 镜像
+# ==============================================================================
+
+Vagrant.configure("2") do |config|
+    # --------------------------------------------------------------------------
+    # 🔧 全局配置
+    # --------------------------------------------------------------------------
+    config.vagrant.plugins = ["vagrant-libvirt"]
+    config.vm.box = "cloud-image/debian-13"
+    config.vm.box_version = ">= 20251117"
+
+    # --------------------------------------------------------------------------
+    # 🧩 提取公共脚本（避免重复）
+    # --------------------------------------------------------------------------
+    COMMON_PROVISION_SCRIPT = <<~SHELL
+        #!/bin/bash
+        set -e
+
+        # 等待 cloud-init 完成
+        if [ ! -f /var/lib/cloud/instance/boot-finished ]; then
+            cloud-init status --wait
+        fi
+
+        # 切换默认 shell 为 bash
+        chsh -s /bin/bash vagrant
+
+        # 替换为清华大学 APT 源（Debian 13 = trixie）
+        cp /etc/apt/sources.list.d/debian.sources{,.bak}
+cat > /etc/apt/sources.list.d/debian.sources << 'EOF'
+Types: deb
+URIs: https://mirrors.tuna.tsinghua.edu.cn/debian
+Suites: trixie trixie-updates trixie-backports
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb
+URIs: https://mirrors.tuna.tsinghua.edu.cn/debian-security
+Suites: trixie-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+EOF
+
+    apt-get update
+    # 强制以非交互模式运行，即使遇到需要用户输入的问题（如时区选择），也会使用默认值，不会暂停等待输入
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+
+    # 安装基础工具（所有机器都需要）
+    apt-get install -y curl wget git vim htop iputils-ping
+
+    # 配置 Podman 国内镜像加速
+    apt-get install -y podman podman-compose
+    cp /etc/containers/registries.conf{,.bak}
+cat > /etc/containers/registries.conf << 'EOF'
+unqualified-search-registries = ["docker.io"]
+[[registry]]
+prefix = "docker.io"
+location = "registry-1.docker.io"
+[[registry.mirror]]
+location = "psb591u6.mirror.aliyuncs.com"
+[[registry.mirror]]
+location = "docker.1ms.run"
+EOF
+    SHELL
+
+    # --------------------------------------------------------------------------
+    # 🌐 定义 IP 地址（便于维护）
+    # --------------------------------------------------------------------------
+    APP_IP    = "192.168.121.10"
+    DB_IP     = "192.168.121.20"
+    CACHE_IP  = "192.168.121.30"
+
+    # --------------------------------------------------------------------------
+    # 🖥️ 1. 应用服务器 (app)
+    # --------------------------------------------------------------------------
+    config.vm.define "app", primary: true do |app|
+        app.vm.hostname = "spring-dev"
+        app.vm.network "private_network", ip: APP_IP
+
+        # 同步代码目录
+        app.vm.synced_folder ".", "/vagrant",
+            type: "rsync",
+            rsync__exclude: [".git/", "target/", "node_modules/"]
+
+        app.vm.provider :libvirt do |v|
+            v.title = "应用服务器"
+            v.description = "Spring Boot 应用"
+            v.memory = 4096
+            v.cpus = 2
+            v.nested = true
+            v.machine_virtual_size = 40
+            v.graphics_type = "none"
+        end
+
+        app.vm.provision "shell", inline: COMMON_PROVISION_SCRIPT
+
+        app.vm.provision "shell", inline: <<~SHELL
+            # App 专属：JDK + Maven + Node.js
+            apt-get install -y openjdk-25-jdk maven nodejs
+            npm config set registry https://registry.npmmirror.com
+        SHELL
+
+        # 添加其他机器到 hosts
+        app.vm.provision "shell", inline: "echo '#{DB_IP} postgres-db' >> /etc/hosts"
+        app.vm.provision "shell", inline: "echo '#{CACHE_IP} redis-cache' >> /etc/hosts"
+    end
+
+    # --------------------------------------------------------------------------
+    # 🗄️ 2. 数据库服务器 (db)
+    # --------------------------------------------------------------------------
+    config.vm.define "db" do |db|
+        db.vm.hostname = "postgres-db"
+        db.vm.network "private_network", ip: DB_IP
+        db.vm.synced_folder ".", "/vagrant", disabled: true  # 禁用同步
+
+        db.vm.provider :libvirt do |v|
+            v.title = "数据库服务器"
+            v.description = "PostgreSQL"
+            v.memory = 2048
+            v.cpus = 1
+            v.nested = true
+            v.machine_virtual_size = 20
+            v.graphics_type = "none"
+        end
+
+        db.vm.provision "shell", inline: COMMON_PROVISION_SCRIPT
+
+        db.vm.provision "shell", inline: <<~SHELL
+            # DB 专属：安装 PostgreSQL（或通过 Podman 运行）
+            # apt-get install -y postgresql
+        SHELL
+
+        # 添加其他机器到 hosts
+        db.vm.provision "shell", inline: "echo '#{APP_IP} spring-dev' >> /etc/hosts"
+        db.vm.provision "shell", inline: "echo '#{CACHE_IP} redis-cache' >> /etc/hosts"
+    end
+
+    # --------------------------------------------------------------------------
+    # ⚡ 3. 缓存服务器 (cache)
+    # --------------------------------------------------------------------------
+    config.vm.define "cache" do |cache|
+        cache.vm.hostname = "redis-cache"
+        cache.vm.network "private_network", ip: CACHE_IP
+        cache.vm.synced_folder ".", "/vagrant", disabled: true
+
+        cache.vm.provider :libvirt do |v|
+            v.title = "缓存服务器"
+            v.description = "Redis"
+            v.memory = 1024
+            v.cpus = 1
+            v.nested = true
+            v.machine_virtual_size = 10
+            v.graphics_type = "none"
+        end
+
+        cache.vm.provision "shell", inline: COMMON_PROVISION_SCRIPT
+
+        cache.vm.provision "shell", inline: <<~SHELL
+            # Redis 专属：安装 Redis（或通过 Podman 运行）
+            # apt-get install -y postgresql
+        SHELL
+
+        # 添加其他机器到 hosts
+        cache.vm.provision "shell", inline: "echo '#{APP_IP} spring-dev' >> /etc/hosts"
+        cache.vm.provision "shell", inline: "echo '#{DB_IP} postgres-db' >> /etc/hosts"
+    end
+
+    # --------------------------------------------------------------------------
+    # ℹ️ 最终提示
+    # --------------------------------------------------------------------------
+    config.vm.provision "shell", inline: "echo '✅ 多机环境部署完成！'"
+end

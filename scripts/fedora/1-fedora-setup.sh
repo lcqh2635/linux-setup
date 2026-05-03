@@ -322,7 +322,6 @@ sudo dnf install -y libva-utils vulkan-tools
 # vainfo | grep -E 'H264|H265'
 # vulkaninfo | grep "GPU"
 
-
 ## 5. 开发环境配置 =============================================
 # 安装常用应用
 # evolution配置qq邮箱授权码： embwnsuwkdjrebge

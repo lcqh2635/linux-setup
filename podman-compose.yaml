@@ -1,0 +1,668 @@
+# ================================================
+# 🚀 企业级 Java 微服务开发环境配置文件
+# 文件名：docker-compose.yml
+# 用途：本地一站式启动所有中间件与服务，模拟生产架构
+# 环境：Fedora Workstation 42 + Podman Compose
+# 镜像源：registry.aliyuncs.com（国内加速）
+# 作者：Java 后端开发团队
+# 日期：2025-04-05
+# 版本：v1.3（优化健康检查 + 资源限制 + 安全配置）
+# ================================================
+
+version: '3.8'
+
+# ================================================
+# 🌐 网络定义：创建专用网络，实现服务间安全通信
+# 所有服务默认加入此网络，可通过 service_name:port 直接访问
+# ================================================
+networks:
+  dev-network:
+    name: java-dev-network
+    driver: bridge
+    # 可选：自定义子网（避免与宿主机冲突）
+    # ipam:
+    #   config:
+    #     - subnet: 172.28.0.0/16
+    #       gateway: 172.28.0.1
+
+# ================================================
+# 🗃️ 数据卷定义：持久化存储关键数据（数据库、缓存、日志）
+# 使用命名卷（volume）而非宿主机挂载，避免权限与 SELinux 问题
+# ================================================
+volumes:
+  # PostgreSQL 数据目录
+  pg-data:
+    name: java-pg-data
+  # MySQL 数据目录
+  mysql-data:
+    name: java-mysql-data
+  # MariaDB 数据目录
+  mariadb-data:
+    name: java-mariadb-data
+  # Redis 持久化数据（AOF/RDB）
+  redis-data:
+    name: java-redis-data
+  # Redis Stack（含 RedisInsight）数据
+  redis-stack-data:
+    name: java-redis-stack-data
+  # RocketMQ Broker 数据
+  rocketmq-broker-data:
+    name: java-rocketmq-broker-data
+  # RocketMQ NameServer 数据
+  rocketmq-namesrv-data:
+    name: java-rocketmq-namesrv-data
+  # Nacos 配置与日志
+  nacos-data:
+    name: java-nacos-data
+  # Seata 事务日志
+  seata-data:
+    name: java-seata-data
+  # SkyWalking OAP 存储（Elasticsearch）
+  skywalking-es-data:
+    name: java-skywalking-es-data
+  # ELK（Elasticsearch）数据
+  elk-es-data:
+    name: java-elk-es-data
+  # Prometheus 数据存储
+  prometheus-data:
+    name: java-prometheus-data
+  # Grafana 配置与插件
+  grafana-data:
+    name: java-grafana-data
+  # Alertmanager 配置
+  alertmanager-data:
+    name: java-alertmanager-data
+  # Snail-Job 任务数据
+  snail-job-data:
+    name: java-snail-job-data
+  # Higress 网关配置
+  higress-config:
+    name: java-higress-config
+  # Sentinel Dashboard 配置
+  sentinel-dashboard-data:
+    name: java-sentinel-dashboard-data
+
+# ================================================
+# 🛠️ 服务定义：所有微服务与中间件
+# 每个服务均配置：镜像、端口、环境变量、卷、网络、健康检查、资源限制
+# ================================================
+services:
+
+  # ================================================
+  # 🐘 PostgreSQL 数据库（推荐用于金融保险系统）
+  # ================================================
+  postgres:
+    image: registry.aliyuncs.com/library/postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"  # 映射到宿主机，供 DBeaver、IDEA 等工具连接
+    environment:
+      POSTGRES_DB: insurance      # 默认数据库名
+      POSTGRES_USER: dev          # 用户名
+      POSTGRES_PASSWORD: dev123   # 密码（开发环境，生产请用 Vault）
+      PGDATA: /var/lib/postgresql/data/pgdata  # 指定数据目录（与卷映射一致）
+    volumes:
+      - pg-data:/var/lib/postgresql/data/pgdata  # 持久化数据，避免重启丢失
+    networks:
+      - dev-network  # 加入专用网络，其他服务可通过 postgres:5432 访问
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d insurance"]  # 检查数据库是否可连接
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s  # 启动后等待40秒再开始检查，避免过早失败
+    restart: unless-stopped  # 除非手动停止，否则自动重启
+    # 限制资源，避免占用过多内存（开发机推荐）
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # ================================================
+  # 🐬 MySQL 8.0（兼容性好，适合传统系统）
+  # ================================================
+  mysql:
+    image: registry.aliyuncs.com/library/mysql:latest
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: insurance
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: dev123
+      MYSQL_ROOT_PASSWORD: root123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "dev", "-pdev123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # ================================================
+  # 🐰 MariaDB 11.0（MySQL 兼容，轻量级）
+  # ================================================
+  mariadb:
+    image: registry.aliyuncs.com/library/mariadb:latest
+    container_name: mariadb
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: insurance
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: dev123
+      MYSQL_ROOT_PASSWORD: root123
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "dev", "-pdev123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # ================================================
+  # 🚀 Redis 7（高性能缓存）
+  # ================================================
+  redis:
+    image: registry.aliyuncs.com/library/redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass dev123  # 开启 AOF 持久化 + 密码
+    volumes:
+      - redis-data:/data
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "dev123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.2'
+
+  # ================================================
+  # 🌟 Redis Stack（Redis + RedisInsight 图形界面）
+  # ================================================
+  redis-stack:
+    image: registry.aliyuncs.com/library/redis/redis-stack:latest
+    container_name: redis-stack
+    ports:
+      - "6379:6379"     # Redis 服务端口
+      - "8001:8001"     # RedisInsight Web 管理界面
+    command: >
+      redis-server --appendonly yes --requirepass dev123
+      --redis-stack-server --port 8001
+    volumes:
+      - redis-stack-data:/data
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "dev123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.4'
+
+  # ================================================
+  # 🐘 RocketMQ（分布式消息队列）
+  # 包含 NameServer + Broker + Dashboard
+  # ================================================
+
+  # NameServer（集群发现服务）
+  rocketmq-namesrv:
+    image: registry.aliyuncs.com/acs/rocketmq:latest
+    container_name: rocketmq-namesrv
+    ports:
+      - "9876:9876"
+    command: sh mqnamesrv
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.3'
+
+  # Broker（消息存储与转发）
+  rocketmq-broker:
+    image: registry.aliyuncs.com/acs/rocketmq:latest
+    container_name: rocketmq-broker
+    ports:
+      - "10911:10911"  # Broker 通信端口
+      - "10909:10909"  # HTTP 服务端口
+    command: sh mqbroker -n "rocketmq-namesrv:9876" autoCreateTopicEnable=true
+    volumes:
+      - rocketmq-broker-data:/home/rocketmq/rocketmq-4.9.4/store
+    depends_on:
+      - rocketmq-namesrv
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+
+  # RocketMQ Dashboard（Web 管理界面）
+  rocketmq-dashboard:
+    image: registry.aliyuncs.com/acs/rocketmq-dashboard:latest
+    container_name: rocketmq-dashboard
+    ports:
+      - "8081:8080"
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-namesrv:9876"
+    depends_on:
+      - rocketmq-namesrv
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.3'
+
+  # ================================================
+  # 🚀 Nacos（服务注册与配置中心）
+  # ================================================
+  nacos:
+    image: registry.aliyuncs.com/acs/nacos/nacos-server:latest
+    container_name: nacos
+    ports:
+      - "8848:8848"     # 配置中心端口
+      - "9848:9848"     # gRPC 通信端口
+      - "9849:9849"     # gRPC 通信端口
+    environment:
+      MODE: standalone     # 单机模式（开发）
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: nacos_config
+      MYSQL_SERVICE_USER: dev
+      MYSQL_SERVICE_PASSWORD: dev123
+      JVM_XMS: 512m
+      JVM_XMX: 1g
+      JVM_XMN: 256m
+    volumes:
+      - nacos-data:/home/nacos/data
+      - nacos-data:/home/nacos/logs
+    depends_on:
+      - mysql
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 60s  # Nacos 启动较慢，需等待
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+
+  # ================================================
+  # 📦 Seata（分布式事务解决方案）
+  # ================================================
+  seata-server:
+    image: registry.aliyuncs.com/seataio/seata-server:latest
+    container_name: seata-server
+    ports:
+      - "8091:8091"     # Seata 服务端口
+      - "7091:7091"     # Seata 控制台端口
+    environment:
+      STORE_MODE: db           # 使用数据库存储事务日志
+      SEATA_CONFIG_NAME: file:/root/seata-config/registry.conf
+      SEATA_SERVER_PORT: 8091
+      SEATA_REGISTRY_TYPE: nacos
+      SEATA_REGISTRY_NACOS_SERVER_ADDR: nacos:8848
+      SEATA_REGISTRY_NACOS_NAMESPACE: public
+      SEATA_CONFIG_TYPE: nacos
+      SEATA_CONFIG_NACOS_SERVER_ADDR: nacos:8848
+      SEATA_CONFIG_NACOS_NAMESPACE: public
+      SEATA_CONFIG_NACOS_DATA_ID: seataServer.properties
+      SEATA_CONFIG_NACOS_GROUP: SEATA_GROUP
+      # 数据库配置（与 Nacos 共用 MySQL）
+      SEATA_STORE_DB_DATASOURCE: druid
+      SEATA_STORE_DB_DB_TYPE: mysql
+      SEATA_STORE_DB_DB_DRIVER: com.mysql.cj.jdbc.Driver
+      SEATA_STORE_DB_DB_URL: jdbc:mysql://mysql:3306/seata?useUnicode=true&characterEncoding=utf8&connectTimeout=5000&socketTimeout=30000&autoReconnect=true
+      SEATA_STORE_DB_DB_USER: dev
+      SEATA_STORE_DB_DB_PASSWORD: dev123
+      SEATA_STORE_DB_DB_NAME: seata
+    volumes:
+      - seata-data:/seata-server/conf
+    depends_on:
+      - nacos
+      - mysql
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.8'
+
+  # ================================================
+  # 📡 RocketMQ（已包含）+ Snail-Job（分布式任务调度）
+  # ================================================
+  snail-job:
+    image: registry.aliyuncs.com/snailjob/snail-job-server:latest
+    container_name: snail-job
+    ports:
+      - "8085:8085"     # Web 控制台
+      - "9090:9090"     # RPC 服务端口
+    environment:
+      SNAIL_JOB_DB_URL: jdbc:mysql://mysql:3306/snail_job?useUnicode=true&characterEncoding=utf8&useSSL=false
+      SNAIL_JOB_DB_USERNAME: dev
+      SNAIL_JOB_DB_PASSWORD: dev123
+      SNAIL_JOB_REDIS_HOST: redis
+      SNAIL_JOB_REDIS_PORT: 6379
+      SNAIL_JOB_REDIS_PASSWORD: dev123
+      SNAIL_JOB_ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
+    volumes:
+      - snail-job-data:/snail-job/data
+    depends_on:
+      - mysql
+      - redis
+      - rocketmq-namesrv
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # ================================================
+  # 🔍 Sentinel Dashboard（流量控制与熔断）
+  # ================================================
+  sentinel-dashboard:
+    image: registry.aliyuncs.com/acs/sentinel-dashboard:latest
+    container_name: sentinel-dashboard
+    ports:
+      - "8858:8858"
+    environment:
+      - DASHBOARD_PORT=8858
+      - SPRING_PROFILES_ACTIVE=prod
+      # 指向 Nacos 作为配置中心（可选）
+      # - SENTINEL_CONFIG_CENTER=nacos
+      # - SENTINEL_CONFIG_NACOS_SERVER_ADDR=nacos:8848
+    volumes:
+      - sentinel-dashboard-data:/opt/sentinel-dashboard/conf
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.3'
+
+  # ================================================
+  # 🌐 Higress（阿里开源云原生 API 网关）
+  # 替代 Nginx + Spring Cloud Gateway，支持 K8s Ingress 标准
+  # ================================================
+  higress:
+    image: registry.aliyuncs.com/higress/higress-controller:1.2.0
+    container_name: higress
+    ports:
+      - "80:80"      # HTTP
+      - "443:443"    # HTTPS
+      - "8443:8443"  # HTTPS 控制端口
+    volumes:
+      - higress-config:/etc/higress
+    command: ["--config", "/etc/higress/higress.yaml"]
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.8'
+
+  # ================================================
+  # 📊 ELK（Elasticsearch + Logstash + Kibana）日志分析系统
+  # ================================================
+  elk-elasticsearch:
+    image: registry.aliyuncs.com/acs/elasticsearch:latest
+    container_name: elk-elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"   # 开发环境关闭安全
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - elk-es-data:/usr/share/elasticsearch/data
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"'"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.8'
+
+  elk-logstash:
+    image: registry.aliyuncs.com/acs/logstash:latest
+    container_name: elk-logstash
+    ports:
+      - "5044:5044"   # Beats 输入端口
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline  # 挂载自定义日志解析配置
+    depends_on:
+      - elk-elasticsearch
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  elk-kibana:
+    image: registry.aliyuncs.com/acs/kibana:latest
+    container_name: elk-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      SERVER_HOST: 0.0.0.0
+      ELASTICSEARCH_HOSTS: http://elk-elasticsearch:9200
+    depends_on:
+      - elk-elasticsearch
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.3'
+
+  # ================================================
+  # 📈 Prometheus + Grafana + Alertmanager 监控告警系统
+  # ================================================
+  prometheus:
+    image: registry.aliyuncs.com/acs/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.8'
+
+  grafana:
+    image: registry.aliyuncs.com/acs/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards  # 挂载自定义仪表盘
+    depends_on:
+      - prometheus
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.4'
+
+  alertmanager:
+    image: registry.aliyuncs.com/acs/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - alertmanager-data:/etc/alertmanager
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.2'
+
+  # ================================================
+  # 🌐 SkyWalking（APM 链路追踪）
+  # 包含 OAP（后端） + UI（前端）
+  # ================================================
+  skywalking-oap:
+    image: registry.aliyuncs.com/acs/skywalking-oap-server:latest
+    container_name: skywalking-oap
+    ports:
+      - "11800:11800"  # gRPC 接收端口（Java Agent 上报）
+      - "12800:12800"  # HTTP 接收端口（UI 通信）
+    environment:
+      SW_STORAGE: elasticsearch
+      SW_STORAGE_ES_CLUSTER_NODES: elk-elasticsearch:9200
+      SW_STORAGE_ES_USER: ""
+      SW_STORAGE_ES_PASSWORD: ""
+      SW_STORAGE_ES_INDEX_SHARDS_NUMBER: 1
+      SW_STORAGE_ES_INDEX_REPLICAS_NUMBER: 0
+      SW_STORAGE_ES_CONNECTION_TIMEOUT: 10000
+      SW_STORAGE_ES_SOCKET_TIMEOUT: 60000
+    volumes:
+      - skywalking-es-data:/opt/skywalking/data
+    depends_on:
+      - elk-elasticsearch
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+
+  skywalking-ui:
+    image: registry.aliyuncs.com/acs/skywalking-ui:latest
+    container_name: skywalking-ui
+    ports:
+      - "8080:8080"
+    environment:
+      SW_OAP_ADDRESS: http://skywalking-oap:12800
+    depends_on:
+      - skywalking-oap
+    networks:
+      - dev-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.3'
+
+# ================================================
+# 📌 附注：推荐的开发目录结构
+# ================================================
+# 项目根目录下应包含：
+# ├── docker-compose.yml
+# ├── .env                     # 环境变量（如：POSTGRES_VERSION=16）
+# ├── logstash/
+# │   └── pipeline/
+# │       └── app.conf         # 日志解析配置
+# ├── prometheus/
+# │   └── prometheus.yml       # 监控任务配置
+# ├── grafana/
+# │   └── dashboards/
+# │       └── java-app.json    # 自定义仪表盘
+# ├── alertmanager/
+# │   └── alertmanager.yml     # 告警规则
+# └── start.sh                 # 一键启动脚本（见下方）
+#
+# 启动脚本 start.sh 示例：
+# #!/bin/bash
+# echo "🚀 正在拉取镜像..."
+# podman-compose pull
+# echo "🏗️  正在构建镜像（如需）..."
+# podman-compose build
+# echo "⚡ 正在启动服务..."
+# podman-compose up -d
+# echo "📊 正在追踪日志（按 Ctrl+C 退出）..."
+# podman-compose logs -f app
+# trap 'echo "🛑 正在清理环境..." && podman-compose down -v' EXIT
+# ================================================
+

@@ -1,0 +1,336 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrant 配置版本（目前主流使用 "2"）
+Vagrant.configure("2") do |config|
+    # --------------------------------------------------------------------------
+    # 🔧 1. 全局配置：强制使用 vagrant-libvirt 插件（避免在 VirtualBox 环境误启）
+    #    在开发过程中，您可以在 Vagrantfile 中添加以下行，以确保 Vagrant 检查插件是否已安装
+    # --------------------------------------------------------------------------
+    config.vagrant.plugins = ["vagrant-libvirt"]
+
+    # --------------------------------------------------------------------------
+    # 📦 2. 虚拟机基础定义：使用 cloud-image/debian-13（支持自动扩容 + cloud-init）
+    #    该镜像由社区维护，专为云/容器环境优化，启动快、体积小、安全
+    #    参考 https://portal.cloud.hashicorp.com/vagrant/discover/cloud-image/debian-13
+    #    Debian 系统官方社区 https://www.debian.club/
+    # --------------------------------------------------------------------------
+    config.vm.box = "cloud-image/debian-13"
+    config.vm.box_version = ">= 20251117"  # 使用 >= 允许自动使用更新版本（可选）
+
+    # --------------------------------------------------------------------------
+    # 🌐 3. 虚拟机实例定义（支持多机，此处仅定义一台）显式定义虚拟机名称为 app
+    #    多虚拟机定义配置，参考 https://developer.hashicorp.com/vagrant/docs/multi-machine
+    # --------------------------------------------------------------------------
+    config.vm.define "app" do |app|
+        # 所有 VM 配置放在这里
+        # ----------------------------------------------------------------------
+        # 🖥️ 主机名与描述（便于 libvirt-manager 识别）
+        #    配置参考 https://developer.hashicorp.com/vagrant/docs/networking/basic_usage#setting-hostname
+        #    可以使用 config.vm.hostname 设置为 Vagrant 虚拟机定义主机名。即服务器对应的域名
+        #    默认情况下，这会修改 /etc/hosts，在未使用的回环接口上添加主机名。例如：
+        # ----------------------------------------------------------------------
+        app.vm.hostname = "spring-dev"  # 设置 VM 内 /etc/hostname
+        # 这将会在 /etc/hosts 文件中添加条目 127.0.0.1 lcqh2635.com
+        # cat /etc/hosts
+
+        # ----------------------------------------------------------------------
+        # 🌐 网络配置
+        #   - 使用 private_network + 固定 IP（便于从宿主机访问服务）
+        #   - libvirt 默认网络为 virbr0（192.168.122.0/24），建议使用 192.168.121.x 避免冲突
+        #   配置私有网络（固定 IP）参考 https://developer.hashicorp.com/vagrant/docs/networking/private_network#private-networks
+        # ----------------------------------------------------------------------
+        app.vm.network "private_network", ip: "192.168.121.10"
+
+        # ----------------------------------------------------------------------
+        # 📁 同步文件夹配置
+        #   - 默认 /vagrant 已足够，但可显式启用并优化
+        #   - libvirt 下推荐使用 rsync（性能好、兼容性强），若需实时同步可选 NFS
+        #   将宿主机当前目录（即 Vagrantfile 所在目录）挂载到 VM 的 /vagrant
+        #   这是 Vagrant 默认行为，通常保留，参考 https://developer.hashicorp.com/vagrant/docs/synced-folders/basic_usage#disabling
+        # ----------------------------------------------------------------------
+        # 方式1：使用 rsync（推荐，安全且无需额外配置）
+        app.vm.synced_folder ".", "/vagrant",
+            type: "rsync",
+            rsync__exclude: [".git/", ".vagrant/", "target/", "node_modules/"],
+            rsync__args: ["--verbose", "--archive", "--delete", "-z"]
+
+        # ----------------------------------------------------------------------
+        # ⚙️ 资源与虚拟化配置（libvirt provider）
+        #    vagrant-libvirt 官方 Github 仓库 https://github.com/vagrant-libvirt/vagrant-libvirt
+        #    vagrant-libvirt 配置参考 https://vagrant-libvirt.github.io/vagrant-libvirt/configuration.html
+        # ----------------------------------------------------------------------
+        app.vm.provider :libvirt do |v|
+            # 以下是 Provider 连接选项配置，参考 https://vagrant-libvirt.github.io/vagrant-libvirt/configuration.html#connection-options
+            # 要访问的虚拟机管理程序名称。目前仅支持 KVM 和 QEMU
+            v.driver = "kvm"
+            # 用于高级使用。直接指定 vagrant-libvirt 应使用的 Libvirt 连接 URI。会覆盖以上所有连接配置选项
+            v.uri = 'qemu:///system'
+            # Libvirt UNIX 套接字的路径（例如 /var/run/libvirt/libvirt-sock）
+            v.socket = '/var/run/libvirt/libvirt-sock'
+            # 运行 Libvirtd 的服务器名称。特别是 v.host，除非你在远程连接 libvirt，否则应留空。
+            # v.host = "lcqh2635.com"
+            # 访问 Libvirt 的用户名和密码
+            # v.username = ''
+            # v.password = ''
+            # 如果使用 SSH 隧道连接到 Libvirt，这是绝对必要的，以便访问远程主机上的 Libvirt。否则将无法获取已启动虚拟机的 IP 地址。
+            # 如果不为 nil，则使用此 SSH 私钥访问 Libvirt。默认值是 $HOME/.ssh/id_rsa。如果没有目录，则在前面加上 $HOME/.ssh/
+            # v.id_ssh_key_file = "$HOME/.ssh/id_rsa"
+
+            # 以下是 Provider Domain 特定选项配置，参考 https://vagrant-libvirt.github.io/vagrant-libvirt/configuration.html#domain-specific-options
+            # 虚拟机元数据（在 virt-manager 中显示）
+            v.title = "应用服务器"
+            # 虚拟机的人类可读描述
+            v.description = "这是一个用于部署 SpringBoot 应用的虚拟机服务器"
+            # 硬件资源配置
+            v.memory = 4096                 # 内存：4GB，内存容量（以MB为单位）。如果未设置，默认值为 512
+            v.cpus = 2                      # CPU 核心数：2
+            v.nested = true                 # 启用嵌套虚拟化（如需在 VM 内使用 Docker/Podman）
+            # 磁盘配置
+            # 使用这个命令查看磁盘的内部组成 lsblk
+            # 配置项来自 https://vagrant-libvirt.github.io/vagrant-libvirt/configuration.html#domain-specific-options
+            v.machine_virtual_size = 40     # 扩展磁盘至 40GB（cloud-image 会自动扩容分区）
+            # 图形与输入（无头模式可设为 false）
+            v.graphics_type = "none"        # 无图形界面（节省资源），如需 VNC 可设为 "spice" 或 "vnc"
+            v.video_vram = 16               # 降低显存占用
+        end
+
+        # ===================================================================
+        # 5. 自动初始化脚本（Provision）
+        # 在 VM 首次启动时自动执行，安装开发所需软件
+        # 不需要显式写 sudo，Vagrant 的 shell provisioner 默认以 root 身份执行脚本。
+        # ===================================================================
+        app.vm.provision "shell", inline: <<-SHELL
+            #!/bin/bash
+            set -e  # 遇错即停
+
+            # 等待上面的 cloud-init 完成
+            if [ ! -f /var/lib/cloud/instance/boot-finished ]; then
+                echo "等待 cloud-init 完成..."
+                cloud-init status --wait
+            fi
+
+            echo "🔧 正在配置 Debian 开发环境..."
+            # 将默认 shell 改为 Bash，然后 vagrant ssh 重新登录终端
+            chsh -s /bin/bash
+
+            # 参考 “清华大学” 镜像站点 https://mirrors.tuna.tsinghua.edu.cn/help/debian/
+            # 备份原始 sources.list
+            cp /etc/apt/sources.list.d/debian.sources{,.bak}
+
+            # 1. 替换为清华大学 APT 源（加速包下载）
+cat > /etc/apt/sources.list.d/debian.sources << 'EOF'
+Types: deb
+URIs: https://mirrors.tuna.tsinghua.edu.cn/debian
+Suites: trixie trixie-updates trixie-backports
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+Types: deb-src
+URIs: https://mirrors.tuna.tsinghua.edu.cn/debian
+Suites: trixie trixie-updates trixie-backports
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+# 以下安全更新软件源包含了官方源与镜像站配置，如有需要可自行修改注释切换
+Types: deb
+URIs: https://mirrors.tuna.tsinghua.edu.cn/debian-security
+Suites: trixie-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb-src
+URIs: https://mirrors.tuna.tsinghua.edu.cn/debian-security
+Suites: trixie-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+EOF
+
+            cat /etc/apt/sources.list.d/debian.sources
+
+            echo "======== 正在更新系统 ========="
+            apt-get update && apt-get upgrade -y
+
+            # Debian 安装开发环境 https://www.debian.club/applications/development#java-%E5%AE%89%E8%A3%85
+            echo "======== 安装基础开发工具 ========="
+            apt-get install -y build-essential
+            apt-get install -y \
+                curl \
+                wget \
+                git \
+                vim \
+                htop \
+                zip unzip \
+                iputils-ping
+
+            # 配置 rustup 使用中国科学技术大学（USTC）的镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新。
+            # 配置 Rust Toolchain 反向代理 	https://mirrors.ustc.edu.cn/help/rust-static.html
+            # 指定 Rust 工具链和组件的下载地址（如 rustc,cargo,rust-std 等）
+            echo 'export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static' >> ~/.bash_profile
+            # 指定 rustup 自身更新元数据的地址（即 rustup 如何检查自身版本、下载新版本）
+            echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup' >> ~/.bash_profile
+            source ~/.bash_profile
+            # 用 shell 执行从标准输入来的脚本，并把 -y 作为参数传给那个脚本，告诉它：自动安装，不要问我！”
+            # “自动确认所有提示，使用默认设置安装”（相当于 “yes”）
+            # 使用官方 rustup 脚本安装
+            # Rust 的升级非常频繁。如果您安装 Rustup 后已有一段时间，那么很可能您的 Rust 版本已经过时了。运行 rustup update 获取最新版本的 Rust。
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+            # 将 Rust 工具链加入环境变量（对当前 shell 生效）
+            source "$HOME/.cargo/env"
+            # 验证安装
+            echo "🐍 你刚安装的 rustc 版本号为：$(rustc --version)"
+
+            # （可选）配置 Rust 国内镜像源（加速 crates.io）
+cat > ~/.cargo/config.toml << 'EOF'
+# 配置 Cargo 国内加速镜像源，可选：ustc、tuna、sjtu、aliyun
+[source.crates-io]
+replace-with = 'ustc'
+
+# 中国科学技术大学镜像 https://mirrors.ustc.edu.cn/help/crates.io-index.html
+[source.ustc]
+registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+[registries.ustc]
+index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+
+# 阿里云镜像
+# 使用稀疏协议（sparse）减少元数据下载量，大幅加速
+[source.aliyun]
+registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+[registries.aliyun]
+index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+EOF
+
+            # 在安装 sdkman 之前需要配置 github 加速，否则有概率 sdkman 安装失败
+            # github 实时有效的 hosts 可从 https://github.com/521xueweihan/GitHub520
+            sudo sh -c 'sed -i "/# GitHub520 Host Start/Q" /etc/hosts && curl https://raw.hellogithub.com/hosts >> /etc/hosts'
+
+            echo "======== 安装 sdkman 开发工具 ========="
+            sdkman_dir="$HOME/.sdkman"
+            # 如果目录存在
+            if [ -d "$sdkman_dir" ]; then
+                rm -rf $sdkman_dir
+            fi
+            # 安装 sdkman 工具
+            curl -s "https://get.sdkman.io" | bash
+            # 启动SDKMAN
+            source "$HOME/.sdkman/bin/sdkman-init.sh"
+            # 验证SDKMAN是否成功安装
+            echo 你刚安装的 sdkman 版本号为： $(sdk version)
+            echo "========== 开始安装 Java =========="
+            # 默认安装 Temurin(Eclipse) 的最新稳定版 Java，例如：21.0.8-tem
+            sdk install java
+            if command -v java &> /dev/null; then
+                java_ver=$(java -version 2>&1 | head -n 1)
+                echo "Java 通过 SDKMAN! 安装成功：$java_ver"
+            else
+                print_error "Java 安装失败！"
+            fi
+            echo "========== 开始安装 Maven =========="
+            sdk install mvnd
+            if command -v mvnd &> /dev/null; then
+                mvnd_ver=$(mvnd -v | head -n 1)
+                echo "Maven-mvnd 安装成功：mvnd：$mvnd_ver"
+            else
+                echo "Maven-mvnd 安装失败！"
+            fi
+            sdk current
+
+            # podman 官方文档 https://podman.org.cn/get-started
+            apt-get install -y podman podman-compose
+            echo "🐍 你刚安装的 podman-compose 版本号为：$(podman-compose --version)"
+            # 配置 podman 国内加速镜像
+            # 主要用于 登录到容器镜像仓库（Registry），以便拉取（pull）私有镜像或推送（push）镜像到仓库。
+            # lcqh2635@gmail.com
+            # podman login
+            # 配置国内加速镜像仓库
+            # cat /etc/containers/registries.conf
+            # 备份到同目录（添加 .bak 后缀）
+            cp /etc/containers/registries.conf{,.bak}
+            # 检查 .bak 文件是否存在
+            # ls -l /etc/containers
+            # 从同目录 .bak 文件恢复
+            # cp /etc/containers/registries.conf{.bak,}
+cat > /etc/containers/registries.conf << 'EOF'
+# 定义未指定镜像仓库前缀时，默认搜索的镜像仓库列表
+# 例如执行 "podman pull nginx" 会自动从 "docker.io" 查找 "library/nginx"
+unqualified-search-registries = ["docker.io"]
+
+# Podman 优先尝试从 registry.mirror 拉取镜像，如果加速器不可用/镜像不存在，则自动回退到 location 指定的官方地址
+# 官方仓库地址（最终回退地址）
+[[registry]]
+# 匹配的镜像仓库前缀（支持通配符 *）
+# 例如 "docker.io" 会匹配所有 "docker.io/xxx" 的镜像
+prefix = "docker.io"
+location = "registry-1.docker.io"
+
+# 在配置加速镜像之前先 ping 一下，看看网络能不能正常连通
+# 阿里云容器镜像获取地址 https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
+# 镜像加速器 1：阿里云（需替换为你的专属地址，这个是我的专属地址）
+[[registry.mirror]]
+location = "psb591u6.mirror.aliyuncs.com"
+
+# 镜像加速器 2：一个不知名的超快 Docker 加速镜像
+[[registry.mirror]]
+location = "docker.1ms.run"
+EOF
+            # systemctl --user enable --now podman.socket
+            # systemctl --user status podman.socket
+            # podman run hello-world  # 应正常运行
+            # 配置 Podman 替代 Docker
+            # 创建软连接： 由于 1Panel 默认使用 Docker 套接字 /var/run/docker.sock，需要将其指向 Podman 的套接字：
+            # sudo ln -sf /run/user/1000/podman/podman.sock /var/run/docker.sock
+            # vagrant ssh -c "systemctl --user enable --now podman.socket; systemctl --user status podman.socket; ln -sf /run/user/1000/podman/podman.sock /tmp/docker.sock"
+            # vagrant ssh -c "
+            #   echo '开始启动 podman 服务.'
+            #   systemctl --user enable --now podman.socket
+            #   systemctl --user status podman.socket
+            #   ln -sf /run/user/1000/podman/podman.sock /tmp/docker.sock
+            #   echo 'Done.'
+            # "
+
+            # 安装 1panel Linux 面板
+            # bash -c "$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)"
+
+            echo "✅ 开发环境已部署完成！"
+            echo ""
+            echo "📌 下一步操作："
+            echo "   1. 进入虚拟机：vagrant ssh"
+            echo "   2. 进入项目目录：cd /vagrant"
+            echo "   3. 编译并启动应用：mvn clean package && java -jar target/*.jar"
+            echo ""
+            echo "🌐 访问应用：http://192.168.121.10:8080"
+        SHELL
+    end
+
+    # ------------------------------------------------------------
+    # 使用说明
+    # ------------------------------------------------------------
+    # 常用命令：
+    # vagrant validate     # 校验 Vagrantfile 文件的正确性
+    # vagrant up           # 启动虚拟机
+    # vagrant validate && vagrant up
+    # vagrant halt         # 关闭虚拟机
+    # vagrant reload       # 重启虚拟机
+    # vagrant ssh          # SSH 登录虚拟机
+    # vagrant ssh -c "bash; chsh -s /bin/bash"
+        # 1. SSH 登录 vagrant 用户
+        # vagrant ssh
+        # 2. 切换到 root（无需密码，因 vagrant 用户有免密 sudo 权限）
+        # sudo -i
+        # 或
+        # sudo su -
+    # vagrant provision    # 重新运行配置脚本
+    # vagrant destroy      # 删除虚拟机
+    # vagrant status       # 查看虚拟机状态
+    # vagrant snapshot     # 管理虚拟机快照
+    #
+    # 网络访问：
+    # SSH: ssh vagrant@127.0.0.1 -p 2222 (密码: vagrant)
+    # Web: http://localhost:8080
+    #
+    # 共享文件夹：
+    # 主机: ./projects  -> 虚拟机: /home/vagrant/projects
+    # ------------------------------------------------------------
+
+end
