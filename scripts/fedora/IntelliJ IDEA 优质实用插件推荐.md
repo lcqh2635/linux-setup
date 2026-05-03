@@ -38,7 +38,7 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 | 插件 | 核心作用 | 适用场景 | 备注 |
 |------|----------|----------|------|
 | **GitToolBox** | 行内作者信息（Inline Blame）、自动 Fetch、提交模板、提交统计 | 团队协作、代码溯源、规范提交 | 替代老旧的 `Git Commit Template` 等插件 |
-| **Commit Message AI**（或 AI 插件内置功能） | 根据代码变更自动生成英文/中文 Commit 信息 | 频繁提交、追求规范的项目 | 通常由 Copilot/通义灵码 等 AI 插件附带提供 |
+| **Git Commit Message Helper** | 根据代码变更自动生成英文/中文 Commit 信息 | 频繁提交、追求规范的项目 | 通常由 Copilot/通义灵码 等 AI 插件附带提供 |
 
 ---
 
@@ -54,6 +54,10 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 ---
 
 ### 📦 六、轻量实用型（可选）
+- SonarLint
+- Key Promoter X
+- String Manipulation
+- Translation
 - Maven Helper
 - maven-search
 - MyBatisCodeHelperPro
@@ -75,10 +79,11 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 - spotbugs-idea
 - Apifox Helper
 - JRebel and XRebel
-- Background Image Plus
-- Power Mode II
-- jclasslib Bytecode Viewer
+- jclasslib
 - Smart Input Pro
+- MapStruct Support
+- TestMe
+- CheckStyle-IDEA
 
 ---
 
