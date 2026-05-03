@@ -59,6 +59,7 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 - Indent Rainbow
 - **SequenceDiagram**：一键生成方法调用时序图（支持 PlantUML/Java 源码）
 - MyBatisCodeHelperPro
+- JPA Buddy
 - Background Image Plus
 - Save Actions X
 - Statistic
@@ -80,7 +81,8 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 - Maven Helper
 - GitToolBox
 - Commit Message AI
-- 
+- Smart Input Pro
+- maven-search
 
 ---
 
