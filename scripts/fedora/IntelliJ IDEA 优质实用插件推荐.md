@@ -71,12 +71,11 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 - Save Actions X
 - Lingma - Alibaba Cloud AI Coding Assistant
 - .env files
-- SequenceDiagram
-- Background Image Plus
-- JMH
+- SequenceDiagram Core
 - spotbugs-idea
 - Apifox Helper
 - JRebel and XRebel
+- Background Image Plus
 - Power Mode II
 - jclasslib Bytecode Viewer
 - Smart Input Pro
