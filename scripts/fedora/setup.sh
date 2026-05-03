@@ -210,7 +210,7 @@ configure_basics_gsettings() {
     if [ ! -d "$HOME/下载/linux-setup" ]; then
         git config --global user.name "lcqh2635"
         git config --global user.email "lcqh2635@gmail.com"
-        git clone --depth=1 https://gitee.com/lcqh2635/linux-setup.git
+        git clone --depth=1 https://github.com/lcqh2635/linux-setup.git
         cp -r ~/下载/linux-setup/template/* /home/lcqh/模板/
         mkdir -vp ~/.local/share/backgrounds
         # nautilus ~/.local/share/backgrounds/
