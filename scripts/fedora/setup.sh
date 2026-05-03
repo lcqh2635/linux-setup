@@ -1064,6 +1064,7 @@ EOF
     log_info "配置 Java、Maven 环境..."
     # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-java/
     # whereis maven
+    # whereis maven4
     # nautilus admin:/usr/share/maven
     sudo dnf install -y java-25-openjdk maven maven4 maven4-openjdk25
     log_info "你刚安装的 java 版本号为：$(java --version)"
@@ -2361,8 +2362,12 @@ sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
             wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
             unzip jetbra-*.zip && mv jetbra ~/.jetbra
             # nautilus ~/.jetbra
-	    
-	    # https://www.jetbrains.com/zh-cn/help/idea/tuning-the-ide.html
+            rm -rf jetbra*
+        fi
+        log_warn "JetBrains Toolbox 已经安装"
+    fi
+    
+    	    # https://www.jetbrains.com/zh-cn/help/idea/tuning-the-ide.html
 	    # https://www.jetbrains.com/zh-cn/help/idea/2026.1/getting-started.html?keymap=GNOME
 	    # 生效机制：IntelliJ IDEA 启动时，会优先读取用户配置目录（~/.config/JetBrains/IntelliJIdea2026.1/）下的 idea64.vmoptions 文件。
 	    # 如果这个文件存在，IDEA 就会忽略安装目录 （~/.local/share/JetBrains/Toolbox/apps/intellij-idea/）下的那个文件。
@@ -2383,10 +2388,6 @@ sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
             # --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
 	    # --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
 	    # -javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
-            rm -rf jetbra*
-        fi
-        log_warn "JetBrains Toolbox 已经安装"
-    fi
 }
 
 # VPN 相关软件和订阅来源
