@@ -54,35 +54,32 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 ---
 
 ### 📦 六、轻量实用型（可选）
-- **`.env files`**：环境变量文件语法高亮与校验
-- **Rainbow Brackets**：多层括号颜色区分，适合复杂泛型/嵌套结构
-- Indent Rainbow
-- **SequenceDiagram**：一键生成方法调用时序图（支持 PlantUML/Java 源码）
+- Maven Helper
+- maven-search
 - MyBatisCodeHelperPro
 - JPA Buddy
-- Background Image Plus
-- Save Actions X
-- Statistic
-- Grep Console
-- Maven Helper
-- JMH
-- SonarQube for IDE
-- spotbugs-idea
-- Fast Request
-- CamelCase
-- Apifox Helper
 - CodeGlance Pro
-- JRebel and XRebel
-- SequenceDiagram
+- CamelCase
+- Grep Console
+- Indent Rainbow
+- Rainbow Brackets
 - HighlightBracketPair
+- GitToolBox
+- Git Commit Message Helper
+- SonarQube for IDE
+- Statistic
+- Save Actions X
+- Lingma - Alibaba Cloud AI Coding Assistant
+- .env files
+- SequenceDiagram
+- Background Image Plus
+- JMH
+- spotbugs-idea
+- Apifox Helper
+- JRebel and XRebel
 - Power Mode II
 - jclasslib Bytecode Viewer
-- Package Checker
-- Maven Helper
-- GitToolBox
-- Commit Message AI
 - Smart Input Pro
-- maven-search
 
 ---
 
