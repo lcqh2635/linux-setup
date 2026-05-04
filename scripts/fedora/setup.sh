@@ -2363,6 +2363,7 @@ sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
             unzip jetbra-*.zip && mv jetbra ~/.jetbra
             # nautilus ~/.jetbra
             rm -rf jetbra*
+            # cat ~/.jetbra/vmoptions/idea.vmoptions
         fi
         log_warn "JetBrains Toolbox 已经安装"
     fi
