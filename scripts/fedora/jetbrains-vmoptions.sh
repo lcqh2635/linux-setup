@@ -52,295 +52,146 @@ if [ ! -d "WhiteSur-wallpapers" ]; then
 fi
 
 
+# ===================================================================
+#  JetBrains IDE 优化配置文件 (idea64.vmoptions)
+#  适用环境：
+#    - 操作系统：Fedora Linux
+#    - JVM：JDK 21（推荐使用 Oracle JDK 或 OpenJDK 21+）
+#    - IDE：IntelliJ IDEA、WebStorm、PyCharm、GoLand 等
+#    - 物理内存建议：16GB ~ 32GB 系统，堆内存 2G~4G
+#  优化目标：
+#    - 稳定优先（适合日常开发）
+#    - 内存利用合理（6GB）
+#    - 避免 GC 卡顿，加快启动和索引性能
+#    - 兼顾 Linux / Wayland 显示效果
+#  使用方式：
+#    1. 在 IDE 启动界面点击齿轮图标 → "Custom VM Options"
+#    2. 或手动编辑：
+#       ~/.config/JetBrains/<Product><Version>/idea64.vmoptions
+# JVM 配置参数官网：https://www.jetbrains.com/zh-cn/help/idea/tuning-the-ide.html
+# ===================================================================
+
+# ===================================================================
+# 1、🧠 内存设置（核心参数）
+# ===================================================================
+# JVM 初始堆内存：2GB
+# 👉 启动时直接分配，避免频繁扩容带来的性能抖动
+-Xms2g
+# JVM 最大堆内存：6GB
+# 👉 你的 32GB 内存，给 IDEA 6GB 是比较合理的平衡点
+-Xmx6g
+# ===================================================================
+# 2、⚙️ JIT + 代码缓存
+# ===================================================================
+# JIT 编译后的代码缓存大小：1GB
+# 👉 防止 "CodeCache is full" 导致性能下降
+# 👉 大型项目（Spring / 多模块）很有用
+-XX:ReservedCodeCacheSize=1g
+# JIT 编译线程数
+# 👉 使用 4 个线程进行即时编译
+# 👉 避免线程过多抢占 CPU（你是 16 线程，4 是较优解）
+-XX:CICompilerCount=4
+# ===================================================================
+# 3、🗑️ 垃圾回收（GC）
+# ===================================================================
+# 使用 G1 垃圾回收器（默认推荐）
+# 👉 平衡吞吐量与延迟，适合 IDEA 这种桌面应用
+-XX:+UseG1GC
+# 目标 GC 停顿时间：200ms
+# 👉 JVM 会尽量调整策略来控制停顿时间
+-XX:MaxGCPauseMillis=200
+# 软引用回收策略
+# 👉 内存紧张时更快回收缓存对象（如图片、索引缓存）
+# 👉 IDEA 这种大量缓存场景很有用
+-XX:SoftRefLRUPolicyMSPerMB=50
+# 禁止手动调用 System.gc()
+# 👉 防止某些插件或代码触发 Full GC 导致卡顿
+-XX:+DisableExplicitGC
+# ===================================================================
+# 4、🚀 性能优化
+# ===================================================================
+# 字符串去重（G1GC 特性）
+# 👉 减少重复字符串占用内存（对 Java 项目特别有效）
+-XX:+UseStringDeduplication
+# 压缩对象指针
+# 👉 减少内存占用，提高缓存命中率（默认其实已开启）
+-XX:+UseCompressedOops
+# 解锁实验性 JVM 参数
+# 👉 为某些高级参数提供支持（本配置中影响不大，但可保留）
+-XX:+UnlockExperimentalVMOptions
+# ===================================================================
+# 5、🧯 稳定性 & 调试
+# ===================================================================
+# OOM 时生成堆转储（heap dump）
+# 👉 用于分析内存泄漏问题
+-XX:+HeapDumpOnOutOfMemoryError
+# 禁用 FastThrow 优化
+# 👉 保证异常始终有完整堆栈（方便调试）
+-XX:-OmitStackTraceInFastThrow
+# ===================================================================
+# 6、🌐 网络 & IO
+# ===================================================================
+# 优先使用 IPv4
+# 👉 避免某些环境 IPv6 带来的连接问题
+-Djava.net.preferIPv4Stack=true
+# 禁用文件路径缓存
+# 👉 避免文件变动后缓存未更新的问题（开发环境更安全）
+-Dsun.io.useCanonCaches=false
+# ===================================================================
+# 7、🌍 编码
+# ===================================================================
+# 默认字符编码 UTF-8
+# 👉 避免中文乱码问题（强烈建议保留）
+-Dfile.encoding=UTF-8
+# ===================================================================
+# 8、🖥️ UI 渲染（Linux / Wayland 优化）
+# ===================================================================
+# 使用系统字体抗锯齿设置
+# 👉 提升字体显示效果
+-Dawt.useSystemAAFontSettings=lcd
+# Swing 开启抗锯齿
+# 👉 让 IDEA 字体更平滑
+-Dswing.aatext=true
+# ===================================================================
+# 9、🔥 自定义的破解工具
+# ===================================================================
+-javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
+
+
+
 # IDEA 虚拟机配置文件存放位置
 # nautilus ~/.config/JetBrains
 # cat ~/.config/JetBrains/IntelliJIdea*/idea64.vmoptions
 
-
-
-
--Xms512m
--Xmx4g
--XX:ReservedCodeCacheSize=512m
--XX:MetaspaceSize=256m
--XX:MaxMetaspaceSize=512m
--XX:+UseZGC
--XX:SoftMaxHeapSize=3g
--XX:+UnlockExperimentalVMOptions
--XX:+TieredCompilation
--XX:TieredStopAtLevel=1
--XX:+ParallelRefProcEnabled
--Dsun.java2d.uiScale.enabled=true
--Dsun.java2d.dpiaware=true
--Dswing.bufferPerWindow=true
--Dide.no.platform.update=true
--Dide.plugins.snapshot.on.start=false
--Dfile.encoding=UTF-8
--Duser.language=zh
-# -Duser.region=CN
-# -Duser.country=CN
-
-
 # 为 IntelliJIdea 配置虚拟机参数
-echo "
--Xms2g
--Xmx4g
--XX:ReservedCodeCacheSize=512m
--XX:+IgnoreUnrecognizedVMOptions
--XX:+UnlockExperimentalVMOptions
--XX:+UseZGC
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:CICompilerCount=2
--XX:+HeapDumpOnOutOfMemoryError
--XX:-OmitStackTraceInFastThrow
+tee -a ~/.config/JetBrains/IntelliJIdea*/idea64.vmoptions > /dev/null << EOF
 
--ea
--Dsun.io.useCanonCaches=false
--Djdk.http.auth.tunneling.disabledSchemes=""
--Djdk.attach.allowAttachSelf=true
--Djdk.module.illegalAccess.silent=true
--Dkotlinx.coroutines.debug=off
--Drecreate.x11.input.method=true
--XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log
--XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof
---add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
---add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
--javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
-" | sudo tee -a ~/.config/JetBrains/IntelliJIdea*/idea64.vmoptions
+EOF
 
+# 为 RustRover 配置虚拟机参数
+tee -a ~/.config/JetBrains/RustRover*/rustrover64.vmoptions > /dev/null << EOF
 
-
-#=============================================================
-#  JetBrains IDE 优化配置 (JDK 21 + Fedora 42)
-#  适用于 IntelliJ IDEA / WebStorm / GoLand 等
-#  内存建议：16GB+ 系统，堆内存 2G~4G
-#=============================================================
-# 基础堆内存（根据项目规模调整）
--Xms2g
--Xmx4g
-# 垃圾回收器（JDK21推荐ZGC）减少 GC 停顿（ZGC 下效果显著）
--XX:+UseZGC
--XX:+UnlockExperimentalVMOptions
--XX:ZCollectionInterval=30
--XX:ZAllocationSpikeTolerance=2.0
--XX:ZCollectionInterval=5000
-# 元空间（默认值可能不足）
--XX:MetaspaceSize=256m
--XX:MaxMetaspaceSize=512m
--XX:ZFragmentationLimit=10
--XX:+UseStringDeduplication
--XX:ReservedCodeCacheSize=512m
--XX:+IgnoreUnrecognizedVMOptions
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:CICompilerCount=2
--XX:+HeapDumpOnOutOfMemoryError
--XX:-OmitStackTraceInFastThrow
-# 启用并行类加载（提升启动速度）
--XX:+ParallelRefProcEnabled
-# 启用 JVM 分层编译，提升启动和运行性能
--XX:+TieredCompilation
--XX:TieredStopAtLevel=1
--XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log
--XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof
--ea
--Dsun.io.useCanonCaches=false
--Djdk.http.auth.tunneling.disabledSchemes=""
--Djdk.attach.allowAttachSelf=true
--Djdk.module.illegalAccess.silent=true
--Dkotlinx.coroutines.debug=off
--Dfile.encoding=UTF-8
--Duser.language=zh
-# -Duser.region=CN
-
---add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
---add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
--javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
-
+EOF
 
 # 为 GoLand 配置虚拟机参数
-echo "
--Xms1g
--Xmx5g
--XX:ReservedCodeCacheSize=512m
--XX:+IgnoreUnrecognizedVMOptions
--XX:+UnlockExperimentalVMOptions
--XX:+UseZGC
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:CICompilerCount=2
--XX:+HeapDumpOnOutOfMemoryError
--XX:-OmitStackTraceInFastThrow
--ea
--Dsun.io.useCanonCaches=false
--Djdk.http.auth.tunneling.disabledSchemes=""
--Djdk.attach.allowAttachSelf=true
--Djdk.module.illegalAccess.silent=true
--Dkotlinx.coroutines.debug=off
--Drecreate.x11.input.method=true
--XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log
--XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof
---add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
---add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
--javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
-" | sudo tee -a ~/.config/JetBrains/GoLand*/goland64.vmoptions
+tee -a ~/.config/JetBrains/GoLand*/goland64.vmoptions > /dev/null << EOF
+
+EOF
 
 # 为 DataGrip 配置虚拟机参数
-echo "
--Xms1g
--Xmx5g
--XX:ReservedCodeCacheSize=512m
--XX:+IgnoreUnrecognizedVMOptions
--XX:+UnlockExperimentalVMOptions
--XX:+UseZGC
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:CICompilerCount=2
--XX:+HeapDumpOnOutOfMemoryError
--XX:-OmitStackTraceInFastThrow
--ea
--Dsun.io.useCanonCaches=false
--Djdk.http.auth.tunneling.disabledSchemes=""
--Djdk.attach.allowAttachSelf=true
--Djdk.module.illegalAccess.silent=true
--Dkotlinx.coroutines.debug=off
--Drecreate.x11.input.method=true
--XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log
--XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof
---add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
---add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
--javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
-" | sudo tee -a ~/.config/JetBrains/DataGrip*/datagrip64.vmoptions
+tee -a ~/.config/JetBrains/DataGrip*/datagrip64.vmoptions > /dev/null << EOF
+
+EOF
 
 # 为 PyCharm 配置虚拟机参数
-echo "
--Xms1g
--Xmx5g
--XX:ReservedCodeCacheSize=512m
--XX:+IgnoreUnrecognizedVMOptions
--XX:+UnlockExperimentalVMOptions
--XX:+UseZGC
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:CICompilerCount=2
--XX:+HeapDumpOnOutOfMemoryError
--XX:-OmitStackTraceInFastThrow
--ea
--Dsun.io.useCanonCaches=false
--Djdk.http.auth.tunneling.disabledSchemes=""
--Djdk.attach.allowAttachSelf=true
--Djdk.module.illegalAccess.silent=true
--Dkotlinx.coroutines.debug=off
--Drecreate.x11.input.method=true
--XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log
--XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof
---add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
---add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
--javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
-" | sudo tee -a ~/.config/JetBrains/PyCharm*/pycharm64.vmoptions
+tee -a ~/.config/JetBrains/PyCharm*/pycharm64.vmoptions > /dev/null << EOF
 
-
-# 清理临时文件
-echo "正在清理临时文件..."
-dnf clean all
+EOF
 
 echo "主题美化完成！请注销或重启系统以查看全部更改效果。"
 echo "您可以使用GNOME Tweaks工具进一步自定义外观。"
 
 
 
-# ===================================================================
-#  JetBrains IDE 优化配置文件 (idea64.vmoptions)
-#  适用环境：
-#    - 操作系统：Fedora 42（Linux）
-#    - JVM：JDK 21（推荐使用 Oracle JDK 或 OpenJDK 21+）
-#    - IDE：IntelliJ IDEA、WebStorm、PyCharm、GoLand 等
-#    - 物理内存建议：16GB ~ 32GB 系统，堆内存 2G~4G
-#  优化目标：
-#    - 降低内存占用
-#    - 提升 UI 响应速度
-#    - 减少 GC 卡顿
-#    - 加快启动和索引性能
-#  使用方式：
-#    1. 在 IDE 启动界面点击齿轮图标 → "Custom VM Options"
-#    2. 或手动编辑：
-#       ~/.config/JetBrains/<Product><Version>/idea64.vmoptions
-# ===================================================================
 
-# 堆内存设置：平衡性能与内存占用
-# 初始堆大小设为 512MB，避免启动时占用过多内存
--Xms1g
-# 最大堆内存设为 4GB。足够应对大多数 Java/TS/Rust 项目。
-# 若内存紧张可降为 -Xmx3g 或 -Xmx2g；大型项目可升至 -Xmx6g
--Xmx4g
 
-# 代码缓存与元空间优化
-# JIT 编译后的字节码缓存空间。增大可减少重复编译，提升响应速度
--XX:ReservedCodeCacheSize=512m
-# 类元数据区初始大小。避免频繁动态扩展
-# -XX:MetaspaceSize=256m
-# 限制元空间最大值，防止因类加载过多导致内存溢出
-# -XX:MaxMetaspaceSize=512m
-
-# 使用 ZGC（低延迟垃圾回收器，JDK 21 推荐）
-# JDK 21 默认支持 ZGC，延迟极低（通常 < 10ms），显著减少卡顿
-# 替代 G1GC，特别适合交互式开发环境
--XX:+UseZGC
-# ZGC 特有参数：建议 JVM 尽量保持堆在 3GB 以内，仅在必要时扩展到 -Xmx
-# 有助于控制系统内存占用
--XX:SoftMaxHeapSize=3g
-# 启用 ZGC 所需（在某些 OpenJDK 构建中需要）
--XX:+UnlockExperimentalVMOptions
-
-# JVM 性能与编译优化
-# 启用分层编译（解释执行 → C1 → C2），提升运行时性能
--XX:+TieredCompilation
-# 限制 JIT 编译层级到 C1（简单优化），减少编译开销和内存使用
-# 适合开发环境（非生产），加快响应
--XX:TieredStopAtLevel=1
-# 并行处理软/弱/虚引用，减少 GC 停顿时间
--XX:+ParallelRefProcEnabled
--XX:+IgnoreUnrecognizedVMOptions
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:CICompilerCount=2
--XX:+HeapDumpOnOutOfMemoryError
--XX:-OmitStackTraceInFastThrow
--XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log
--XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof
--ea
--Dsun.io.useCanonCaches=false
--Djdk.http.auth.tunneling.disabledSchemes=""
--Djdk.attach.allowAttachSelf=true
--Djdk.module.illegalAccess.silent=true
--Dkotlinx.coroutines.debug=off
-
-# UI 与图形渲染优化（Fedora 推荐）
-# 启用高 DPI 缩放支持（HiDPI 屏幕友好）
--Dsun.java2d.uiScale.enabled=true
-# 让 Java 应用感知系统 DPI 设置，避免模糊
--Dsun.java2d.dpiaware=true
-# 启用窗口级双缓冲，减少重绘闪烁，提升 UI 流畅性
--Dswing.bufferPerWindow=true
-
-# IDE 功能与行为优化
-# 禁用 IDE 平台更新检查（可手动检查），减少后台任务
--Dide.no.platform.update=true
-# 禁用启动时插件状态快照，加快启动速度
--Dide.plugins.snapshot.on.start=false
-# 强制文件编码为 UTF-8
--Dfile.encoding=UTF-8
-# 设置中文（简体）
--Duser.language=zh
-# 设置区域格式，影响日期、数字、货币的显示形式（如 ¥ vs ￥）CN, US
-# -Duser.region=CN
-# 设置国家/地区代码，影响语言包加载（如界面语言）CN, US
-# -Duser.country=CN
-
---add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
---add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
--javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
-
-# 其他建议（不在 vmoptions 中，但相关）
-# 1. 在 IDE 设置中：
-#    - Settings → Plugins → 禁用不用的插件（如 Docker、Database、AI 工具）
-#    - Settings → Directories → 将 node_modules、target、build 标记为 "Excluded"
-#    - 启用 "Power Save Mode" 进行专注编码
-# 2. 使用 JetBrains Toolbox 管理多个 IDE 版本
-# 3. 避免使用 Flatpak 版本（沙盒限制多，性能较差）
-# 4. 若使用 Rust 插件，确保启用 LSP 模式以减少资源占用
