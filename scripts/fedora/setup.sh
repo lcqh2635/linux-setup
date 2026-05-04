@@ -2366,7 +2366,7 @@ sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
         fi
         log_warn "JetBrains Toolbox 已经安装"
     fi
-    
+    	    # https://plugins.jetbrains.com/
     	    # https://www.jetbrains.com/zh-cn/help/idea/tuning-the-ide.html
 	    # https://www.jetbrains.com/zh-cn/help/idea/2026.1/getting-started.html?keymap=GNOME
 	    # 生效机制：IntelliJ IDEA 启动时，会优先读取用户配置目录（~/.config/JetBrains/IntelliJIdea2026.1/）下的 idea64.vmoptions 文件。

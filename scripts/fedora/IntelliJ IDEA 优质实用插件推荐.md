@@ -136,7 +136,6 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 ---
 
 ### 📦 六、轻量实用型（可选）
-- SonarLint
 - Key Promoter X
 - String Manipulation
 - Translation
@@ -166,6 +165,12 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 - MapStruct Support
 - TestMe
 - CheckStyle-IDEA
+- Catppuccin Icons
+- Easy Deploy
+- ExcelReader
+- Spring Boot Helper
+- Extra ToolWindow Colorful Icons
+- Advanced JSON Studio
 
 ---
 
@@ -271,6 +276,7 @@ IntelliJ IDEA 经过近几年的持续迭代，已**内置了大量曾经需要�
 | `.env files`      | 为 `.env` 环境变量文件提供语法高亮与变量解析          |
 | `Smart Input Pro` | 智能切换输入法（写代码切英文，写注释/文档切中文）     |
 | `Apifox Helper`   | 一键同步 API 文档、生成客户端代码、接口调试集成       |
+| `Word Book`       |                                                       |
 
 ---
 
