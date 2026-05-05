@@ -216,6 +216,7 @@ configure_basics_gsettings() {
         # nautilus ~/.local/share/backgrounds/
         # nautilus admin:/usr/share/backgrounds/
         cp -r ~/下载/linux-setup/wallpaper/* ~/.local/share/backgrounds/
+        # cp -r ~/文档/linux-setup/wallpaper/* ~/.local/share/backgrounds/
         # gsettings list-recursively org.gnome.desktop.background
         gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
         gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
@@ -1402,6 +1403,7 @@ install_gnome_extensions() {
     gnome-shell-extension-top-bar-organizer.noarch \
     gnome-shell-extension-vitals.noarch \
     gnome-shell-extension-weather-oclock.noarch
+    # ls /usr/share/glib-2.0/schemas/
     
     # Auto Move Windows
     # gsettings list-recursively org.gnome.shell.extensions.auto-move-windows
