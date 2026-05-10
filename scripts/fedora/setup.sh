@@ -1264,6 +1264,8 @@ EOF
     # PostgreSQL server 服务器默认未运行且被禁用。要设置启动时启动，请运行：
     sudo systemctl enable postgresql
     # 安装后需要填充数据库初始数据。数据库初始化可以通过以下命令完成。它创建配置文件 postgresql.conf 和 pg_hba.conf
+    #  * Initializing database in '/var/lib/pgsql/data'
+    # * Initialized, logs are in /var/lib/pgsql/initdb_postgresql.log
     sudo postgresql-setup --initdb --unit postgresql
     # 要手动启动 PostgreSQL 服务器，请运行
     sudo systemctl start postgresql
@@ -1325,8 +1327,69 @@ EOF
     # 为了提高耐久性，启用 AOF 记录每一次写操作：
     # sudo grep 'appendonly ' /etc/valkey/valkey.conf
     sudo sed -i "s/appendonly no/appendonly yes/g" /etc/valkey/valkey.conf
+    # 启用外部 ACL 文件（与直接配置互斥）
+cat << EOF | sudo tee /etc/valkey/users.acl
+# =============================================================================
+# Redis ACL 配置文件 (users.acl)
+# 适用项目: mall-cloud 微服务电商系统
+# 维护者: 运维/架构组
+# =============================================================================
+
+# =============================================================================
+# 1. 默认用户 (Default User)
+# 安全建议：生产环境中强烈建议禁用默认用户，强制所有服务使用命名用户登录。
+# =============================================================================
+# off: 禁用该用户，拒绝任何未指定用户名的连接
+user default off
+
+# =============================================================================
+# 2. 超级管理员 (Super Admin)
+# 用途：仅供运维人员、DBA 或自动化脚本使用。
+# =============================================================================
+# - on: 启用
+# - >Super@Secure#2026: 设置强密码（明文，建议后续替换为 SHA256 哈希值）
+# - ~*: 允许访问所有 Key
+# - +@all: 允许执行所有命令
+# - +@admin: 显式允许管理命令
+# - +@dangerous: 允许执行危险命令（如 FLUSHALL, KEYS, DEBUG 等）
+# user admin on >Super@Secure#2026 ~* +@all +@admin +@dangerous
+
+# =============================================================================
+# 3. 用户/认证服务 (User & Auth Service)
+# 对应微服务: user-service, auth-server
+# 业务场景: 用户注册登录、JWT Token 管理、黑名单、Session 存储。
+# =============================================================================
+# - ~user:*: 允许操作用户数据
+# - ~auth:*: 允许操作认证数据
+# - ~session:*: 允许操作会话数据
+# - ~token:blacklist:*: 允许操作 Token 黑名单 (退出登录用)
+# - +@all: 由于是核心数据源，给予该服务较全的权限，但排除危险操作
+# - -@dangerous: 禁止危险命令
+# user auth-service on >Auth@Service! ~user:* ~auth:* ~session:* ~token:blacklist:* +@all -@dangerous
+
+# =============================================================================
+# 4. 订单服务 (Order Service)
+# 对应微服务: order-service
+# 业务场景: 处理订单创建、支付状态查询。需要读写订单数据，且有时需要关联查询用户基础信息。
+# =============================================================================
+# - ~order:*: 允许访问以 "order:" 开头的所有键 (如 order:1001)
+# - ~user:profile:*: 允许访问用户档案数据 (用于订单详情展示买家信息)
+# - +@read: 允许读操作 (GET, HGET, LRANGE...)
+# - +@write: 允许写操作 (SET, HSET, LPUSH...)
+# - +@transaction: 允许事务操作 (MULTI, EXEC)
+# - -FLUSHALL: 严禁清空数据库
+# - -CONFIG: 严禁修改 Redis 配置
+# - -KEYS: 严禁使用 KEYS 命令 (防止阻塞主线程)
+# user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
+EOF
+    # sudo cat /etc/valkey/users.acl
+    sudo sed -i "s/# aclfile /aclfile /g" /etc/valkey/valkey.conf
+    # sudo sed 's|^aclfile /etc/valkey/users\.acl|# &|' /etc/valkey/valkey.conf
+
     sudo systemctl restart valkey
-    systemctl status valkey
+    systemctl status valkey --no-pager
+    # journalctl -xeu valkey.service --no-pager | tail -n 30
+    
     # 此外，通过连接CLI并发送PING命令来验证服务器响应命令：
     # valkey-cli -a 479368 ping
     # 此外，要查看详细服务器信息，请连接到CLI并执行INFO命令：
