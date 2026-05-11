@@ -1329,6 +1329,39 @@ EOF
     sudo sed -i "s/appendonly no/appendonly yes/g" /etc/valkey/valkey.conf
     # 启用外部 ACL 文件（与直接配置互斥）
 cat << EOF | sudo tee /etc/valkey/users.acl
+user default off
+user admin on >Admin@SecurePass2026 ~* +@all +@admin +@dangerous
+user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
+user auth-service on >Auth@Service! ~user:* ~auth:* ~session:* ~token:blacklist:* +@all -@dangerous
+user cart-service on >Cart@2026 ~cart:* +@write +@read +H* -KEYS -FLUSHALL -FLUSHDB
+user product-service on >Product@Cache! ~product:* ~category:* ~inventory:cache:* +GET +MGET +SET +MSET +EXPIRE +TTL
+user monitor-readonly on >Monitor@Read! ~stats:* ~metrics:* +INFO +PING +SLOWLOG +@read -@write
+user notification-service on >Notify@Svc! ~queue:email:* ~queue:sms:* ~ws:session:* +LPUSH +RPUSH +LPOP +RPOP +LLEN -GET
+EOF
+# valkey-cli --user admin --pass 123456
+
+
+# /etc/valkey/users.acl 文件不支持中文，统一使用英文
+sudo tee /etc/valkey/users.acl << 'EOF'
+# Default user - disabled for security
+user default off
+
+# Admin user - for ops and DBA only
+user admin on >Admin@SecurePass2026 ~* +@all +@admin +@dangerous
+
+# Order service
+user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
+
+# Auth service
+user auth-service on >Auth@Service! ~user:* ~auth:* ~session:* ~token:blacklist:* +@all -@dangerous
+EOF
+
+
+
+
+
+
+# cat << EOF | sudo tee /etc/valkey/users.acl
 # =============================================================================
 # Redis ACL 配置文件 (users.acl)
 # 适用项目: mall-cloud 微服务电商系统
@@ -1381,8 +1414,21 @@ user default off
 # - -CONFIG: 严禁修改 Redis 配置
 # - -KEYS: 严禁使用 KEYS 命令 (防止阻塞主线程)
 # user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
+# EOF
+
+# /etc/valkey/users.acl 文件不支持任何的 # 注释，中文、英文都不行
+# nautilus admin:/etc/valkey
+cat << EOF | sudo tee /etc/valkey/users.acl
+user default off
+user admin on >479368 ~* +@all +@admin +@dangerous
+user auth-service on >Auth@Service! ~user:* ~auth:* ~session:* ~token:blacklist:* +@all -@dangerous
+user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
 EOF
+# valkey-cli --user admin --pass 479368
+# ACL LIST
+
     # sudo cat /etc/valkey/users.acl
+    # sudo grep -n "aclfile" /etc/valkey/valkey.conf
     sudo sed -i "s/# aclfile /aclfile /g" /etc/valkey/valkey.conf
     # sudo sed 's|^aclfile /etc/valkey/users\.acl|# &|' /etc/valkey/valkey.conf
 
