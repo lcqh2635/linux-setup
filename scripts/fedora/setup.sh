@@ -2640,6 +2640,8 @@ install_vpn() {
     # flatpak install -y flathub dev.skynomads.Seabird
     # Thunderbird 是一款免费且开源的电子邮件、新闻源、聊天和日历客户端
     flatpak install -y flathub org.mozilla.Thunderbird
+    flatpak install -y flathub dev.zed.Zed
+    flatpak install -y flathub io.neovim.nvim
 
     # 设置 Dock 栏应用图标
     gsettings set org.gnome.shell favorite-apps "['org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.TextEditor.desktop', 'org.gnome.Ptyxis.desktop', 'org.gnome.Settings.desktop', 'org.gnome.SystemMonitor.desktop', 'com.microsoft.Edge.desktop', 'org.gnome.tweaks.desktop']"
