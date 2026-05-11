@@ -1264,7 +1264,7 @@ EOF
     # PostgreSQL server 服务器默认未运行且被禁用。要设置启动时启动，请运行：
     sudo systemctl enable postgresql
     # 安装后需要填充数据库初始数据。数据库初始化可以通过以下命令完成。它创建配置文件 postgresql.conf 和 pg_hba.conf
-    #  * Initializing database in '/var/lib/pgsql/data'
+    # * Initializing database in '/var/lib/pgsql/data'
     # * Initialized, logs are in /var/lib/pgsql/initdb_postgresql.log
     sudo postgresql-setup --initdb --unit postgresql
     # 要手动启动 PostgreSQL 服务器，请运行
@@ -1287,11 +1287,19 @@ EOF
     # 如果你想让 postgres 接受网络连接，你应该更换 postgresql.conf 中的 listen_addresses 属性值从 localhost 改成 *
     sudo cp /var/lib/pgsql/data/postgresql.conf{,.bak}
     sudo cp /var/lib/pgsql/data/pg_hba.conf{,.bak}
-    # sudo grep 'listen_addresses = ' /var/lib/pgsql/data/postgresql.conf
+    # sudo grep -n 'listen_addresses = ' /var/lib/pgsql/data/postgresql.conf
     sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /var/lib/pgsql/data/postgresql.conf
+    # sudo grep -n 'port = 5432' /var/lib/pgsql/data/postgresql.conf
+    sudo sed -i "s/#port = 5432/port = 5432/g" /var/lib/pgsql/data/postgresql.conf
+    # 如果 local 或 host 那行显示的是 peer 或 ident，需要改为 md5 或 scram-sha-256：
+    sudo sed -i.bak 's/ident/scram-sha-256/g; s/peer/scram-sha-256/g' /var/lib/pgsql/data/pg_hba.conf
     # 重启 PostgreSQL
     # 修改配置后，必须重载配置才能生效。由于修改了监听地址，建议重启服务：
     sudo systemctl restart postgresql
+    systemctl status postgresql --no-pager
+    # 切换到 postgres 用户并启动 psql 客户端
+    sudo -u postgres psql
+    ALTER USER postgres WITH PASSWORD '479368';
     # 重启后，你可以用以下命令检查监听状态：
     sudo netstat -tulnp | grep 5432
     # sudo cat /var/lib/pgsql/data/pg_hba.conf
@@ -1327,39 +1335,6 @@ EOF
     # 为了提高耐久性，启用 AOF 记录每一次写操作：
     # sudo grep 'appendonly ' /etc/valkey/valkey.conf
     sudo sed -i "s/appendonly no/appendonly yes/g" /etc/valkey/valkey.conf
-    # 启用外部 ACL 文件（与直接配置互斥）
-cat << EOF | sudo tee /etc/valkey/users.acl
-user default off
-user admin on >Admin@SecurePass2026 ~* +@all +@admin +@dangerous
-user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
-user auth-service on >Auth@Service! ~user:* ~auth:* ~session:* ~token:blacklist:* +@all -@dangerous
-user cart-service on >Cart@2026 ~cart:* +@write +@read +H* -KEYS -FLUSHALL -FLUSHDB
-user product-service on >Product@Cache! ~product:* ~category:* ~inventory:cache:* +GET +MGET +SET +MSET +EXPIRE +TTL
-user monitor-readonly on >Monitor@Read! ~stats:* ~metrics:* +INFO +PING +SLOWLOG +@read -@write
-user notification-service on >Notify@Svc! ~queue:email:* ~queue:sms:* ~ws:session:* +LPUSH +RPUSH +LPOP +RPOP +LLEN -GET
-EOF
-# valkey-cli --user admin --pass 123456
-
-
-# /etc/valkey/users.acl 文件不支持中文，统一使用英文
-sudo tee /etc/valkey/users.acl << 'EOF'
-# Default user - disabled for security
-user default off
-
-# Admin user - for ops and DBA only
-user admin on >Admin@SecurePass2026 ~* +@all +@admin +@dangerous
-
-# Order service
-user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
-
-# Auth service
-user auth-service on >Auth@Service! ~user:* ~auth:* ~session:* ~token:blacklist:* +@all -@dangerous
-EOF
-
-
-
-
-
 
 # cat << EOF | sudo tee /etc/valkey/users.acl
 # =============================================================================
