@@ -223,7 +223,7 @@ configure_basics_gsettings() {
     fi
     
     # 甚至可以使用大括号展开来创建有规律的目录
-    mkdir -vp $HOME/编程/{Java,Rust,Cpp,Python,TypeScript,Database,Gnome}
+    mkdir -vp $HOME/编程/{Java,Rust,Cpp,Python,TypeScript,Database,Gnome,AndroidStudio}
     mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis}
     
     log_success "GNOME 基础配置完成。"
@@ -1131,13 +1131,21 @@ EOF
     log_info "配置 Rust 环境..."
     # https://developer.fedoraproject.org/tech/languages/rust/rust-installation.html
     # https://linuxcapable.com/how-to-install-rust-programming-language-on-fedora-linux/
-    # which rustc
-    # which cargo
-    # nautilus admin:/usr/bin/rustc
-    # nautilus admin:/usr/bin/cargo
-    sudo dnf install -y rust cargo rustup clippy rustfmt rust-src rust-analyzer lldb
-    log_info "Rust 已安装: $(rustc --version)"
-    log_info "Cargo 已安装: $(cargo --version)"
+# 设置 Rustup 镜像，参考：https://developer.aliyun.com/mirror/rustup
+echo '
+# 设置 Rustup 镜像，参考：https://developer.aliyun.com/mirror/rustup
+export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup
+export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup
+' >> ~/.bash_profile
+source ~/.bash_profile
+    
+# 使用阿里云安装脚本
+curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
+. "$HOME/.cargo/env"
+rustup update
+rustup toolchain install stable
+
+
 # 配置 Cargo 镜像        
 # 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
 mkdir -vp "$HOME/.cargo"
@@ -1166,9 +1174,8 @@ mkdir -vp "$HOME/.android/Sdk"
 mkdir -vp "$HOME/.android/Sdk/ndk"
 # https://tauri.app/zh-cn/start/prerequisites/#android
 # https://linuxcapable.com/how-to-set-java-environment-path-in-fedora-linux/
-
-cat << EOF | tee -a ~/.bashrc
 # 在执行该命令前，请先提前安装 Android Studio
+echo '
 # Tauri 开发 Android 应用需要配置如下内容，具体参考：https://tauri.app/zh-cn/start/prerequisites/#android
 # 1. 配置 JDK 变量，使用  alternatives --display java 查看  JDK 安装的根目录
 # 参考：https://linuxcapable.com/how-to-set-java-environment-path-in-fedora-linux/
@@ -1178,10 +1185,16 @@ export PATH=$JAVA_HOME/bin:$PATH
 export ANDROID_HOME="$HOME/.android/Sdk"
 # 3. NDK 变量（构建工具会自动读取，仅手动调用 ndk-build 时需要 PATH）
 export NDK_HOME="$ANDROID_HOME/ndk/$(ls -1 $ANDROID_HOME/ndk)"
-EOF
-
-# rustup target add aarch64-linux-android x86_64-linux-android
-    
+' >> ~/.bashrc
+source ~/.bashrc
+rustup target add aarch64-linux-android x86_64-linux-android
+rustup target add aarch64-apple-ios aarch64-apple-ios-sim
+# 打开 Android Studio 、创建一个应用、点击设置、点击 SDK Manager、选择 SDK Tools 然后勾选下面 5 个工具
+# Android SDK Platform
+# Android SDK Platform-Tools
+# NDK (Side by side)
+# Android SDK Build-Tools
+# Android SDK Command-line Tools
     
     # 5. Zig
     log_info "配置 Zig 环境..."
