@@ -1092,6 +1092,8 @@ rm -rf $HOME/.sdkman
 curl -fsSL "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install gradle
+# sdkman 自我检查更新，并且更新所有已经安装的工具，例如：java、gradle、maven 等
+sdk selfupdate && sdk update
     
 
     # 3. Go
