@@ -1040,6 +1040,7 @@ configure_languages() {
         # bun - 现代的 JavaScript 运行时和包管理器
         # https://www.npmjs.com/package/bun
         npm install -g bun typescript
+        # 
         # bun create vite my-vue-app --template vue-ts
         # bun 自行升级	bun upgrade
         # bun run config --help
@@ -1134,7 +1135,7 @@ EOF
     # which cargo
     # nautilus admin:/usr/bin/rustc
     # nautilus admin:/usr/bin/cargo
-    sudo dnf install -y rust cargo clippy rustfmt rust-src rust-analyzer lldb
+    sudo dnf install -y rust cargo rustup clippy rustfmt rust-src rust-analyzer lldb
     log_info "Rust 已安装: $(rustc --version)"
     log_info "Cargo 已安装: $(cargo --version)"
 # 配置 Cargo 镜像        
@@ -1160,6 +1161,27 @@ registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 [registries.ustc]
 index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
+    
+mkdir -vp "$HOME/.android/Sdk"
+mkdir -vp "$HOME/.android/Sdk/ndk"
+# https://tauri.app/zh-cn/start/prerequisites/#android
+# https://linuxcapable.com/how-to-set-java-environment-path-in-fedora-linux/
+
+cat << EOF | tee -a ~/.bashrc
+# 在执行该命令前，请先提前安装 Android Studio
+# Tauri 开发 Android 应用需要配置如下内容，具体参考：https://tauri.app/zh-cn/start/prerequisites/#android
+# 1. 配置 JDK 变量，使用  alternatives --display java 查看  JDK 安装的根目录
+# 参考：https://linuxcapable.com/how-to-set-java-environment-path-in-fedora-linux/
+export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
+export PATH=$JAVA_HOME/bin:$PATH
+# 2. 基础变量（所有场景都建议配置）
+export ANDROID_HOME="$HOME/.android/Sdk"
+# 3. NDK 变量（构建工具会自动读取，仅手动调用 ndk-build 时需要 PATH）
+export NDK_HOME="$ANDROID_HOME/ndk/$(ls -1 $ANDROID_HOME/ndk)"
+EOF
+
+# rustup target add aarch64-linux-android x86_64-linux-android
+    
     
     # 5. Zig
     log_info "配置 Zig 环境..."
