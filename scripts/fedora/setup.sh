@@ -377,14 +377,7 @@ configure_repos_and_dnf() {
                  -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.aliyun.com/fedora|g' \
                  -i.bak \
                  /etc/yum.repos.d/fedora.repo \
-                 /etc/yum.repos.d/fedora-updates.repo
-        
-        sudo sed -e 's|^metalink=|#metalink=|g' \
-    		 -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.tuna.tsinghua.edu.cn/fedora|g' \
-    		 -i.bak \
-    		 /etc/yum.repos.d/fedora.repo \
-    		 /etc/yum.repos.d/fedora-updates.repo
-                 
+                 /etc/yum.repos.d/fedora-updates.repo 
     else
         echo "✅ 加速镜像仓库 'fedora' 已经配置，跳过配置。"
     fi  
@@ -397,16 +390,11 @@ configure_repos_and_dnf() {
     sudo dnf install -y --nogpgcheck \
     	https://mirrors.aliyun.com/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     	https://mirrors.aliyun.com/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    
-sudo dnf install -y --nogpgcheck \
-     	https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-     	https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     sudo sed -e 's!^metalink=!#metalink=!g' \
          -e 's!^mirrorlist=!#mirrorlist=!g' \
          -e 's!^#baseurl=!baseurl=!g' \
          -e 's!https\?://download1\.rpmfusion\.org/!https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/!g' \
          -i.bak /etc/yum.repos.d/rpmfusion*.repo
-    
     # 修改 RPM Fusion 源为 USTC
     # 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
     # 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
@@ -1097,6 +1085,13 @@ cat << EOF | tee $HOME/.m2/settings.xml
 </settings>
 EOF
     fi
+
+    # https://sdkman.io/
+    rm -rf $HOME/.sdkman
+    curl -fsSL "https://get.sdkman.io" | bash
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+    sdk install gradle
+    
 
     # 3. Go
     log_info "配置 Go 环境..."
