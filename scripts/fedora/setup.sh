@@ -1086,11 +1086,12 @@ cat << EOF | tee $HOME/.m2/settings.xml
 EOF
     fi
 
-    # https://sdkman.io/
-    rm -rf $HOME/.sdkman
-    curl -fsSL "https://get.sdkman.io" | bash
-    source "$HOME/.sdkman/bin/sdkman-init.sh"
-    sdk install gradle
+# 使用 Android Studio 需要提前安装 gradle
+# https://sdkman.io/    执行以下命令时，推荐开启 VPN 否则容易失败并且下载速度极慢
+rm -rf $HOME/.sdkman
+curl -fsSL "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install gradle
     
 
     # 3. Go
