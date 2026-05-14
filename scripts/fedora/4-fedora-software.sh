@@ -193,25 +193,31 @@ flatpak install -y flathub re.sonny.Workbench
 flatpak install -y flathub com.getpostman.Postman
 # Apifox = Postman + Swagger + Mock + JMeter
 flatpak install -y flathub com.apifox.Apifox
+
+# Wayland By Default in 2026.1 会导致圆角失效，具体的详细信息参考官方博客
+# https://blog.jetbrains.com/platform/2026/02/wayland-by-default-in-2026-1-eap/
+# nautilus ~/.var/app/com.jetbrains.GoLand/config/JetBrains
 # 在 Fedora 上的  Flatpak 仓库 jetbrains 等应用 中缺少 最小化/最大化 按钮解决方案
 # https://github.com/flathub/com.jetbrains.Rider/issues/115
 # 推荐使用字体：Noto Sans CJK SC Medium
 flatpak install -y flathub com.jetbrains.IntelliJ-IDEA-Ultimate
 flatpak run --command=gsettings com.jetbrains.IntelliJ-IDEA-Ultimate set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+flatpak install -y flathub com.jetbrains.GoLand
+flatpak run --command=gsettings com.jetbrains.GoLand set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+# 以下 jetbrains 应用可以非商业应用免费使用
 flatpak install -y flathub com.jetbrains.WebStorm
 flatpak run --command=gsettings com.jetbrains.WebStorm set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.RustRover
 flatpak run --command=gsettings com.jetbrains.RustRover set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.DataGrip
-# flatpak run --command=gsettings com.jetbrains.DataGrip set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+flatpak run --command=gsettings com.jetbrains.DataGrip set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.CLion
-# flatpak run --command=gsettings com.jetbrains.CLion set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-flatpak install -y flathub com.jetbrains.GoLand
-# flatpak run --command=gsettings com.jetbrains.GoLand set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+flatpak run --command=gsettings com.jetbrains.CLion set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.jetbrains.PyCharm-Professional
-# flatpak run --command=gsettings com.jetbrains.PyCharm-Professional set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+flatpak run --command=gsettings com.jetbrains.PyCharm-Professional set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 flatpak install -y flathub com.google.AndroidStudio
-# flatpak run --command=gsettings com.google.AndroidStudio set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+flatpak run --command=gsettings com.google.AndroidStudio set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+
 flatpak install -y flathub com.visualstudio.code
 flatpak install -y flathub com.vscodium.codium
 flatpak install -y flathub dev.zed.Zed
