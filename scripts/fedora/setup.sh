@@ -1167,7 +1167,16 @@ registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 [registries.ustc]
 index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
-    
+
+# 使用 Android Studio 需要提前安装 gradle 和  kotlin
+# https://sdkman.io/    执行以下命令时，推荐开启 VPN 否则容易失败并且下载速度极慢
+rm -rf $HOME/.sdkman
+curl -fsSL "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install gradle kotlin
+# sdkman 自我检查更新，并且更新所有已经安装的工具，例如：java、gradle、maven 等
+sdk selfupdate && sdk update
+
 mkdir -vp "$HOME/.android/Sdk"
 mkdir -vp "$HOME/.android/Sdk/ndk"
 # https://tauri.app/zh-cn/start/prerequisites/#android
@@ -1193,6 +1202,22 @@ rustup target add aarch64-apple-ios aarch64-apple-ios-sim
 # NDK (Side by side)
 # Android SDK Build-Tools
 # Android SDK Command-line Tools
+    
+bun create tauri-app --help
+bun create tauri-app tauri-app \
+--template vue-ts \
+--manager bun \
+--yes
+
+1、模板已创建！要开始，请运行：
+cd tauri-app
+bun install
+bun run tauri android init
+2、对于桌面开发，运行：
+bun run tauri dev
+3、对于 Android 开发，运行：
+bun run tauri android dev
+
     
     # 5. Zig
     log_info "配置 Zig 环境..."
