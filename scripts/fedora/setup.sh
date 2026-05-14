@@ -2549,10 +2549,6 @@ sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
 # VPN 相关软件和订阅来源
 # https://gitclone.com/
 # https://gh-proxy.com/
-# https://github.akams.cn/
-# https://xiake.pro/
-# https://ghproxylist.com/
-# https://www.freeclashnode.com/
 install_vpn() {
     # 进入到下载目录
     cd ~/下载
@@ -2563,6 +2559,12 @@ install_vpn() {
     # https://v2rayn.co/
     # https://github.com/2dust/v2rayN/releases
     # 使用教程	https://v2rayn.co/v2rayn-tutorial/
+    
+    # 从下面这两个节点网站一次性复制多条 v2rayN 节点，然后打开 v2rayN 点击配置项，然后点击 “从剪切板导入分享链接” 这会一次性批量导入节点
+    # 然后鼠标右键，点击 “一键生成策略组 -> 全部配置项”，然后点击刚生成的 “策略组” 鼠标右键，点击 “编辑”， 然后可以选择 “策略组类型”，例如：最低延迟、故障转移、负载均衡，等等策略
+    # https://v2raynode.github.io/
+    # https://www.freeclashnode.com/
+    
     # 1、点击顶部菜单栏的 “订阅分组”，选择 “订阅分组设置”，在弹出的窗口中点击 "添加"，
     # 2、添加订阅节点完成后回到主界面，点击 “订阅分组” -> “更新全部订阅 (不通过代理)” 操作完成后，你应该能看到列表中出现了一排节点
     # 3、开启代理与模式选择。这是最关键的一步，决定了电脑是否已经处于代理加速状态

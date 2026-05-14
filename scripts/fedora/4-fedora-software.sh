@@ -202,7 +202,18 @@ flatpak install -y flathub com.apifox.Apifox
 # 推荐使用字体：Noto Sans CJK SC Medium
 flatpak install -y flathub com.jetbrains.IntelliJ-IDEA-Ultimate
 flatpak run --command=gsettings com.jetbrains.IntelliJ-IDEA-Ultimate set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+# Flatpak 支持指定版本安装，例如安装 2025.3 版本：
+flatpak install -y flathub com.jetbrains.IntelliJ-IDEA-Ultimate//2025.3
+# 如何查看当前可用的版本（分支）
+flatpak remote-info flathub com.jetbrains.IntelliJ-IDEA-Ultimate
+flatpak remote-ls flathub --app | grep IntelliJ
+# 屏蔽应用更新
+flatpak mask com.jetbrains.IntelliJ-IDEA-Ultimate
+# 取消屏蔽（恢复更新）
+flatpak mask --remove com.jetbrains.IntelliJ-IDEA-Ultimate
+
 flatpak install -y flathub com.jetbrains.GoLand
+flatpak install -y flathub com.jetbrains.GoLand//2025.3.4.1
 flatpak run --command=gsettings com.jetbrains.GoLand set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 # 以下 jetbrains 应用可以非商业应用免费使用
 flatpak install -y flathub com.jetbrains.WebStorm
