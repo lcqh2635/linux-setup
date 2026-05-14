@@ -2559,87 +2559,78 @@ install_vpn() {
         cd ~/下载
     fi
     
-    yaru-icon-theme yaru-gtk4-theme
-    sweet-gtk-theme
-    numix-icon-theme numix-gtk-theme
-    oxygen-icon-theme
-    breeze-cursor-theme breeze-icon-theme
-    # https://github.com/lassekongo83/adw-gtk3
-    # 将 GNOME 最新的默认视觉风格（Libadwaita）移植到旧的 GTK 3 应用程序上
-    # 让那些基于 GTK 3 的老程序也能拥有和新一代 GNOME 应用（如设置、文件、终端等）几乎一模一样的外观。
-    sudo dnf install -y adw-gtk3-theme
-    # flatpak list --all
-    # 搜索远程仓库的应用/运行时
-    # flatpak search org.gtk.Gtk3theme
-    flatpak install -y org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark
-    # mask 屏蔽更新和自动安装
-    sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3
-    sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
-    # https://wiki.archlinux.org.cn/title/Uniform_look_for_Qt_and_GTK_applications
-    # mkdir -vp ~/.config/Kvantum
-    # sudo dnf install -y kvantum
 
-    log_info "正在安装 Flatpak 常用应用程序..."
-    # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
-    # 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
-    
-    # GNOME 扩展负责更新扩展、配置扩展偏好以及移除或禁用不需要的扩展
-    flatpak install -y flathub org.gnome.Extensions
-    # 浏览并安装GNOME Shell 扩展以定制你的桌面
-    flatpak install -y flathub com.mattjakeman.ExtensionManager
-    # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
-    flatpak install -y flathub io.github.kolunmi.Bazaar
-    # Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
-    flatpak install -y flathub com.github.tchx84.Flatseal
-    # Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
-    flatpak install -y flathub io.github.flattool.Warehouse
-    # 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
-    flatpak install -y flathub io.github.giantpinkrobots.flatsweep
-    # 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
-    flatpak install -y flathub io.github.realmazharhussain.GdmSettings
-    # 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
-    flatpak install -y flathub io.gitlab.adhami3310.Impression
-    # 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
-    flatpak install -y flathub de.haeckerfelix.Fragments
-    # 用干净、无干扰的标记删除编辑器专注于你的写作
-    flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
-    # 忘记忘记事情
-    flatpak install -y flathub io.github.alainm23.planify
-    # 一款极简的Markdown阅读与写作应用
-    flatpak install -y flathub io.typora.Typora
-    # 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
-    flatpak install -y flathub io.github.sitraorg.sitra
-    # Refine 帮助发现 GNOME 中的高级和实验性功能
-    flatpak install -y flathub page.tesk.Refine
-    # Rewaita通过用流行的配色方案为您的Adwaita应用增添新意
-    flatpak install -y flathub io.github.swordpuffin.rewaita
-    # 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
-    flatpak install -y flathub com.github.neithern.g4music
-    # 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
-    # netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
-    flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
-    # 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
-    flatpak install -y flathub it.mijorus.gearlever
-    # Microsoft Edge 网络浏览器
-    flatpak install -y flathub com.microsoft.Edge
-    # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
-    flatpak install -y flathub com.google.Chrome
-    # Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
-    flatpak install -y flathub re.sonny.Playhouse
-    # Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
-    flatpak install -y flathub re.sonny.Workbench
-    flatpak install -y flathub com.github.marhkb.Pods
-    # flatpak install -y flathub dev.skynomads.Seabird
-    # Thunderbird 是一款免费且开源的电子邮件、新闻源、聊天和日历客户端
-    flatpak install -y flathub org.mozilla.Thunderbird
-    flatpak install -y flathub dev.zed.Zed
-    flatpak install -y flathub io.neovim.nvim
-
-    # 设置 Dock 栏应用图标
-    gsettings set org.gnome.shell favorite-apps "['org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.TextEditor.desktop', 'org.gnome.Ptyxis.desktop', 'org.gnome.Settings.desktop', 'org.gnome.SystemMonitor.desktop', 'com.microsoft.Edge.desktop', 'org.gnome.tweaks.desktop']"
-
-
-    log_success "Flatpak 应用安装完成。"
+# https://github.com/lassekongo83/adw-gtk3
+# 将 GNOME 最新的默认视觉风格（Libadwaita）移植到旧的 GTK 3 应用程序上
+# 让那些基于 GTK 3 的老程序也能拥有和新一代 GNOME 应用（如设置、文件、终端等）几乎一模一样的外观。
+sudo dnf install -y adw-gtk3-theme
+# flatpak list --all
+# 搜索远程仓库的应用/运行时
+# flatpak search org.gtk.Gtk3theme
+flatpak install -y org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark
+# mask 屏蔽更新和自动安装
+sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3
+sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
+# https://wiki.archlinux.org.cn/title/Uniform_look_for_Qt_and_GTK_applications
+# mkdir -vp ~/.config/Kvantum
+# sudo dnf install -y kvantum
+log_info "正在安装 Flatpak 常用应用程序..."
+# 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
+# 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
+# GNOME 扩展负责更新扩展、配置扩展偏好以及移除或禁用不需要的扩展
+flatpak install -y flathub org.gnome.Extensions
+# 浏览并安装GNOME Shell 扩展以定制你的桌面
+flatpak install -y flathub com.mattjakeman.ExtensionManager
+# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
+flatpak install -y flathub io.github.kolunmi.Bazaar
+# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
+flatpak install -y flathub com.github.tchx84.Flatseal
+# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
+flatpak install -y flathub io.github.flattool.Warehouse
+# 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
+flatpak install -y flathub io.github.giantpinkrobots.flatsweep
+# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
+flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
+flatpak install -y flathub io.gitlab.adhami3310.Impression
+# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
+flatpak install -y flathub de.haeckerfelix.Fragments
+# 用干净、无干扰的标记删除编辑器专注于你的写作
+flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+# 忘记忘记事情
+flatpak install -y flathub io.github.alainm23.planify
+# 一款极简的Markdown阅读与写作应用
+flatpak install -y flathub io.typora.Typora
+# 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
+flatpak install -y flathub io.github.sitraorg.sitra
+# Refine 帮助发现 GNOME 中的高级和实验性功能
+flatpak install -y flathub page.tesk.Refine
+# Rewaita通过用流行的配色方案为您的Adwaita应用增添新意
+flatpak install -y flathub io.github.swordpuffin.rewaita
+# 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
+flatpak install -y flathub com.github.neithern.g4music
+# 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
+# netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
+flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
+# 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
+flatpak install -y flathub it.mijorus.gearlever
+# Microsoft Edge 网络浏览器
+flatpak install -y flathub com.microsoft.Edge
+# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
+flatpak install -y flathub com.google.Chrome
+# Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
+flatpak install -y flathub re.sonny.Playhouse
+# Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
+flatpak install -y flathub re.sonny.Workbench
+flatpak install -y flathub com.github.marhkb.Pods
+# flatpak install -y flathub dev.skynomads.Seabird
+# Thunderbird 是一款免费且开源的电子邮件、新闻源、聊天和日历客户端
+flatpak install -y flathub org.mozilla.Thunderbird
+flatpak install -y flathub dev.zed.Zed
+flatpak install -y flathub io.neovim.nvim
+# 设置 Dock 栏应用图标
+gsettings set org.gnome.shell favorite-apps "['org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.TextEditor.desktop', 'org.gnome.Ptyxis.desktop', 'org.gnome.Settings.desktop', 'org.gnome.SystemMonitor.desktop', 'com.microsoft.Edge.desktop', 'org.gnome.tweaks.desktop']"
+log_success "Flatpak 应用安装完成。"
 }
 
 
