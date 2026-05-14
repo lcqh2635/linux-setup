@@ -1056,7 +1056,7 @@ EOF
     # whereis maven
     # whereis maven4
     # nautilus admin:/usr/share/maven
-    sudo dnf install -y java-25-openjdk maven maven4 maven4-openjdk25
+    sudo dnf install -y java-25-openjdk maven maven4 maven4-openjdk25 kotlin
     log_info "你刚安装的 java 版本号为：$(java --version)"
     log_info "你刚安装的 maven 版本号为：$(mvn --version)"
     log_info "你刚安装的 maven4 版本号为：$(mvn4 --version)"
@@ -1169,6 +1169,7 @@ index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
 
 # 使用 Android Studio 需要提前安装 gradle 和  kotlin
+sudo dnf install -y kotlin
 # https://sdkman.io/    执行以下命令时，推荐开启 VPN 否则容易失败并且下载速度极慢
 rm -rf $HOME/.sdkman
 curl -fsSL "https://get.sdkman.io" | bash
@@ -1182,6 +1183,9 @@ mkdir -vp "$HOME/.android/Sdk/ndk"
 # https://tauri.app/zh-cn/start/prerequisites/#android
 # https://linuxcapable.com/how-to-set-java-environment-path-in-fedora-linux/
 # 在执行该命令前，请先提前安装 Android Studio
+flatpak install -y flathub com.google.AndroidStudio
+flatpak run --command=gsettings com.google.AndroidStudio set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+
 echo '
 # Tauri 开发 Android 应用需要配置如下内容，具体参考：https://tauri.app/zh-cn/start/prerequisites/#android
 # 1. 配置 JDK 变量，使用  alternatives --display java 查看  JDK 安装的根目录
@@ -1202,7 +1206,14 @@ rustup target add aarch64-apple-ios aarch64-apple-ios-sim
 # NDK (Side by side)
 # Android SDK Build-Tools
 # Android SDK Command-line Tools
-    
+
+# No target device found.	错误处理
+# 1、点击 Android Studio 右侧工具栏中的手机图标。
+# 2、选择 " + " 号
+# 3、点击 "Create Virtual Device"。
+# 4、选择设备类型（如 Pixel 3a XL），点击 "Next"。
+# 5、下载并安装系统镜像。
+
 bun create tauri-app --help
 bun create tauri-app tauri-app \
 --template vue-ts \
