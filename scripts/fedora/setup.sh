@@ -335,15 +335,13 @@ log_info "替换 Fedora 主仓库镜像..."
 # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-updates.repo
 # 将上述两个文件先做个备份，根据 Fedora 系统版本分别替换为下面内容，之后通过 sudo dnf makecache 命令更新本地缓存，即可使用所选择的软件源镜像。
 if [ ! -f "/etc/yum.repos.d/fedora.repo.bak" ]; then
-    echo "⚠️  加速镜像仓库 'fedora' 还未配置，开始配置..."
-    # https://developer.aliyun.com/mirror/fedora
-    sudo sed -e 's|^metalink=|#metalink=|g' \
-    -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.aliyun.com/fedora|g' \
-    -i.bak \
-    /etc/yum.repos.d/fedora.repo \
-    /etc/yum.repos.d/fedora-updates.repo 
-else
-    echo "✅ 加速镜像仓库 'fedora' 已经配置，跳过配置。"
+echo "⚠️  加速镜像仓库 'fedora' 还未配置，开始配置..."
+# https://developer.aliyun.com/mirror/fedora
+sudo sed -e 's|^metalink=|#metalink=|g' \
+-e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.aliyun.com/fedora|g' \
+-i.bak \
+/etc/yum.repos.d/fedora.repo \
+/etc/yum.repos.d/fedora-updates.repo 
 fi  
 # 4. 安装 RPM Fusion 源
 log_info "安装并配置 RPM Fusion 源..."
@@ -354,12 +352,6 @@ log_info "安装并配置 RPM Fusion 源..."
 sudo dnf install -y --nogpgcheck \
 https://mirrors.aliyun.com/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
 https://mirrors.aliyun.com/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-# 
-sudo sed -e 's!^metalink=!#metalink=!g' \
--e 's!^mirrorlist=!#mirrorlist=!g' \
--e 's!^#baseurl=!baseurl=!g' \
--e 's!https\?://download1\.rpmfusion\.org/!https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/!g' \
--i.bak /etc/yum.repos.d/rpmfusion*.repo
 # 修改 RPM Fusion 源为 USTC
 # 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
 # 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
@@ -367,14 +359,12 @@ sudo sed -e 's!^metalink=!#metalink=!g' \
 # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free.repo
 # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free-updates.repo
 if [ ! -f "/etc/yum.repos.d/rpmfusion-free.repo.bak" ]; then
-    echo "⚠️  加速镜像仓库 'rpmfusion' 还未配置，开始配置..."
-    sudo sed -e 's!^metalink=!#metalink=!g' \
-    -e 's!^mirrorlist=!#mirrorlist=!g' \
-    -e 's!^#baseurl=!baseurl=!g' \
-    -e 's!https\?://download1\.rpmfusion\.org/!https://mirrors.aliyun.com/rpmfusion/!g' \
-    -i.bak /etc/yum.repos.d/rpmfusion*.repo
-else
-    echo "✅ 加速镜像仓库 'rpmfusion' 已经配置，跳过配置。"
+echo "⚠️  加速镜像仓库 'rpmfusion' 还未配置，开始配置..."
+sudo sed -e 's!^metalink=!#metalink=!g' \
+-e 's!^mirrorlist=!#mirrorlist=!g' \
+-e 's!^#baseurl=!baseurl=!g' \
+-e 's!https\?://download1\.rpmfusion\.org/!https://mirrors.aliyun.com/rpmfusion/!g' \
+-i.bak /etc/yum.repos.d/rpmfusion*.repo
 fi
 # 5、删除文件后，必须清理 DNF 缓存以生效，同时重建 DNF 缓存
 log_info "正在清理 DNF 缓存并重建 DNF 缓存..."
@@ -383,13 +373,10 @@ sudo dnf makecache
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
 log_info "正在更新系统并清理无用包..."
 sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
-sudo dnf group remove -y libreoffice
-sudo dnf remove -y gnome-boxes gnome-characters firefox libreoffice*
 log_info "正在安装常用软件包..."
 sudo dnf install -y gnome-tweaks \
 gnome-browser-connector gnome-extensions-app \
 libadwaita-demo timeshift
-sudo dnf install -y evolution epiphany
 sudo dnf install -y gnome-builder
 gsettings set org.gnome.builder projects-directory "$HOME/编程/Gnome"
 # 安装游戏平台
