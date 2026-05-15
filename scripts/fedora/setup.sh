@@ -922,52 +922,6 @@ log_success "基础开发工具安装完成。"
 
 configure_languages() {
 log_info "正在配置编程语言环境 (Node, Java, Go, Rust, Zig)..."
-# 1. Node.js & Bun & Web Tools
-log_info "配置 Node.js 生态..."
-sudo dnf install -y nodejs
-# npm config get registry
-# 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
-# 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
-# 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
-npm config set registry https://registry.npmmirror.com/
-# 将目录所有权改为当前用户，否则如下命令将因为权限问题执行失败
-# 修复 /usr/local 权限以便全局安装
-if [ -d "/usr/local" ]; then
-    sudo chown -R $(whoami):$(whoami) /usr/local
-fi
-# 安装 Bun
-if ! check_command bun; then
-# npm 列出所有全局安装的包
-# npm list -g --depth=0
-# 执行更新命令，更新所有可更新的全局包
-# npm update -g
-# 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
-# bun - 现代的 JavaScript 运行时和包管理器
-# https://www.npmjs.com/package/bun
-npm install -g bun typescript
-# bun create vite my-vue-app --template vue-ts
-# bun 自行升级	bun upgrade
-# bun run config --help
-# bun --config
-log_info "Bun 已安装: $(bun --version)"
-# 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
-cat << EOF | tee $HOME/.bunfig.toml
-# 使用配置文件 bunfig.toml 配置 Bun 的行为 https://bun.zhcndoc.com/runtime/bunfig
-[install]
-# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，
-# 地址为 https://developer.aliyun.com/mirror/NPM
-registry = "https://registry.npmmirror.com/"
-EOF
-fi
-# which node
-# whereis node
-# whereis bun
-# 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
-# 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
-# 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
-
-
-# 2. Java & Maven
 log_info "配置 Java、Maven 环境..."
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-java/
 # whereis maven
@@ -1026,9 +980,60 @@ cat << EOF | tee $HOME/.m2/settings.xml
 </settings>
 EOF
 fi
+# 安装 Java 开发代码编辑器 IDEA
+# 推荐使用字体：Noto Sans CJK SC Medium
+flatpak install -y flathub com.jetbrains.IntelliJ-IDEA-Ultimate
+flatpak run --command=gsettings com.jetbrains.IntelliJ-IDEA-Ultimate set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 
 
-# 4. Rust    
+log_info "配置 Node.js 生态..."
+sudo dnf install -y nodejs
+# npm config get registry
+# 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
+# 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
+# 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
+npm config set registry https://registry.npmmirror.com/
+# 将目录所有权改为当前用户，否则如下命令将因为权限问题执行失败
+# 修复 /usr/local 权限以便全局安装
+if [ -d "/usr/local" ]; then
+    sudo chown -R $(whoami):$(whoami) /usr/local
+fi
+# 安装 Bun
+if ! check_command bun; then
+# npm 列出所有全局安装的包
+# npm list -g --depth=0
+# 执行更新命令，更新所有可更新的全局包
+# npm update -g
+# 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
+# bun - 现代的 JavaScript 运行时和包管理器
+# https://www.npmjs.com/package/bun
+npm install -g bun typescript
+# bun create vite --help
+# -i, --immediate	自动安装依赖并启动  dev 开发环境
+# bun create vite my-vue-app --template vue-ts --immediate
+# bun 自行升级	bun upgrade
+# bun run config --help
+# bun --config
+log_info "Bun 已安装: $(bun --version)"
+# 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
+cat << EOF | tee $HOME/.bunfig.toml
+# 使用配置文件 bunfig.toml 配置 Bun 的行为 https://bun.zhcndoc.com/runtime/bunfig
+[install]
+# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，
+# 地址为 https://developer.aliyun.com/mirror/NPM
+registry = "https://registry.npmmirror.com/"
+EOF
+fi
+# which node
+# whereis node
+# whereis bun
+# 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
+# 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
+# 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
+flatpak install -y flathub com.jetbrains.WebStorm
+flatpak run --command=gsettings com.jetbrains.WebStorm set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+
+
 log_info "配置 Rust 环境..."
 # https://developer.fedoraproject.org/tech/languages/rust/rust-installation.html
 # https://linuxcapable.com/how-to-install-rust-programming-language-on-fedora-linux/
@@ -1067,6 +1072,9 @@ registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 [registries.ustc]
 index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
+# 安装 Rust 开发代码编辑器 RustRover
+flatpak install -y flathub com.jetbrains.RustRover
+flatpak run --command=gsettings com.jetbrains.RustRover set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 # 使用 Android Studio 需要提前安装 gradle 和  kotlin
 # 创建 ANDROID_HOME 和 NDK_HOME 环境变量目录
 mkdir -vp "$HOME/.android/Sdk/ndk"
