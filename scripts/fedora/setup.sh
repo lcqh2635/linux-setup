@@ -973,7 +973,29 @@ log_info "配置 Java、Maven 环境..."
 # whereis maven
 # whereis maven4
 # nautilus admin:/usr/share/maven
-sudo dnf install -y java-25-openjdk maven maven4 maven4-openjdk25 kotlin
+# sudo dnf install -y java-25-openjdk maven maven4 maven4-openjdk25 kotlin
+# 使用 Android Studio 需要提前安装 gradle 和  kotlin
+# https://sdkman.io/    执行以下命令时，推荐开启 VPN 否则容易失败并且下载速度极慢
+rm -rf $HOME/.sdkman
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk version
+# sdkman 自我检查更新，刷新 sdkman 候选者元数据、更新所有已经安装的工具，例如：java、gradle、maven 等
+sdk selfupdate && sdk update && sdk upgrade
+# 通过运行以下命令来安装您选择的最新稳定版本SDK（例如Java JDK）：
+sdk install java kotlin maven mvnd gradle groovy
+sdk current
+# 在脚本中使用SDKMAN时，获取SDK所在的绝对路径通常很有用（类似于macOS上的java_home命令）。为此，我们有home命令。
+# sdk home java 25.0.3-tem
+# /home/lcqh/.sdkman/candidates/java/current
+# sdk home kotlin 2.3.21
+# /home/lcqh/.sdkman/candidates/kotlin/current
+# sdk home maven 3.9.15
+# /home/lcqh/.sdkman/candidates/maven/current
+# sdk home mvnd 1.0.5
+# /home/lcqh/.sdkman/candidates/mvnd/current
+# sdk home gradle 9.5.1
+# /home/lcqh/.sdkman/candidates/gradle/current
 log_info "你刚安装的 java 版本号为：$(java --version)"
 log_info "你刚安装的 maven 版本号为：$(mvn --version)"
 log_info "你刚安装的 maven4 版本号为：$(mvn4 --version)"
@@ -1004,14 +1026,6 @@ cat << EOF | tee $HOME/.m2/settings.xml
 </settings>
 EOF
 fi
-# 使用 Android Studio 需要提前安装 gradle
-# https://sdkman.io/    执行以下命令时，推荐开启 VPN 否则容易失败并且下载速度极慢
-rm -rf $HOME/.sdkman
-curl -fsSL "https://get.sdkman.io" | bash
-source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install gradle
-# sdkman 自我检查更新，并且更新所有已经安装的工具，例如：java、gradle、maven 等
-sdk selfupdate && sdk update
 
 
 # 4. Rust    
@@ -1053,25 +1067,15 @@ registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 [registries.ustc]
 index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
-
 # 使用 Android Studio 需要提前安装 gradle 和  kotlin
-sudo dnf install -y kotlin
-# https://sdkman.io/    执行以下命令时，推荐开启 VPN 否则容易失败并且下载速度极慢
-rm -rf $HOME/.sdkman
-curl -fsSL "https://get.sdkman.io" | bash
-source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install gradle kotlin
-# sdkman 自我检查更新，并且更新所有已经安装的工具，例如：java、gradle、maven 等
-sdk selfupdate && sdk update
-
-mkdir -vp "$HOME/.android/Sdk"
+# 创建 ANDROID_HOME 和 NDK_HOME 环境变量目录
 mkdir -vp "$HOME/.android/Sdk/ndk"
 # https://tauri.app/zh-cn/start/prerequisites/#android
 # https://linuxcapable.com/how-to-set-java-environment-path-in-fedora-linux/
 # 在执行该命令前，请先提前安装 Android Studio
 flatpak install -y flathub com.google.AndroidStudio
 flatpak run --command=gsettings com.google.AndroidStudio set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-
+# Tauri 开发 Android 应用需要配置如下内容，具体参考：https://tauri.app/zh-cn/start/prerequisites/#android
 echo '
 # Tauri 开发 Android 应用需要配置如下内容，具体参考：https://tauri.app/zh-cn/start/prerequisites/#android
 # 1. 配置 JDK 变量，使用  alternatives --display java 查看  JDK 安装的根目录
@@ -1084,6 +1088,7 @@ export ANDROID_HOME="$HOME/.android/Sdk"
 export NDK_HOME="$ANDROID_HOME/ndk/$(ls -1 $ANDROID_HOME/ndk)"
 ' >> ~/.bashrc
 source ~/.bashrc
+# 使用 rustup 添加 Android 编译目标：
 rustup target add aarch64-linux-android x86_64-linux-android
 rustup target add aarch64-apple-ios aarch64-apple-ios-sim
 # 打开 Android Studio 、创建一个应用、点击设置、点击 SDK Manager、选择 SDK Tools 然后勾选下面 5 个工具
