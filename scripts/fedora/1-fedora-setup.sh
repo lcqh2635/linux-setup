@@ -795,14 +795,6 @@ location = "docker.1ms.run"
 insecure = false
 EOF
 fi
-# kubelet 需要 CRI 接口调用容器运行时，Fedora 默认 Podman 不直接兼容 kubelet，推荐安装 CRI-O：
-# 1. 安装 CRI-O（与 Podman 同生态，兼容性好）
-sudo dnf install -y cri-o
-# 2. 启用并启动 CRI-O
-sudo systemctl enable --now crio
-# 3. 验证 CRI 是否就绪
-crictl info | head -20
-
 # 创建网络
 # podman network create podman-net
 # Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
@@ -817,17 +809,36 @@ crictl info | head -20
 # kubectl 命令行客户端。建议在任何配置为控制平面的节点上使用，因为它允许集群管理员从控制平面的SSH会话中对集群进行控制。在可以通过网络连接到集群的机器上安装。
 # kubernetes-systemd 用于 Kubernetes 控制平面和/或节点的 Systemd 服务。对于大多数安装，不需要这些服务，因为 kubeadm 会将这些组件作为静态 Pod 安装。如果使用，则需要在所有节点上安装。
 # 使用 systemctl 在所有节点上启用 kube-proxy。在控制平面节点上启用 kube-apiserver、kube-controller-manager 和 kube-scheduler。
-sudo dnf install -y kubernetes kubernetes-kubeadm kubernetes-client
-sudo systemctl enable --now kubelet
-# sudo systemctl stop  kubelet
-# 查看 kubelet 服务状态
-systemctl status kubelet --no-pager
+# 所有节点（控制平面 + 工作节点）
+
+# Kubernetes 版本 : CRI-O 版本 : CRI-Tools 版本 = 1 : 1 : 1 主版本必须保持一致，例如： kubernetes1.34 + cri-o1.34 + cri-tools1.34
+sudo dnf install -y \
+kubernetes1.34 \
+kubernetes1.34-kubeadm \
+kubernetes1.34-client \
+cri-o1.34 \
+cri-tools1.34 \
+containernetworking-plugins
 # kubelet 每个节点都在运行的服务，管理本节点上的所有 Pod 和容器
 echo "🐍 你安装的 kubernetes 版本号为：$(kubelet --version)"
 # Kubeadm 初始化集群并将新节点加入集群
 echo "🐍 你安装的 kubernetes-kubeadm 版本号为：$(kubeadm version)"
 # kubectl 是 Kubernetes 命令行客户端，由 kubernetes-client 包提供
 echo "🐍 你安装的 k8s 命令行工具 kubectl 版本号为：$(kubectl version --client)"
+echo "🐍 你安装的 cri-o 版本号为：$(crio --version)"
+echo "🐍 你安装的 cri-tools 版本号为：$(crictl --version)"
+
+# 配置 kubelet  https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-kubelet/
+sudo cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+# 创建以下目录，用于用户管理的系统级 systemd kubelet 默认配置的覆盖
+sudo mkdir -p /etc/systemd/system/kubelet.service.d/
+sudo cat /var/lib/kubelet/config.yaml
+
+sudo systemctl enable --now kubelet
+# sudo systemctl stop  kubelet
+# 查看 kubelet 服务状态
+systemctl status kubelet --no-pager
+
 # IDEA 添加 Kubernetes 集群，参考 jetbrains 官方文档 https://www.jetbrains.com/zh-cn/help/idea/kubernetes.html
 # 在 设置 对话框（Ctrl + Alt + S ）中，选择 构建、执行、部署 | Kubernetes。测试好 kubectl（K8s 的命令行工具 CLI） 和 Helm（K8s 的“包管理器”） 
 # 有关群集的信息存储在 kubeconfig 文件中。 IntelliJ IDEA 会检测默认的 kubeconfig 文件，这个文件通常位于 $HOME/.kube/config （此位置可以通过 KUBECONFIG 环境变量更改）。
