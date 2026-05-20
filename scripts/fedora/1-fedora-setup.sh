@@ -795,6 +795,14 @@ location = "docker.1ms.run"
 insecure = false
 EOF
 fi
+# kubelet 需要 CRI 接口调用容器运行时，Fedora 默认 Podman 不直接兼容 kubelet，推荐安装 CRI-O：
+# 1. 安装 CRI-O（与 Podman 同生态，兼容性好）
+sudo dnf install -y cri-o
+# 2. 启用并启动 CRI-O
+sudo systemctl enable --now crio
+# 3. 验证 CRI 是否就绪
+crictl info | head -20
+
 # 创建网络
 # podman network create podman-net
 # Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
@@ -811,6 +819,7 @@ fi
 # 使用 systemctl 在所有节点上启用 kube-proxy。在控制平面节点上启用 kube-apiserver、kube-controller-manager 和 kube-scheduler。
 sudo dnf install -y kubernetes kubernetes-kubeadm kubernetes-client
 sudo systemctl enable --now kubelet
+# sudo systemctl stop  kubelet
 # 查看 kubelet 服务状态
 systemctl status kubelet --no-pager
 # kubelet 每个节点都在运行的服务，管理本节点上的所有 Pod 和容器
