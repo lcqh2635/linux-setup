@@ -107,7 +107,7 @@ confirm_action() {
 # 模块 1: 系统基础配置 (GNOME Settings)
 # ------------------------------------------------------------------------------
 configure_basics_gsettings() {
-log_info "正在配置 GNOME 桌面基础设置..."
+echo "正在配置 GNOME 桌面基础设置..."
 cd ~/下载
 # 显示登出菜单
 gsettings set org.gnome.shell always-show-log-out true
@@ -118,7 +118,7 @@ gsettings set org.gnome.mutter center-new-windows true
 # 显示星期几
 gsettings set org.gnome.desktop.interface clock-show-weekday true
 # 自动设置时区
-gsettings set org.gnome.desktop.datetime automatic-timezone true
+# gsettings set org.gnome.desktop.datetime automatic-timezone true
 # 设置电量百分比
 gsettings set org.gnome.desktop.interface show-battery-percentage true
 # 设置夜灯温度（色温，范围 1000~10000，默认约 2700 色温严重偏黄，越小越黄）
@@ -127,8 +127,9 @@ gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 40
 gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
 # 设置窗口按钮位置 (右)
 gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-# 禁用动态工作区
-gsettings set org.gnome.mutter dynamic-workspaces false
+# 禁用动态工作区，会导致预览窗口出现 3 个小窗口
+# gsettings set org.gnome.mutter dynamic-workspaces false
+# gsettings set org.gnome.mutter dynamic-workspaces true
 # 设置工作区数量为3（奇数确保有中间位）
 gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
 # 预设工作区名称
@@ -159,7 +160,7 @@ gsettings set org.gnome.shell.weather automatic-location true
 # 设置天气位置
 gsettings set org.gnome.Weather locations "[<(uint32 2, <('Shenzhen', 'ZGSZ', false, [(0.39357174632472131, 1.9914206765255298)], @a(dd) [])>)>]"
 # 快捷键优化
-log_info "配置自定义快捷键..."
+echo "配置自定义快捷键..."
 # 自定义快捷键优化，Alt 管理工作区、Super 管理窗口
 # gsettings list-recursively org.gnome.desktop.wm.keybindings
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
@@ -172,8 +173,8 @@ gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']
 gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
 gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
 gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
-gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
-# gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>Right']"
+# gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
 # Alt + Super 移动当前工作取得窗口到左右其他工作区
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
@@ -181,6 +182,8 @@ gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super
 if [ ! -d "$HOME/下载/linux-setup" ]; then
     git config --global user.name "lcqh2635"
     git config --global user.email "lcqh2635@gmail.com"
+    # ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com" -f "$HOME/.ssh/id_rsa" -N ""
+    # cat "$HOME/.ssh/id_rsa.pub" | wl-copy
     git clone --depth=1 https://github.com/lcqh2635/linux-setup.git
     cp -r ~/下载/linux-setup/template/* /home/lcqh/模板/
     mkdir -vp ~/.local/share/backgrounds
@@ -195,7 +198,7 @@ fi
 # 甚至可以使用大括号展开来创建有规律的目录
 mkdir -vp $HOME/编程/{Java,Rust,Cpp,Python,TypeScript,Database,Gnome,AndroidStudio}
 mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis}
-log_success "GNOME 基础配置完成。"
+echo "GNOME 基础配置完成。"
 }
 
 
@@ -203,9 +206,9 @@ log_success "GNOME 基础配置完成。"
 # 模块 5: Flatpak 应用安装
 # ------------------------------------------------------------------------------
 configure_flatpak_and_install_app() {
-log_info "正在配置 Flatpak 国内镜像源 (使用 USTC 镜像)..."
+echo "正在配置 Flatpak 国内镜像源 (使用 USTC 镜像)..."
 # 禁用 fedora 仓库
-# flatpak remote-modify --disable fedora
+flatpak remote-modify --disable fedora
 # flatpak remote-modify --enable fedora
 # sudo flatpak remote-add --if-not-exists --title=Fedora fedora oci+https://registry.fedoraproject.org
 local REPO_ID="${1:-fedora}"
@@ -256,10 +259,10 @@ sudo flatpak override --filesystem=$HOME/.icons:ro
 # 模块 2: 软件源加速与 DNF 优化
 # ------------------------------------------------------------------------------
 configure_repos_and_dnf() {
-log_info "正在配置软件源加速与 DNF 优化..."
+echo "正在配置软件源加速与 DNF 优化..."
 cd ~/下载
 # 1. 优化 DNF 速度 (并行下载 + 最快镜像)
-log_info "优化 DNF 下载速度..."
+echo "优化 DNF 下载速度..."
 # https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
 # 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
 # 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
@@ -274,7 +277,7 @@ log_info "优化 DNF 下载速度..."
 # sudo dnf config-manager setopt max_parallel_downloads=6 fastestmirror=True
 # 如果下面配置使用了固定的阿里云加速镜像，则不要配置 fastestmirror=True
 sudo dnf config-manager setopt max_parallel_downloads=10
-sudo dnf config-manager setopt fastestmirror=False
+# sudo dnf config-manager setopt fastestmirror=False
 # ls /etc/dnf && cat /etc/dnf/dnf.conf
 # 现在验证当前运行时的值，而不仅仅是检查文件内容：
 dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
@@ -325,7 +328,7 @@ else
     echo "ℹ️ 未检测到仓库 '$REPO_ID'，无需处理。"
 fi
 # 3. 备份并替换 Fedora 官方源为阿里云镜像
-log_info "替换 Fedora 主仓库镜像..."
+echo "替换 Fedora 主仓库镜像..."
 # Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
 # 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
 # https://developer.aliyun.com/mirror/fedora
@@ -344,7 +347,7 @@ sudo sed -e 's|^metalink=|#metalink=|g' \
 /etc/yum.repos.d/fedora-updates.repo 
 fi  
 # 4. 安装 RPM Fusion 源
-log_info "安装并配置 RPM Fusion 源..."
+echo "安装并配置 RPM Fusion 源..."
 # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
 # 阿里云 RPMFusion 镜像源		https://developer.aliyun.com/mirror/rpmfusion
 # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
@@ -379,10 +382,70 @@ gnome-browser-connector gnome-extensions-app \
 libadwaita-demo timeshift
 sudo dnf install -y gnome-builder
 gsettings set org.gnome.builder projects-directory "$HOME/编程/Gnome"
+# 浏览并安装GNOME Shell 扩展以定制你的桌面
+flatpak install -y flathub com.mattjakeman.ExtensionManager
+sudo dnf remove -y \
+gnome-shell-extension-window-list \
+gnome-shell-extension-launch-new-instance
+sudo dnf install -y \
+gnome-shell-extension-appindicator \
+gnome-shell-extension-auto-move-windows \
+gnome-shell-extension-background-logo \
+gnome-shell-extension-blur-my-shell \
+gnome-shell-extension-caffeine \
+gnome-shell-extension-dash-to-dock \
+gnome-shell-extension-forge \
+gnome-shell-extension-gsconnect \
+gnome-shell-extension-just-perfection \
+gnome-shell-extension-drive-menu \
+gnome-shell-extension-user-theme \
+gnome-shell-extension-workspace-indicator
+# Background Logo
+# gsettings list-recursively org.fedorahosted.background-logo-extension
+# gsettings reset-recursively org.fedorahosted.background-logo-extension
+gsettings set org.fedorahosted.background-logo-extension logo-always-visible true 
+# Blur My Shell
+gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
+gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
+gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
+gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false  
+# Dash To Dock
+gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
+gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
+gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
+gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true 
+# Forge
+gsettings set org.gnome.shell.extensions.forge tiling-mode-enabled false
+gsettings set org.gnome.shell.extensions.forge focus-border-toggle false
+# Just Perfection
+gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
+gsettings set org.gnome.shell.extensions.just-perfection world-clock false
+gsettings set org.gnome.shell.extensions.just-perfection weather false
+gsettings set org.gnome.shell.extensions.just-perfection events-button false
+gsettings set org.gnome.shell.extensions.just-perfection workspace false
+gsettings set org.gnome.shell.extensions.just-perfection workspace-wrap-around true
+gsettings set org.gnome.shell.extensions.just-perfection window-demands-attention-focus true
+gsettings set org.gnome.shell.extensions.just-perfection startup-status 0
+gsettings set org.gnome.shell.extensions.just-perfection animation 7
 # 安装游戏平台
 # sudo dnf install -y wine dxvk-native lutris steam
 # https://developer.aliyun.com/mirror/google-chrome
-sudo dnf install -y google-chrome-stable
+# sudo dnf install -y google-chrome-stable
+# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
+flatpak install -y flathub io.github.kolunmi.Bazaar
+# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
+flatpak install -y flathub com.github.tchx84.Flatseal
+# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
+flatpak install -y flathub io.github.flattool.Warehouse
+# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
+flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+# Microsoft Edge 网络浏览器
+flatpak install -y flathub com.microsoft.Edge
+# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
+flatpak install -y flathub com.google.Chrome
 # https://waydro.id/index.html
 # https://github.com/waydroid/waydroid
 # 一种基于容器的方法，用于在运行基于 Wayland 的桌面环境的常规 GNU/Linux 系统上启动完整的 Android 系统
@@ -493,7 +556,7 @@ hostnamectl set-hostname YOUR_HOSTNAME
 sudo systemctl disable NetworkManager-wait-online.service
 # sudo systemctl enable --now NetworkManager-wait-online.service
 # systemctl status NetworkManager-wait-online.service --no-pager
-log_success "软件源与 DNF 配置完成。"
+echo "软件源与 DNF 配置完成。"
 }
 
 
@@ -506,6 +569,45 @@ reset__mirror_configure() {
     # 遍历 /etc/yum.repos.d/ 目录下所有以 rpmfusion 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
     for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 }
+
+
+# 重置系统字体配置
+reset_font() {
+# dnf list *fonts*
+# Noto Fonts（思源黑体/宋体 的谷歌版本）
+# Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
+# Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
+# JetBrains Mono JetBrains 公司专门为 IDE 设计的字体。字母宽度大，容易区分 1、l、I，默认支持连字符，非常耐看。
+# 系统界面（中文）	Noto Sans CJK SC	谷歌思源黑体，字库全，笔画均衡，与 Inter 风格协调
+# 文档阅读/写作	Noto Serif CJK SC	思源宋体，适合长时间阅读，衬线带来轻松的纸质感
+# 编程/终端		JetBrains Mono		字母区分度高，支持连字，视觉疲劳度低
+# fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
+# Noto Sans CJK SC （思源黑体——简体中文）
+# Noto Serif CJK SC （思源宋体——简体中文）
+sudo dnf install -y \
+google-noto-sans-cjk-fonts \
+google-noto-serif-cjk-fonts \
+adobe-source-han-sans-cn-fonts \
+adobe-source-han-serif-cn-fonts \
+jetbrains-mono-fonts
+# 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
+gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
+# 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
+gsettings set org.gnome.desktop.interface document-font-name 'Noto Serif CJK SC Regular 11'
+# 设置等宽字体，影响范围：终端、代码编辑器
+gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono Regular 11'
+# 设置窗口标题栏字体，影响范围：所有应用程序窗口顶部的标题文字
+gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC Bold 11'
+# 微调：full（较好）或 slight
+gsettings set org.gnome.desktop.interface font-hinting 'slight'
+# 抗锯齿：rggb（LCD 显示器常用）或 grayscale
+gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
+
+# 安装 Ubuntu 的声音主题
+sudo dnf install -y yaru-sound-theme
+gsettings set org.gnome.desktop.sound theme-name 'Yaru'
+}
+
 
 
 # 在 Fedora 添加或移除软件源
@@ -891,7 +993,7 @@ sudo dnf install -y libva-utils vulkan-tools
 # vainfo | grep -E 'H264|H265'
 # vulkaninfo | grep "GPU"
 # 常用命令行工具
-sudo dnf install -y fastfetch wl-clipboard clapper gtk4 cmake meson just
+sudo dnf install -y fastfetch wl-clipboard clapper just
 # Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
 # https://tauri.app/zh-cn/start/prerequisites/#linux
 sudo dnf check-update
@@ -923,8 +1025,18 @@ source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk version
 # sdkman 自我检查更新，刷新 sdkman 候选者元数据、更新所有已经安装的工具，例如：java、gradle、maven 等
 sdk selfupdate && sdk update && sdk upgrade
+# 通过 SDKMAN! 安装的工具（Java、Kotlin、Maven、Gradle 等）完全不需要手动配置环境变量。SDKMAN! 的核心设计就是自动接管并动态注入这些变量。可以直接 echo $JAVA_HOME
 # 通过运行以下命令来安装您选择的最新稳定版本SDK（例如Java JDK）：
-sdk install java kotlin maven mvnd gradle groovy
+sdk install java
+echo $JAVA_HOME
+sdk install maven
+echo $MAVEN_HOME
+sdk install mvnd
+echo $MVND_HOME
+sdk install kotlin
+echo $KOTLIN_HOME
+sdk install gradle
+echo $GRADLE_HOME
 sdk current
 # 在脚本中使用SDKMAN时，获取SDK所在的绝对路径通常很有用（类似于macOS上的java_home命令）。为此，我们有home命令。
 # sdk home java 25.0.3-tem
@@ -937,9 +1049,11 @@ sdk current
 # /home/lcqh/.sdkman/candidates/mvnd/current
 # sdk home gradle 9.5.1
 # /home/lcqh/.sdkman/candidates/gradle/current
-log_info "你刚安装的 java 版本号为：$(java --version)"
-log_info "你刚安装的 maven 版本号为：$(mvn --version)"
-log_info "你刚安装的 maven4 版本号为：$(mvn4 --version)"
+echo "你刚安装的 java 版本号为：$(java --version)"
+echo "你刚安装的 maven 版本号为：$(mvn --version)"
+echo "你刚安装的 mvnd 版本号为：$(mvnd --version)"
+echo "你刚安装的 kotlin 版本号为：$(kotlin -version)"
+echo "你刚安装的 gradle 版本号为：$(gradle --version)"
 # 配置 maven 阿里云 aliyun 加速镜像	https://maven.aliyun.com/mvn/guide
 # -v (verbose)：详细模式。
 # 作用：每创建一个目录，都会在终端打印一条提示信息。让用户知道命令到底执行了什么
@@ -971,9 +1085,9 @@ fi
 # 推荐使用字体：Noto Sans CJK SC Medium
 flatpak install -y flathub com.jetbrains.IntelliJ-IDEA-Ultimate
 flatpak run --command=gsettings com.jetbrains.IntelliJ-IDEA-Ultimate set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+# git clone git@github.com:lcqh2635/mall-cloud.git
 
-
-log_info "配置 Node.js 生态..."
+echo "配置 Node.js 生态..."
 sudo dnf install -y nodejs
 # npm config get registry
 # 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
@@ -986,7 +1100,6 @@ if [ -d "/usr/local" ]; then
     sudo chown -R $(whoami):$(whoami) /usr/local
 fi
 # 安装 Bun
-if ! check_command bun; then
 # npm 列出所有全局安装的包
 # npm list -g --depth=0
 # 执行更新命令，更新所有可更新的全局包
@@ -1001,7 +1114,7 @@ npm install -g bun typescript
 # bun 自行升级	bun upgrade
 # bun run config --help
 # bun --config
-log_info "Bun 已安装: $(bun --version)"
+echo "Bun 已安装: $(bun --version)"
 # 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
 cat << EOF | tee $HOME/.bunfig.toml
 # 使用配置文件 bunfig.toml 配置 Bun 的行为 https://bun.zhcndoc.com/runtime/bunfig
@@ -1010,7 +1123,6 @@ cat << EOF | tee $HOME/.bunfig.toml
 # 地址为 https://developer.aliyun.com/mirror/NPM
 registry = "https://registry.npmmirror.com/"
 EOF
-fi
 # which node
 # whereis node
 # whereis bun
@@ -1021,7 +1133,7 @@ flatpak install -y flathub com.jetbrains.WebStorm
 flatpak run --command=gsettings com.jetbrains.WebStorm set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 
 
-log_info "配置 Rust 环境..."
+echo "配置 Rust 环境..."
 # https://developer.fedoraproject.org/tech/languages/rust/rust-installation.html
 # https://linuxcapable.com/how-to-install-rust-programming-language-on-fedora-linux/
 # 设置 Rustup 镜像，参考：https://developer.aliyun.com/mirror/rustup
@@ -1070,22 +1182,15 @@ mkdir -vp "$HOME/.android/Sdk/ndk"
 # 在执行该命令前，请先提前安装 Android Studio
 flatpak install -y flathub com.google.AndroidStudio
 flatpak run --command=gsettings com.google.AndroidStudio set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+# 配置全局 Geadle 设置：Settings -> Build,Execution,Deplay -> Build Tools -> Gradle 修改如下内容：
+# 1、Gradle user home：/home/lcqh/.sdkman/candidates/gradle/current
+# 2、勾选启用，Enable parallel Gradle model fetching for Gradle 7.4+
+# 3、Distribution：从默认的 Wrapper 改为 Local installation
+# 4、Version：改为安装的 JDK 对应版本，例如 25
+
 # Tauri 开发 Android 应用需要配置如下内容，具体参考：https://tauri.app/zh-cn/start/prerequisites/#android
-echo '
-# Tauri 开发 Android 应用需要配置如下内容，具体参考：https://tauri.app/zh-cn/start/prerequisites/#android
-# 1. 配置 JDK 变量，使用  alternatives --display java 查看  JDK 安装的根目录
-# 参考：https://linuxcapable.com/how-to-set-java-environment-path-in-fedora-linux/
-export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
-export PATH=$JAVA_HOME/bin:$PATH
-# 2. 基础变量（所有场景都建议配置）
-export ANDROID_HOME="$HOME/.android/Sdk"
-# 3. NDK 变量（构建工具会自动读取，仅手动调用 ndk-build 时需要 PATH）
-export NDK_HOME="$ANDROID_HOME/ndk/$(ls -1 $ANDROID_HOME/ndk)"
-' >> ~/.bashrc
-source ~/.bashrc
 # 使用 rustup 添加 Android 编译目标：
-rustup target add aarch64-linux-android x86_64-linux-android
-rustup target add aarch64-apple-ios aarch64-apple-ios-sim
+rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 # 打开 Android Studio 、创建一个应用、点击设置、点击 SDK Manager、选择 SDK Tools 然后勾选下面 5 个工具
 # Android SDK Platform
 # Android SDK Platform-Tools
@@ -1114,16 +1219,24 @@ bun run tauri android init
 bun run tauri dev
 3、对于 Android 开发，运行：
 bun run tauri android dev
+# 项目目录  src-tauri/gen/android/gradle/wrapper/gradle-wrapper.properties 中的 gradle 下载版本为 8.14.3
+# 运行报错根本原因：你本地使用的是 JDK 25，但 Tauri 中使用的  Gradle 8.14.3 最高只支持运行在 Java 24 及以下 版本，解决办法如下：
+# 安装 JDK 21（如果尚未安装）
+sdk install java 21.0.11-tem
+# 临时切换当前终端
+sdk use java 21.0.11-tem
+# 设置为默认版本（推荐）
+sdk default java 21.0.11-tem
 
 
 # 3. Go
-log_info "配置 Go 环境..."
+echo "配置 Go 环境..."
 # Go 国内加速镜像	https://learnku.com/go/wikis/38122
 # golang 中文学习文档	https://golang.halfiisland.com/
 # golang 官方网站	https://golang.google.cn/
 # golang 公共软件包仓库	https://pkg.go.dev/
 sudo dnf install -y golang
-log_info "你刚安装的 golang 版本号为：$(go version)"
+echo "你刚安装的 golang 版本号为：$(go version)"
 # Go 1.13+：默认启用，无需额外配置。但使用  go env GO111MODULE 显示为空
 # 并不代表 Go Modules 未开启，而是表示你没有显式配置该变量，Go 将使用内部默认值
 # 设置为 auto（推荐，Go 1.13+ 默认逻辑）
@@ -1147,21 +1260,21 @@ go env -w GOPATH=$HOME/.go
 
     
 # 5. Zig
-log_info "配置 Zig 环境..."
+echo "配置 Zig 环境..."
 # https://course.ziglang.cc/
 # https://github.com/ziglang/zig
 # https://github.com/zigtools/zls
 # https://zigtools.org/zls/install/
 sudo dnf install -y zig
-log_info "你刚安装的 zig 版本号为：$(zig version)"
+echo "你刚安装的 zig 版本号为：$(zig version)"
 
 
 # 6. podman、podman-compose
-log_info "安装配置 podman、podman-compose 环境..."
+echo "安装配置 podman、podman-compose 环境..."
 sudo dnf install -y podman podman-compose
 # 启用用户级 socket
 systemctl --user enable --now podman.socket
-# systemctl --user status podman --no-pager
+systemctl --user status podman.socket --no-pager
 # https://github.com/containers/podman/blob/cea9340242f3f6cf41f20fb0b6239aa3db5decd6/docs/tutorials/socket_activation.md
 # cat /usr/lib/systemd/user/podman.socket
 # ls $XDG_RUNTIME_DIR/podman/podman.sock
@@ -1212,7 +1325,7 @@ fi
 # podman network create podman-net
 # Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
 # 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
-# IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择 Unix 套接字 ，然后下拉选择 rootless 版地址
+# IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择  Podman 然后直接点击确定
     
     
 # 在 Fedora 上使用 Kubernetes 官方文档 https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes/
@@ -1227,17 +1340,17 @@ sudo systemctl enable --now kubelet
 # 查看 kubelet 服务状态
 # systemctl status kubelet
 # kubelet 每个节点都在运行的服务，管理本节点上的所有 Pod 和容器
-log_info "🐍 你安装的 kubernetes 版本号为：$(kubelet --version)"
+echo "🐍 你安装的 kubernetes 版本号为：$(kubelet --version)"
 # Kubeadm 初始化集群并将新节点加入集群
-log_info "🐍 你安装的 kubernetes-kubeadm 版本号为：$(kubeadm version)"
+echo "🐍 你安装的 kubernetes-kubeadm 版本号为：$(kubeadm version)"
 # kubectl 是 Kubernetes 命令行客户端，由 kubernetes-client 包提供
-log_info "🐍 你安装的 k8s 命令行工具 kubectl 版本号为：$(kubectl version --client)"
+echo "🐍 你安装的 k8s 命令行工具 kubectl 版本号为：$(kubectl version --client)"
 # IDEA 添加 Kubernetes 集群，参考 jetbrains 官方文档 https://www.jetbrains.com/zh-cn/help/idea/kubernetes.html
 # 在 设置 对话框（Ctrl + Alt + S ）中，选择 构建、执行、部署 | Kubernetes。测试好 kubectl（K8s 的命令行工具 CLI） 和 Helm（K8s 的“包管理器”） 
 # 有关群集的信息存储在 kubeconfig 文件中。 IntelliJ IDEA 会检测默认的 kubeconfig 文件，这个文件通常位于 $HOME/.kube/config （此位置可以通过 KUBECONFIG 环境变量更改）。
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-kubeadm/
 # 使用 kubeadm 初始化 Kubernetes 集群
-log_success "编程语言环境配置完成。"
+echo "编程语言环境配置完成。"
     
 
 # 在 Fedora 系统中安装 PostgreSQL 数据库
@@ -1576,13 +1689,13 @@ gnome-shell-extension-weather-oclock.noarch
     # gnome-extensions list --user
     # 查看所有用户级扩展的文件目录
     # nautilus ~/.local/share/gnome-shell/extensions
+    GITHUB_PROXY_URL="https://gh-proxy.org/"
     if [ -d "$HOME/下载/extensions" ]; then
         rm -rf "$HOME/下载/extensions"
     fi
     if [ ! -d "$HOME/下载/extensions" ]; then
         sudo dnf install -y gettext meson just
-        mkdir -p ~/下载/extensions && cd ~/下载/extensions
-        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/lcqh2635/linux-setup.git
+        mkdir -vp ~/下载/extensions && cd ~/下载/extensions
         cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip && cd ~/下载/extensions
         git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/stuarthayhurst/alphabetical-grid-extension.git
         cd ~/下载/extensions/alphabetical-grid-extension && make build && make install && cd ~/下载/extensions
@@ -1628,8 +1741,6 @@ gnome-shell-extension-weather-oclock.noarch
         cd ~/下载/extensions/PaperWM && make install && cd ~/下载/extensions
         git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/stuarthayhurst/privacy-menu-extension.git
         cd ~/下载/extensions/privacy-menu-extension && make build && make install && cd ~/下载/extensions
-        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/d-go/quick-settings-avatar.git
-        cd ~/下载/extensions && zip -FSr quick-settings-avatar.zip quick-settings-avatar/* && gnome-extensions install -f quick-settings-avatar.zip && cd ~/下载/extensions
         git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/qwreey/quick-settings-tweaks.git
         cd ~/下载/extensions/quick-settings-tweaks && npm i && TARGET=dev ./install.sh create-release && gnome-extensions install -f target/quick-settings-tweaks@qwreey.shell-extension.zip && cd ~/下载/extensions
         git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/lennart-k/gnome-rounded-corners.git
@@ -1641,7 +1752,7 @@ gnome-shell-extension-weather-oclock.noarch
         git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/icedman/search-light.git
         cd ~/下载/extensions/search-light && make && cd ~/下载/extensions
         git clone --depth=1 https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
-        cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip && cd ~/下载/extensions
+        cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.shell-extension.zip && cd ~/下载/extensions
         git clone --depth=1 https://gitlab.gnome.org/june/top-bar-organizer.git
         cd ~/下载/extensions/top-bar-organizer && npm i && ./package.sh && gnome-extensions install -f top-bar-organizer@julian.gse.jsts.xyz.shell-extension.zip && cd ~/下载/extensions
         git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/CleoMenezesJr/weather-oclock.git
@@ -1659,6 +1770,8 @@ gnome-shell-extension-weather-oclock.noarch
             fi
         done
         glib-compile-schemas ~/.local/share/glib-2.0/schemas/
+        
+    fi
         # 删除临时文件夹
         rm -rf ~/下载/extensions
         
@@ -1702,14 +1815,14 @@ gnome-shell-extension-weather-oclock.noarch
         # gsettings reset-recursively org.gnome.shell.extensions.customize-ibus
         
         # ddterm，默认的切换快捷键 F12
-        # gsettings list-recursively com.github.amezin.ddterm
-        gsettings set com.github.amezin.ddterm background-opacity 1.0
-        gsettings set com.github.amezin.ddterm show-animation-duration 0.3
-        gsettings set com.github.amezin.ddterm hide-animation-duration 0.2
-        # gsettings set com.github.amezin.ddterm window-size 0.6
-        gsettings set com.github.amezin.ddterm hide-when-focus-lost true
-        gsettings set com.github.amezin.ddterm hide-window-on-esc true
-        # gsettings reset-recursively com.github.amezin.ddterm
+        # gsettings list-recursively org.gnome.shell.extensions.ddterm
+        gsettings set org.gnome.shell.extensions.ddterm background-opacity 1.0
+        gsettings set org.gnome.shell.extensions.ddterm show-animation-duration 0.3
+        gsettings set org.gnome.shell.extensions.ddterm hide-animation-duration 0.2
+        # gsettings set org.gnome.shell.extensions.ddterm window-size 0.6
+        gsettings set org.gnome.shell.extensions.ddterm hide-when-focus-lost true
+        gsettings set org.gnome.shell.extensions.ddterm hide-window-on-esc true
+        # gsettings reset-recursively org.gnome.shell.extensions.ddterm
         
         # gTile
         # gsettings list-recursively org.gnome.shell.extensions.gtile
@@ -1795,7 +1908,6 @@ gnome-shell-extension-weather-oclock.noarch
         # gnome-session-quit --logout --no-prompt
         # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
         # gnome-session-quit --logout
-    fi
 }
 
 set_theme_example() {
@@ -2061,12 +2173,18 @@ install_theme_whitesur() {
     # https://www.opendesktop.org/p/2299216/
     # https://github.com/vinceliuice/MacTahoe-icon-theme
     # https://github.com/vinceliuice/MacTahoe-icon-theme/tree/main/cursors
-    # git clone --depth=1 https://github.com/vinceliuice/MacTahoe-icon-theme.git
-    # sudo ./install.sh -d /usr/share/icons -t all -b
+    git clone --depth=1 https://github.com/vinceliuice/MacTahoe-icon-theme.git && cd MacTahoe-icon-theme
     sudo ./install.sh -d /usr/share/icons -t default -b
     # sudo ./install.sh -r
     # nautilus admin:/usr/share/icons
     # sudo rm -rf /usr/share/icons/MacTahoe*
+    git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git && cd WhiteSur-gtk-theme
+    ./install.sh -l -o solid
+    ./tweaks.sh -f flat
+    ./tweaks.sh -F -o solid
+    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
+    gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
+    gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
     
     # MacTahoe-gtk-theme 内包含 MacTahoe wallpapers，但需要手动额外安装
     # https://www.gnome-look.org/p/2299211
@@ -2123,7 +2241,7 @@ install_theme_whitesur() {
                 git clone --depth=1 "$repo"
             fi
         done
-        # git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git
+        git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git && cd WhiteSur-gtk-theme
         # 安装光标
         cd WhiteSur-cursors && sudo ./install.sh && cd ..
         gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
@@ -2176,10 +2294,6 @@ install_theme_whitesur() {
     else
         log_warn "WhiteSur 主题已经安装，无需再次安装。"
     fi
-    
-    # 安装 Ubuntu 的声音主题
-    sudo dnf install -y yaru-sound-theme
-    gsettings set org.gnome.desktop.sound theme-name 'Yaru'
 }
 
 # 卸载主题
@@ -2189,38 +2303,6 @@ uninstall_theme() {
     cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
 }
 
-# 重置系统字体配置
-reset_font() {
-# dnf list *fonts*
-# Noto Fonts（思源黑体/宋体 的谷歌版本）
-# Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
-# Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
-# JetBrains Mono JetBrains 公司专门为 IDE 设计的字体。字母宽度大，容易区分 1、l、I，默认支持连字符，非常耐看。
-# 系统界面（中文）	Noto Sans CJK SC	谷歌思源黑体，字库全，笔画均衡，与 Inter 风格协调
-# 文档阅读/写作	Noto Serif CJK SC	思源宋体，适合长时间阅读，衬线带来轻松的纸质感
-# 编程/终端		JetBrains Mono		字母区分度高，支持连字，视觉疲劳度低
-# fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
-# Noto Sans CJK SC （思源黑体——简体中文）
-# Noto Serif CJK SC （思源宋体——简体中文）
-sudo dnf install -y \
-google-noto-sans-cjk-fonts \
-google-noto-serif-cjk-fonts \
-adobe-source-han-sans-cn-fonts \
-adobe-source-han-serif-cn-fonts \
-jetbrains-mono-fonts
-# 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
-gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
-# 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
-gsettings set org.gnome.desktop.interface document-font-name 'Noto Serif CJK SC Regular 11'
-# 设置等宽字体，影响范围：终端、代码编辑器
-gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono Regular 11'
-# 设置窗口标题栏字体，影响范围：所有应用程序窗口顶部的标题文字
-gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC Bold 11'
-# 微调：full（较好）或 slight
-gsettings set org.gnome.desktop.interface font-hinting 'slight'
-# 抗锯齿：rggb（LCD 显示器常用）或 grayscale
-gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
-}
 
 # 重置系统主题配置
 reset_theme() {
@@ -2303,7 +2385,7 @@ configure_git() {
         git config --global user.email "$GIT_EMAIL"
 
         log_info "生成 SSH 密钥..."
-        ssh-keygen -t rsa -b 4096 -C "$GIT_EMAIL" -f "$HOME/.ssh/id_rsa" -N ""
+        ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com" -f "$HOME/.ssh/id_rsa" -N ""
         log_info "公钥内容已复制到剪贴板 (需 wl-clipboard)，请添加到 GitHub/Gitee。"
         cat "$HOME/.ssh/id_rsa.pub" | wl-copy
         cat "$HOME/.ssh/id_rsa.pub"
@@ -2335,8 +2417,17 @@ install_jetbrains_toolbox() {
 # https://copr.fedorainfracloud.org/coprs/tigro/fedora44/packages/
 
 
+# https://www.jetbrains.com/toolbox-app/
 # 包含 jetbrains-toolbox 仓库
 # dnf repolist
+# https://copr.fedorainfracloud.org/coprs/mindset/Mindset-Apps/
+sudo dnf copr enable -y mindset/Mindset-Apps
+sudo dnf update
+sudo dnf install -y jetbrains-toolbox
+sudo dnf remove -y jetbrains-toolbox && sudo dnf autoremove -y
+sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:mindset:Mindset-Apps.enabled=0
+sudo rm -f /etc/yum.repos.d/copr:copr.fedorainfracloud.org:mindset:Mindset-Apps
+
 # https://copr.fedorainfracloud.org/coprs/zliced13/YACR/
 # cat /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:zliced13:YACR.repo
 sudo dnf copr enable -y zliced13/YACR
@@ -2405,23 +2496,24 @@ sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
 		grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | \
 		grep -v 'arm64' | head -1)
 	if [ -z "$DOWNLOAD_URL" ]; then
-	    log_error "无法获取 JetBrains Toolbox 下载链接。"
+	    echo "无法获取 JetBrains Toolbox 下载链接。"
 	    return 1
 	fi
         wget -O jetbrains-toolbox.tar.gz "$DOWNLOAD_URL"
         mkdir -vp "$HOME/.apps"
+        # jetbrains-toolbox 官方安装教程  https://www.jetbrains.com/help/toolbox-app/installation.html#manual_installation
         tar -xzf jetbrains-toolbox.tar.gz -C "$HOME/.apps"
 	# 找到解压后的目录并运行
 	TOOLBOX_DIR=$(find "$HOME/.apps" -maxdepth 1 -type d -name "jetbrains-toolbox-*" | head -1)
 	if [ -n "$TOOLBOX_DIR" ]; then
 	    chmod +x "$TOOLBOX_DIR/bin/jetbrains-toolbox"
-	    log_info "启动 JetBrains Toolbox..."
+	    echo "启动 JetBrains Toolbox..."
 	    # 在后台运行
 	    "$TOOLBOX_DIR/bin/jetbrains-toolbox" &
-	    log_success "JetBrains Toolbox 已启动。请按照界面提示完成后续配置。"
-	    log_warn "注意：本脚本不包含自动激活破解补丁，请使用正版授权或学生认证。"
+	    echo "JetBrains Toolbox 已启动。请按照界面提示完成后续配置。"
+	    echo "注意：本脚本不包含自动激活破解补丁，请使用正版授权或学生认证。"
 	else
-	    log_error "解压 JetBrains Toolbox 失败。"
+	    echo "解压 JetBrains Toolbox 失败。"
 	fi
         rm -rf jetbrains-toolbox*
         
@@ -2431,14 +2523,14 @@ sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
         if compgen -G "$HOME/下载/jetbra-*" > /dev/null; then
             echo "✅ 已找到 jetbra 目录，跳过下载和安装。"
         else
-            log_info "正在安装 jetbra 工具x..."
+            echo "正在安装 jetbra 工具x..."
             wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
             unzip jetbra-*.zip && mv jetbra ~/.jetbra
             # nautilus ~/.jetbra
             rm -rf jetbra*
             # cat ~/.jetbra/vmoptions/idea.vmoptions
         fi
-        log_warn "JetBrains Toolbox 已经安装"
+        echo "JetBrains Toolbox 已经安装"
     fi
     	    # https://plugins.jetbrains.com/
     	    # https://www.jetbrains.com/zh-cn/help/idea/tuning-the-ide.html
@@ -2461,6 +2553,12 @@ sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
 	    # 自动配置  jetbrains 代码编辑器 vmoptions
             # --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
 	    # --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
+	    
+	    # IDEA 默认的虚拟机配置参数
+	    # cat ~/.local/share/JetBrains/Toolbox/apps/intellij-idea/bin/idea64.vmoptions
+	    # 用户自定义的 IDEA 虚拟机配置参数，可以扩展和覆盖 IDEA 默认的配置
+	    # cat ~/.config/JetBrains/IntelliJIdea*/idea64.vmoptions
+	    # https://3.jetbra.in/
 	    # -javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
 }
 
@@ -2577,20 +2675,19 @@ sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
 log_info "正在安装 Flatpak 常用应用程序..."
 # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
 # 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
-# GNOME 扩展负责更新扩展、配置扩展偏好以及移除或禁用不需要的扩展
-flatpak install -y flathub org.gnome.Extensions
-# 浏览并安装GNOME Shell 扩展以定制你的桌面
-flatpak install -y flathub com.mattjakeman.ExtensionManager
+
 # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
 flatpak install -y flathub io.github.kolunmi.Bazaar
 # Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
 flatpak install -y flathub com.github.tchx84.Flatseal
 # Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
 flatpak install -y flathub io.github.flattool.Warehouse
-# 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
-flatpak install -y flathub io.github.giantpinkrobots.flatsweep
 # 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
 flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+# Microsoft Edge 网络浏览器
+flatpak install -y flathub com.microsoft.Edge
+# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
+flatpak install -y flathub com.google.Chrome
 # 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
 flatpak install -y flathub io.gitlab.adhami3310.Impression
 # 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
@@ -2614,10 +2711,6 @@ flatpak install -y flathub com.github.neithern.g4music
 flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
 # 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
 flatpak install -y flathub it.mijorus.gearlever
-# Microsoft Edge 网络浏览器
-flatpak install -y flathub com.microsoft.Edge
-# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
-flatpak install -y flathub com.google.Chrome
 # Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
 flatpak install -y flathub re.sonny.Playhouse
 # Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面

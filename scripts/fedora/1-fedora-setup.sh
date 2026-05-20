@@ -1,16 +1,40 @@
 #!/bin/bash
 # ==============================================================================
-# 脚本名称: 1-fedora-setup.sh
+# 脚本名称: setup.sh
 # 功能描述：Fedora 工作站自动化初始化、优化及开发环境配置脚本
 # 适用系统：Fedora Workstation 40+ (兼容 DNF 4/5)
 # 作者：龙茶清欢 (优化版)
 # 版本：2.0.0
-# 使用方法：chmod +x 1-fedora-setup.sh && ./1-fedora-setup.sh
+# 使用方法：chmod +x setup.sh && ./setup.sh
 # (请勿直接使用 sudo 运行此脚本，脚本内部会自动提权需要 root 的操作)
-# 仓库克隆：cd ~/下载 && git clone --depth=1 https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
+# 仓库克隆：cd ~/下载 && git clone --depth=1 https://gitee.com/lcqh2635/linux-setup.git
+# cd ~/文档 && git clone --depth=1 git@gitee.com:lcqh2635/linux-setup.git
 # 仓库提交：cd ~/文档/linux-setup && git add . && git commit -m 'backup' && git push
 # ==============================================================================
 
+# ------------------------------------------------------------------------------
+# Fedora 操作系统 ISO 下载网址：
+# https://fedoraproject.org/zh-Hans/
+# https://mirrors.ustc.edu.cn/fedora/releases/
+# https://mirrors.aliyun.com/fedora/releases/
+# https://mirrors.tuna.tsinghua.edu.cn/fedora/releases/
+# https://kojipkgs.fedoraproject.org/compose/
+# Fedora copr (https://copr.fedorainfracloud.org/coprs) 是 Fedora 项目官方支持的社区软件仓库构建系统。你可以把它理解为 Fedora 生态中类似于 Ubuntu 的的 PPA
+# Terra (https://terrapkg.com/) 是一个第三方的软件仓库项目，专门致力于为 Fedora Linux 用户提供最新的桌面环境和应用程序
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# Fedora 指导博客	https://linuxcapable.com/category/fedora/
+# Fedora 用户文档	https://docs.fedoraproject.org/zh_Hans/fedora/latest/
+# Fedora 使用文档：	https://docs.fedoraproject.org/zh_CN/docs/
+# Fedora 快速上手：	https://docs.fedoraproject.org/zh_Hans/quick-docs/
+# Fedora 用户社区：	https://discussion.fedoraproject.org/
+# Gnome 官方网站：	https://www.gnome.org/zh-CN/
+# https://www.techpowerup.com/
+# https://pkgs.org/
+# https://fedora.pkgs.org/
+# 使用 DNF 系统插件升级 Fedora Linux	https://docs.fedoraproject.org/en-US/quick-docs/upgrading-fedora-offline/
+# ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # 安全与规范设置
@@ -21,26 +45,39 @@
 set -euo pipefail
 
 
-# ------------------------------------------------------------------------------
-# Fedora 操作系统 ISO 下载网址：
-# https://fedoraproject.org/zh-Hans/
-# https://mirrors.ustc.edu.cn/fedora/releases/
-# https://mirrors.aliyun.com/fedora/releases/
-# https://mirrors.tuna.tsinghua.edu.cn/fedora/releases/
-# https://kojipkgs.fedoraproject.org/compose/
-# ------------------------------------------------------------------------------
+# 检测是否以 root 运行整个脚本（不推荐，因为 gsettings 需要用户环境）
+if [[ $EUID -eq 0 ]]; then
+    echo "请不要使用 sudo 运行此脚本。脚本会在需要时自动请求 sudo 权限。"
+    exit 1
+fi
 
+# 获取当前用户
+CURRENT_USER=$(whoami)
+HOME_DIR="/home/${CURRENT_USER}"
 
-# ------------------------------------------------------------------------------
-# Gnome 官方网站：	https://www.gnome.org/zh-CN/
-# Fedora Linux 用户文档	https://docs.fedoraproject.org/zh_Hans/fedora/latest/
-# Fedora 使用文档：	https://docs.fedoraproject.org/zh_CN/docs/
-# Fedora 快速上手：	https://docs.fedoraproject.org/zh_Hans/quick-docs/
-# Fedora 用户社区：	https://discussion.fedoraproject.org/
-# ------------------------------------------------------------------------------
-
+# 定义加速前缀 (可自行更换)
+GITHUB_PROXY_URL="https://gh-proxy.org/"
 
 # ------------------------------------------------------------------------------
+# 辅助函数
+# ------------------------------------------------------------------------------
+# 检查命令是否存在
+check_command() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# 询问用户确认
+confirm_action() {
+    local prompt="${1:-确定继续吗？}"
+    read -p "${YELLOW}${prompt} (y/n): ${NC}" -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "用户取消操作。"
+        return 1
+    fi
+    return 0
+}
+
 # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
 # gsettings list-schemas
 # gsettings list-schemas | grep 'org.gnome.shell.extensions'
@@ -54,84 +91,128 @@ set -euo pipefail
 # gnome-extensions list --user
 # 查看所有用户级扩展的文件目录
 # nautilus ~/.local/share/gnome-shell/extensions
-
-# 调整和优化系统基础布局和显示
+# ------------------------------------------------------------------------------
+# 模块 1: 系统基础配置 (GNOME Settings)
+# ------------------------------------------------------------------------------
 configure_basics_gsettings() {
-    # 设置强调色为蓝色
-    gsettings set org.gnome.desktop.interface accent-color 'blue'
-    # 设置新窗口居中显示
-    gsettings set org.gnome.mutter center-new-windows true
-    # 显示星期几
-    gsettings set org.gnome.desktop.interface clock-show-weekday true
-    # 设置电量百分比
-    gsettings set org.gnome.desktop.interface show-battery-percentage true
-    # 设置夜灯温度（色温，范围 1000~10000，默认约 2700 色温严重偏黄，越小越黄）
-    gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
-    # 开启夜灯
-    gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
-    # 设置窗口按钮位置 (右)
-    gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-    # 禁用动态工作区
-    gsettings set org.gnome.mutter dynamic-workspaces false
-    # 设置工作区数量为3（奇数确保有中间位）
-    gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
-    # 预设工作区名称
-    gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
-
-    # 自定义快捷键优化，Alt 管理工作区、Super 管理窗口
-    # gsettings list-recursively org.gnome.desktop.wm.keybindings
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
-    # 切换当前工作区所有的窗口的显示与隐藏，可以替代 Show Desktop Button 扩展插件的功能
-    gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
-    gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
-    gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
-    gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
-    # Alt + Super 移动当前工作取得窗口到左右其他工作区
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
-
+echo "正在配置 GNOME 桌面基础设置..."
+cd ~/下载
+# 显示登出菜单
+gsettings set org.gnome.shell always-show-log-out true
+# 设置强调色为蓝色
+gsettings set org.gnome.desktop.interface accent-color 'blue'
+# 设置新窗口居中显示
+gsettings set org.gnome.mutter center-new-windows true
+# 显示星期几
+gsettings set org.gnome.desktop.interface clock-show-weekday true
+# 设置电量百分比
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+# 设置夜灯温度（色温，范围 1000~10000，默认约 2700 色温严重偏黄，越小越黄）
+gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
+# 开启夜灯
+gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+# 设置窗口按钮位置 (右)
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+# 禁用动态工作区，会导致预览窗口出现 3 个小窗口，不建议关闭
+# gsettings set org.gnome.mutter dynamic-workspaces false
+# 设置工作区数量为3（奇数确保有中间位）
+# gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
+# 预设工作区名称
+gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
+# 屏幕时间限制
+gsettings set org.gnome.desktop.screen-time-limits daily-limit-enabled true
+# 每日限制使用时长，从默认的 8 小时改为 10 小时
+gsettings set org.gnome.desktop.screen-time-limits daily-limit-seconds 36000
+# 桌面健康
+gsettings set org.gnome.desktop.break-reminders selected-breaks "['eyesight', 'movement']"
+# gsettings list-recursively org.gnome.desktop.break-reminders.movement
+# 一个小时活动5分钟
+gsettings set org.gnome.desktop.break-reminders.movement duration-seconds 300
+gsettings set org.gnome.desktop.break-reminders.movement interval-seconds 3600
+# 隐私与安全
+gsettings set org.gnome.system.location enabled false
+gsettings set org.gnome.desktop.privacy disable-camera true
+gsettings set org.gnome.desktop.privacy disable-microphone true
+# Nautilus 设置
+# gsettings list-recursively org.gnome.nautilus.preferences
+gsettings set org.gnome.nautilus.preferences date-time-format 'detailed'
+gsettings set org.gnome.nautilus.preferences default-sort-order 'type'
+gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
+gsettings set org.gnome.nautilus.preferences show-delete-permanently true
+# Ptyxis 终端
+gsettings set org.gnome.Ptyxis interface-style 'system'
+gsettings set org.gnome.shell.weather automatic-location true
+# 快捷键优化
+echo "配置自定义快捷键..."
+# 自定义快捷键优化，Alt 管理工作区、Super 管理窗口
+# gsettings list-recursively org.gnome.desktop.wm.keybindings
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
+# 切换当前工作区所有的窗口的显示与隐藏，可以替代 Show Desktop Button 扩展插件的功能
+gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
+gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
+gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
+# gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
+# Alt + Super 移动当前工作取得窗口到左右其他工作区
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
+# gsettings list-recursively org.gnome.shell.keybindings
+if [ ! -d "$HOME/下载/linux-setup" ]; then
+    git config --global user.name "lcqh2635"
+    git config --global user.email "lcqh2635@gmail.com"
+    # ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com" -f "$HOME/.ssh/id_rsa" -N ""
+    # cat "$HOME/.ssh/id_rsa.pub" | wl-copy
+    git clone --depth=1 https://github.com/lcqh2635/linux-setup.git
+    cp -r ~/下载/linux-setup/template/* /home/lcqh/模板/
+    mkdir -vp ~/.local/share/backgrounds
     # nautilus ~/.local/share/backgrounds/
-    cd ~/下载
-    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
-    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
-    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
-    mkdir -vp ~/.local/share/backgrounds/
-    cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
-    cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
-    cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
+    # nautilus admin:/usr/share/backgrounds/
+    cp -r ~/下载/linux-setup/wallpaper/* ~/.local/share/backgrounds/
+    # cp -r ~/文档/linux-setup/wallpaper/* ~/.local/share/backgrounds/
     # gsettings list-recursively org.gnome.desktop.background
     gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
     gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
-    
+fi
+# 甚至可以使用大括号展开来创建有规律的目录
+mkdir -vp $HOME/编程/{Java,Rust,Cpp,Python,TypeScript,Database,Gnome,AndroidStudio}
+mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis}
+echo "GNOME 基础配置完成。"
 }
-# ------------------------------------------------------------------------------
 
 
 # ------------------------------------------------------------------------------
-# 删除官方 Fedora Flatpaks 源
-sudo flatpak remote-delete fedora
-# sudo flatpak remote-add --if-not-exists --title=Fedora fedora oci+https://registry.fedoraproject.org
-# Flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
-# 中国科技大学 Flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
+# 模块 5: Flatpak 应用安装
+# ------------------------------------------------------------------------------
+# shellcheck disable=SC2120
+configure_flatpak_and_install_app() {
+
+echo "正在配置 Flatpak 国内镜像源 (使用中科大 flatpak 镜像)..."
+# 禁用 fedora 仓库，解决 gnome-software 初次加载时间过长的问题
+sudo flatpak remote-modify --disable fedora
+# sudo flatpak remote-modify --enable fedora
+
+# flathub 官方在 Fedora 配置文件 https://flathub.org/zh-Hans/setup/Fedora
+# 中国科技大学 flathub 镜像源 https://mirrors.ustc.edu.cn/help/flathub.html
 # 在已有 flathub 远程源的基础上替换 Flatpak 默认的软件源
 # Fedora默认安装了Flatpak，只要配置Flatpak加速镜像即可
-echo "开始配置Flatpak加速镜像..."
 # flatpak remotes --show-details
-# 添加 Flathub 官方仓库
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-# 修改 Flathub 仓库地址为国内镜像
+# 禁用 flathub 仓库
+# flatpak remote-modify --disable flathub
+# 添加 flathub 官方仓库
+sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+# 修改 flathub 仓库地址为国内镜像源
+# 1、上海交通大学 Flatpak 软件源镜像	https://mirrors.sjtug.sjtu.edu.cn/docs/flathub
+# sudo flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
 # 2、中科大 Flatpak 镜像源（处于测试阶段） https://mirrors.ustc.edu.cn/help/flathub.html
 sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
-# 上海交通大学 Flatpak 软件源镜像
-# sudo flatpak remote-modify flathub --url=https://mirror.sjtu.edu.cn/flathub
-# sudo flatpak update --appstream
 # 恢复默认值：
 # sudo flatpak remote-modify flathub --url=https://dl.flathub.org/repo
+# 允许 Flatpak 访问主机主题
 # 将 WhiteSur 主题包连接到 Flatpak 仓库，可以解决部分应用无法使用 WhiteSur 主题问题，例如：Chrome、Edge
 # xdg-data/themes 是 ~/.local/share/themes 的标准化路径别名（Flatpak 优先识别）
 # :ro 表示只读权限，避免应用误修改主题文件。
@@ -139,9 +220,19 @@ sudo flatpak override --filesystem=xdg-config/gtk-3.0:ro
 sudo flatpak override --filesystem=xdg-config/gtk-4.0:ro
 sudo flatpak override --filesystem=xdg-data/themes:ro
 sudo flatpak override --filesystem=xdg-data/icons:ro
-sudo flatpak override --filesystem=$HOME/.themes:ro
-sudo flatpak override --filesystem=$HOME/.icons:ro
+sudo flatpak override --filesystem="$HOME"/.themes:ro
+sudo flatpak override --filesystem="$HOME"/.icons:ro
 
+}
+
+
+# 模块 2: 软件源加速与 DNF 优化
+# ------------------------------------------------------------------------------
+configure_repos_and_dnf() {
+echo "正在配置软件源加速与 DNF 优化..."
+cd ~/下载
+# 1. 优化 DNF 速度 (并行下载 + 最快镜像)
+echo "优化 DNF 下载速度..."
 # https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
 # 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
 # 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
@@ -153,80 +244,145 @@ sudo flatpak override --filesystem=$HOME/.icons:ro
 # 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
 # Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
 # 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
-sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
+# sudo dnf config-manager setopt max_parallel_downloads=6 fastestmirror=True
+# 如果下面配置使用了固定的阿里云加速镜像，则不要配置 fastestmirror=True
+sudo dnf config-manager setopt max_parallel_downloads=10
+# sudo dnf config-manager setopt fastestmirror=False
 # ls /etc/dnf && cat /etc/dnf/dnf.conf
 # 现在验证当前运行时的值，而不仅仅是检查文件内容：
 dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
-# 由于这个仓库默认使用 https://mirrors.fedoraproject.org 导致经常等新超时，先禁用该仓库
-# ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-cisco-openh264.repo
-sudo dnf config-manager setopt fedora-cisco-openh264.enabled=0
-# Fedora 安装 Chromium 或 Google Chrome 浏览器
-# https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
-# 禁用 Google Chrome 仓库，由于从该仓库中安装的 Google Chrome 只有一个暗色主题，无法根据系统切换主题，所以禁用
-sudo dnf config-manager setopt google-chrome.enabled=0
-# 启用 Google Chrome 仓库：
-# sudo dnf config-manager setopt google-chrome.enabled=1
-# 最后，安装  Google Chrome 浏览器：
-# sudo dnf install -y google-chrome-stable
-# sudo dnf remove -y google-chrome-stable
-# 创建一个 Google Chrome 扩展，复刻 Dev Toolbox 的功能
+
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/adding-or-removing-software-repositories-in-fedora/
-# dnf config-manager --help
-# 查看所有仓库
-# dnf repolist --all
-# 禁用仓库
-sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
-# 在 DNF 5 中，彻底移除第三方仓库的最标准方法依然是手动删除对应的 .repo 文件，下列会打印与每个 Yum 仓库关联的仓库 ID 列表
-# grep -E "^\[.*]" /etc/yum.repos.d/*
-# 删除仓库文件
-sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
-# 删除文件后，必须清理 DNF 缓存以生效
+REPO_ID="copr:copr.fedorainfracloud.org:phracek:PyCharm"
+REPO_FILE="/etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo"
+sudo dnf config-manager setopt "$REPO_ID.enabled=0" 2>/dev/null
+sudo rm -f "$REPO_FILE" 2>/dev/null
+
+# 3. 备份并替换 Fedora 官方源为阿里云镜像
+echo "替换 Fedora 主仓库镜像..."
+# Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
+# 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
+# https://developer.aliyun.com/mirror/fedora
+# https://mirrors.ustc.edu.cn/help/fedora.html
+# https://mirrors.tuna.tsinghua.edu.cn/help/fedora/
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora.repo
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-updates.repo
+# 将上述两个文件先做个备份，根据 Fedora 系统版本分别替换为下面内容，之后通过 sudo dnf makecache 命令更新本地缓存，即可使用所选择的软件源镜像。
+if [ ! -f "/etc/yum.repos.d/fedora.repo.bak" ]; then
+echo "⚠️  加速镜像仓库 'fedora' 还未配置，开始配置..."
+# https://developer.aliyun.com/mirror/fedora
+sudo sed -e 's|^metalink=|#metalink=|g' \
+-e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.aliyun.com/fedora|g' \
+-i.bak \
+/etc/yum.repos.d/fedora.repo \
+/etc/yum.repos.d/fedora-updates.repo 
+fi  
+# 4. 安装 RPM Fusion 源
+echo "安装并配置 RPM Fusion 源..."
+# RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
+# 阿里云 RPMFusion 镜像源		https://developer.aliyun.com/mirror/rpmfusion
+# 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
+# 使用下列命令（在 bash 或兼容 shell 中），可以同时启用其 free 和 nonfree 软件源
+sudo dnf install -y --nogpgcheck \
+https://mirrors.aliyun.com/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+https://mirrors.aliyun.com/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+# 修改 RPM Fusion 源为 USTC
+# 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
+# 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
+# 并将等号后面链接中的 http://download1.rpmfusion.org 替换为 https://mirrors.aliyun.com/rpmfusion
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free.repo
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free-updates.repo
+if [ ! -f "/etc/yum.repos.d/rpmfusion-free.repo.bak" ]; then
+echo "⚠️  加速镜像仓库 'rpmfusion' 还未配置，开始配置..."
+sudo sed -e 's!^metalink=!#metalink=!g' \
+-e 's!^mirrorlist=!#mirrorlist=!g' \
+-e 's!^#baseurl=!baseurl=!g' \
+-e 's!https\?://download1\.rpmfusion\.org/!https://mirrors.aliyun.com/rpmfusion/!g' \
+-i.bak /etc/yum.repos.d/rpmfusion*.repo
+fi
+# 5、删除文件后，必须清理 DNF 缓存以生效，同时重建 DNF 缓存
+echo "正在清理 DNF 缓存并重建 DNF 缓存..."
 sudo dnf clean all
-# 重建 DNF 缓存
 sudo dnf makecache
 # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
+echo "正在更新系统并清理无用包..."
 sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
-# ------------------------------------------------------------------------------
+echo "正在安装常用软件包..."
+sudo dnf install -y gnome-tweaks \
+gnome-browser-connector gnome-extensions-app \
+libadwaita-demo timeshift
+sudo dnf install -y gnome-builder
+gsettings set org.gnome.builder projects-directory "$HOME/编程/Gnome"
+# 浏览并安装GNOME Shell 扩展以定制你的桌面
+flatpak install -y flathub com.mattjakeman.ExtensionManager
 
-# 配置固定加速镜像源
-configure_fixed_mirror() {
-    # Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
-    # 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
-    # https://mirrors.ustc.edu.cn/help/fedora.html
-    # https://developer.aliyun.com/mirror/fedora
-    # https://mirrors.tuna.tsinghua.edu.cn/help/fedora/
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora.repo
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-updates.repo
-    # 将上述两个文件先做个备份，根据 Fedora 系统版本分别替换为下面内容，之后通过 sudo dnf makecache 命令更新本地缓存，即可使用所选择的软件源镜像。
-    sudo sed -e 's|^metalink=|#metalink=|g' \
-             -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g' \
-             -i.bak \
-             /etc/yum.repos.d/fedora.repo \
-             /etc/yum.repos.d/fedora-updates.repo
-    # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
-    # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
-    # 使用下列命令（在 bash 或兼容 shell 中），可以同时启用其 free 和 nonfree 软件源
-    sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-    sudo dnf install -y https://mirrors.ustc.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    # 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
-    # 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
-    # 并将等号后面链接中的 http://download1.rpmfusion.org 替换为 https://mirrors.ustc.edu.cn/rpmfusion：
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free.repo
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free-updates.repo
-    sudo sed -e 's|^metalink=|#metalink=|g' \
-             -e 's|^#baseurl=http://download1.rpmfusion.org|baseurl=https://mirrors.ustc.edu.cn/rpmfusion|g' \
-             -i.bak \
-             /etc/yum.repos.d/rpmfusion*.repo
-    # 删除文件后，必须清理 DNF 缓存以生效
-    sudo dnf clean all
-    # 重建 DNF 缓存
-    sudo dnf makecache
-    # 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
-    sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
+sudo dnf remove -y \
+gnome-shell-extension-window-list \
+gnome-shell-extension-launch-new-instance
+sudo dnf install -y \
+gnome-shell-extension-appindicator \
+gnome-shell-extension-auto-move-windows \
+gnome-shell-extension-background-logo \
+gnome-shell-extension-blur-my-shell \
+gnome-shell-extension-caffeine \
+gnome-shell-extension-dash-to-dock \
+gnome-shell-extension-forge \
+gnome-shell-extension-gsconnect \
+gnome-shell-extension-just-perfection \
+gnome-shell-extension-drive-menu \
+gnome-shell-extension-user-theme \
+gnome-shell-extension-workspace-indicator
+# Background Logo
+# gsettings list-recursively org.fedorahosted.background-logo-extension
+# gsettings reset-recursively org.fedorahosted.background-logo-extension
+gsettings set org.fedorahosted.background-logo-extension logo-always-visible true 
+# Blur My Shell
+gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
+gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
+gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
+gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false  
+# Dash To Dock
+gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
+gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
+gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
+gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true 
+# Forge
+gsettings set org.gnome.shell.extensions.forge tiling-mode-enabled false
+gsettings set org.gnome.shell.extensions.forge focus-border-toggle false
+# Just Perfection
+gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
+gsettings set org.gnome.shell.extensions.just-perfection world-clock false
+gsettings set org.gnome.shell.extensions.just-perfection weather false
+gsettings set org.gnome.shell.extensions.just-perfection events-button false
+gsettings set org.gnome.shell.extensions.just-perfection workspace false
+gsettings set org.gnome.shell.extensions.just-perfection workspace-wrap-around true
+gsettings set org.gnome.shell.extensions.just-perfection window-demands-attention-focus true
+gsettings set org.gnome.shell.extensions.just-perfection startup-status 0
+gsettings set org.gnome.shell.extensions.just-perfection animation 7
+# 安装游戏平台
+# sudo dnf install -y wine dxvk-native lutris steam
+# https://developer.aliyun.com/mirror/google-chrome
+# sudo dnf install -y google-chrome-stable
+# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
+flatpak install -y flathub io.github.kolunmi.Bazaar
+# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
+flatpak install -y flathub com.github.tchx84.Flatseal
+# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
+flatpak install -y flathub io.github.flattool.Warehouse
+# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
+flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+# Microsoft Edge 网络浏览器
+flatpak install -y flathub com.microsoft.Edge
+# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
+flatpak install -y flathub com.google.Chrome
 }
 
+
 # 还原上述固定加速镜像源配置
-reset_fixed_mirror() {
+reset__mirror_configure() {
     # 还原上述 fedora 修改
     # 遍历 /etc/yum.repos.d/ 目录下所有以 fedora 开头且以 .bak 结尾的文件，并去除末尾的 .bak 后缀
     for i in /etc/yum.repos.d/fedora*.bak; do sudo mv "$i" "${i%.bak}"; done
@@ -235,75 +391,123 @@ reset_fixed_mirror() {
     for i in /etc/yum.repos.d/rpmfusion*.bak; do sudo mv "$i" "${i%.bak}"; done
 }
 
-# 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
-sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
-# 删除无用的应用
-sudo dnf remove -y mediawriter libreoffice-*
-# ShellCheck 是一个专门用于分析 Shell 脚本的工具，它能发现语法错误、逻辑隐患、未引用的变量、过时的写法等，而无需运行脚本
-sudo dnf install -y ShellCheck
-# shellcheck fedora-setup.sh
 
-# https://docs.fedoraproject.org/zh_Hans/quick-docs/autoupdates/
-sudo dnf install -y dnf-automatic
-# ls /etc/dnf && cat /etc/dnf/automatic.conf
-# 默认情况下，dnf-automatic 会从 /etc/dnf/automatic.conf 文件中的配置中运行。这些配置只会下载，但不会应用任何包。
-# 要更改或添加任何配置，请以 root 用户身份（或使用sudo）从终端窗口打开 .conf 文件。
-# 修改 automatic.conf 以下载所有更新、应用并重启，可以是：
-cat << EOF | sudo tee /etc/dnf/automatic.conf
-[commands]
-apply_updates=True
-reboot=when-needed
-EOF
-# 配置完成后，执行以下命令以启用并启动系统D计时器
-systemctl enable --now dnf-automatic.timer
-# 检查DNF-自动状态：
-# systemctl status dnf-automatic.timer
+# 重置系统字体配置
+reset_font() {
+# dnf list *fonts*
+# Noto Fonts（思源黑体/宋体 的谷歌版本）
+# Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
+# Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
+# JetBrains Mono JetBrains 公司专门为 IDE 设计的字体。字母宽度大，容易区分 1、l、I，默认支持连字符，非常耐看。
+# 系统界面（中文）	Noto Sans CJK SC	谷歌思源黑体，字库全，笔画均衡，与 Inter 风格协调
+# 文档阅读/写作	Noto Serif CJK SC	思源宋体，适合长时间阅读，衬线带来轻松的纸质感
+# 编程/终端		JetBrains Mono		字母区分度高，支持连字，视觉疲劳度低
+# fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
+# Noto Sans CJK SC （思源黑体——简体中文）
+# Noto Serif CJK SC （思源宋体——简体中文）
+sudo dnf install -y \
+google-noto-sans-cjk-fonts \
+google-noto-serif-cjk-fonts \
+adobe-source-han-sans-cn-fonts \
+adobe-source-han-serif-cn-fonts \
+jetbrains-mono-fonts
+# 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
+gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
+# 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
+gsettings set org.gnome.desktop.interface document-font-name 'Noto Serif CJK SC Regular 11'
+# 设置等宽字体，影响范围：终端、代码编辑器
+gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono Regular 11'
+# 设置窗口标题栏字体，影响范围：所有应用程序窗口顶部的标题文字
+gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC Bold 11'
+# 微调：full（较好）或 slight
+gsettings set org.gnome.desktop.interface font-hinting 'slight'
+# 抗锯齿：rggb（LCD 显示器常用）或 grayscale
+gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
+
+# 安装 Ubuntu 的声音主题
+sudo dnf install -y yaru-sound-theme
+gsettings set org.gnome.desktop.sound theme-name 'Yaru'
+}
+
+# ------------------------------------------------------------------------------
+# 模块 3: 系统更新与基础清理
+# ------------------------------------------------------------------------------
+system_update_and_cleanup() {
+echo "正在更新系统并清理无用包..."
+# 你刚刚修改了软件源（从官方 metalink 切换到了中科大/阿里云等固定镜像）。如果不加 --refresh，DNF 可能会继续使用旧的、缓存的元数据（这些元数据可能指向旧的镜像地址或包含旧的包列表），
+# 导致升级失败、包找不到或仍然从旧源下载。--refresh 强制 DNF 忽略本地缓存，重新从新配置的镜像下载最新的元数据。
+# 只有在以下特殊情况下，你才需要在日常更新时加上 --refresh：
+    # 1、修改了 .repo 文件：比如你刚才手动启用/禁用了某个仓库，或者像我们脚本里那样换了镜像源
+    # 2、怀疑缓存损坏：当你运行 dnf upgrade 报错，提示“元数据不匹配”、“GPG 校验失败”或“找不到包”，但你知道网络上肯定有这个包时。此时执行 sudo dnf upgrade --refresh 可以修复缓存
+    # 3、急需刚刚发布的软件/安全补丁：假设某个严重安全漏洞在 10 分钟前修复并推送到仓库了，而你昨天的缓存还没过期。为了立刻拿到这个补丁，你可以强制刷新。但通常等待几小时让缓存自然过期也是可接受的
+    # 4、长时间未开机：如果你这台电脑关机了几个月没开，本地缓存肯定过期了。虽然 DNF 会自动检测到过期并刷新，但显式加上 --refresh 也没坏处，只是略显多余
+# 但是对于日常的系统更新，推荐命令：sudo dnf upgrade -y 这会直接读取本地缓存的元数据（通常只有几 MB），瞬间完成分析，然后只下载需要更新的软件包
+sudo dnf upgrade --refresh -y
+sudo dnf autoremove -y
+echo "系统更新完成。"
+}
 
 
-# 如意玲珑		https://linyaps.org.cn/
-# 如意玲珑官方文档	https://linyaps.org.cn/guide/start/whatis.html
-# 如意玲珑是统信软件自研的开源软件包格式，用于替代 deb、rpm 等包管理工具，实现了应用包管理、分发、容器、集成开发工具等功能。类似 flatpak、snap
-# ls /etc/yum.repos.d && cat /etc/yum.repos.d/linglong%3ACI%3Arelease.repo
-sudo dnf config-manager addrepo --from-repofile "https://ci.deepin.com/repo/obs/linglong:/CI:/release/Fedora_43/linglong%3ACI%3Arelease.repo"
-sudo sh -c "echo gpgcheck=0 >> /etc/yum.repos.d/linglong%3ACI%3Arelease.repo"
-sudo dnf update
-# 安装后可通过 ‘网页版应用商店 https://store.linyaps.org.cn/’ 进行安装，但不会安装 ‘客户端应用商店’	
-sudo dnf install -y linglong-bin linyaps-web-store-installer
-# 安装意玲珑客户端应用商店	https://linyaps.org.cn/linyaps-appstore 
-cd $HOME/下载 && wget "https://gh-proxy.org/https://github.com/SXFreell/linglong-store/releases/download/2.2.0/linglong-store-2.1.2-1.x86_64.rpm"
-sudo dnf install -y ./linglong-store-2.1.2-1.x86_64.rpm
-
-
-# development-tools 是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
-# c-development 是简化C开发环境配置的包组，安装后即可获得编译、调试和构建C程序所需的核心工具。如果你需要开发C程序，安装它或对应的包组是第一步。例如：gcc、gcc-c++
-# rpm-development-tools	是专门用于 RPM 包开发 的工具集，适合软件打包、维护或发布 RPM 格式的软件。例如：rpm-build、rpmdevtools
-# dnf group install 			# 旨在为开发者提供一个基础的开发环境，而无需手动安装每个工具。
-# dnf group list			# 查看可用的软件包组
-# dnf group info development-tools	# 查看软件包组的信息
-# dnf group info c-development		# 查看软件包组的信息
-sudo dnf group install -y development-tools c-development rpm-development-tools
+# ------------------------------------------------------------------------------
+# 模块 4: 开发环境与工具链安装
+# ------------------------------------------------------------------------------
+install_dev_tools() {
+echo "正在安装基础开发工具链..."
+# 基础工具组
+# development-tools 		是一个预定义的软件包组，包含一组常用的开发工具和库，用于支持软件开发工作。例如：git
+# c-development			是简化C开发环境配置的包组，安装后即可获得编译、调试和构建C程序所需的核心工具。如果你需要开发C程序，安装它或对应的包组是第一步。例如：gcc、gcc-c++
+# rpm-development-tools		是专门用于 RPM 包开发 的工具集，适合软件打包、维护或发布 RPM 格式的软件。例如：rpm-build、rpmdevtools
+# dnf group install		旨在为开发者提供一个基础的开发环境，而无需手动安装每个工具。
+# dnf group list		查看可用的软件包组
+# dnf group list --installed	查看已安装的软件包组
+# 查看软件包组的信息
+# dnf group info development-tools
+# sudo dnf group remove -y development-tools
+sudo dnf group install -y development-tools
+# dnf group info c-development
+# sudo dnf group remove -y c-development
+sudo dnf group install -y --with-optional c-development
+# dnf group info rpm-development-tools
+# sudo dnf group remove -y rpm-development-tools
+sudo dnf group install -y --with-optional rpm-development-tools
 # 安装虚拟化基础
+# https://docs.fedoraproject.org/zh_Hans/quick-docs/virtualization-getting-started/
+# dnf group info virtualization
+# sudo dnf group remove -y virtualization
 sudo dnf group install -y --with-optional virtualization
+# dnf group info container-management
+# sudo dnf group remove -y container-management
+sudo dnf group install -y --with-optional container-management
+# dnf group info vlc
+# sudo dnf group remove -y vlc
+sudo dnf group install -y --with-optional vlc
 # 安装多媒体编解码器 https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-plugins-for-playing-movies-and-music/
 # multimedia 包组提供了一套完整的音视频处理工具链，适合普通用户或开发者处理多媒体任务。例如：gstreamer1-plugin-* 以包含 gstreamer1-plugin-openh264 等
 # 作为 Fedora 用户和系统管理员，您可以使用这些步骤来安装额外的多媒体插件，使您能够播放各种视频和音频类型。 
 # 对于 fedora 41 及更高版本，安装用于播放电影和音乐的插件
-sudo dnf group install -y multimedia
+# dnf group info multimedia
+sudo dnf group install -y --with-optional multimedia
+# dnf group info sound-and-video
+# sudo dnf group remove -y sound-and-video
+sudo dnf group install -y sound-and-video
+# dnf group info libreoffice
+# sudo dnf group remove -y libreoffice
+sudo dnf group remove -y libreoffice
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/openh264/
+# dnf list mozilla-*
 # dnf list --available \*openh264\*
 # 从 fedora-cisco-openh264 存储库安	dnf list gstreamer1-plugin-*
-sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264 mozilla-ublock-origin
+sudo dnf install -y mozilla-openh264 mozilla-ublock-origin
 # 之后，您需要打开 Firefox，转到菜单 → 附加组件 → 插件 并启用 OpenH264 插件。
-# 您可以在此页面 https://mozilla.github.io/webrtc-landing/pc_test.html 上对您的 H.264 是否在 RTC 中工作进行简单测试（检查需要 H.264 视频）
-
-
+# 您可以在此页面 https://mozilla.github.io/webrtc-landing/pc_test.html 上对您的 H.264 是否在 RTC 中工作进行简单测试（检查需要 H.264 视频
 # 安装fedora的多媒体组，以下内容参考 https://rpmfusion.org/Howto/Multimedia
 # 切换到完整的 ffmpeg，使用 swap 命令为替换操作
 # FFmpeg-Free 是 Fedora 默认提供的一个受限版本，仅包含开源且无专利限制的编解码器。
 # FFmpeg 是一个功能强大的多媒体处理工具集，支持视频、音频的编码、解码、转码、流媒体传输等功能。
 # 它支持广泛的编解码器（如 H.264、HEVC、AAC 等），包括一些专利保护的编解码器。 
 # Fedora ffmpeg-free 在大多数时候都能正常工作，但有时会遇到版本不匹配的情况。切换到 rpmfusion 提供的 ffmpeg 构建，它得到了更好的支持。您仍然需要按照下一节了解与您可能已安装的软件包相关的其他编解码器或插件。
-sudo dnf swap -y ffmpeg-free ffmpeg --allowerasing
+# 列出 ffmpeg-free 运行所必须依赖的其他包	dnf repoquery --requires ffmpeg-free
+sudo dnf swap -y --allowerasing ffmpeg-free ffmpeg
 # 硬件加速编解码器
 # 使用 AMD（mesa）的硬件编解码器
 # 使用 rpmfusion-free 部分这是从 Fedora 37 及更高版本开始需要的...主要关注 AMD 硬件，因为带有 nouveau 的 NVIDIA 硬件运行不佳 
@@ -311,26 +515,20 @@ sudo dnf swap -y ffmpeg-free ffmpeg --allowerasing
 # Fedora 默认的 Mesa 驱动遵循严格的开源许可证，因此不包含对某些专利保护的编解码器（如 H.264 和 HEVC）的支持。
 # Fedora 默认安装的是开源的 mesa-va-drivers 和 mesa-vdpau-drivers，这些驱动完全符合开源社区的标准，但可能缺少对某些专有编解码器（如 H.264 或 HEVC）的支持。
 # RPM Fusion 提供了名为 mesa-*-drivers-freeworld 的替代版本，它们是基于 Mesa 的增强版本，支持更多的专有编解码器（如 H.264 和 HEVC）和性能优化
-sudo dnf swap -y mesa-va-drivers mesa-va-drivers-freeworld --allowerasing
-sudo dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld --allowerasing
-sudo dnf swap -y mesa-vulkan-drivers mesa-vulkan-drivers-freeworld --allowerasing
+sudo dnf swap -y --allowerasing mesa-va-drivers mesa-va-drivers-freeworld
+sudo dnf swap -y --allowerasing mesa-vulkan-drivers mesa-vulkan-drivers-freeworld
+# sudo dnf swap -y --allowerasing mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
+sudo dnf install -y mesa-vdpau-drivers-freeworld.x86_64
 # 安装 VA-API 和 VDPAU 驱动，一般默认已安装
-# dnf list mesa*		# 查看 Mesa 驱动程序 freeworld 和原始驱动程序
+# 查看 Mesa 驱动程序 freeworld 和原始驱动程序
+# dnf list mesa*
 # 提供 vainfo 命令的包
 sudo dnf install -y libva-utils vulkan-tools
 # vainfo
 # vainfo | grep -E 'H264|H265'
 # vulkaninfo | grep "GPU"
-
-## 5. 开发环境配置 =============================================
-# 安装常用应用
-# evolution配置qq邮箱授权码： embwnsuwkdjrebge
-echo "安装常用应用程序..."
-sudo dnf install -y \
-git wget curl unzip p7zip \
-fastfetch wl-clipboard \
-gnome-tweaks gnome-browser-connector \
-libadwaita-demo
+# 常用命令行工具
+sudo dnf install -y fastfetch wl-clipboard clapper just
 # Tauri 在 Linux 上进行开发需要各种系统依赖项。这些可能会有所不同，具体取决于你的发行版，在 Fedora 系统中需安装以下依赖：
 # https://tauri.app/zh-cn/start/prerequisites/#linux
 sudo dnf check-update
@@ -339,298 +537,228 @@ webkit2gtk4.1-devel \
 openssl-devel curl wget file \
 libappindicator-gtk3-devel \
 librsvg2-devel libxdo-devel
-# 配置 Git 访问的 SSH 密钥
-git config --global user.name 'lcqh2635' 
-git config --global user.email 'lcqh2635@gmail.com'
-ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com"
-# git config --global user.email '2320391937@qq.com'
-# ssh-keygen -t rsa -b 4096 -C "2320391937@qq.com"
-# 将上面生成的 SSH 密钥复制到剪切板，需要安装 wl-clipboard 工具
-# cat ~/.ssh/id_rsa.pub | wl-copy
-# 配置 Gitee 密钥	https://gitee.com/profile/sshkeys
-# 配置 Github 密钥	https://github.com/settings/keys
-# cd ~/文档 && git clone git@github.com:lcqh2635/linux-setup.git
-# cd ~/下载 && git clone https://gitee.com/lcqh2635/init-fedora.git
-# cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
+# 为了让扩展程序能够最佳运行，您需要安装以下依赖项：
+# https://github.com/lukasgierth/fedora-packages/blob/main/tools-misc/gnome-shell-extension-copyous
+# sudo dnf install -y libgda libgda-sqlite
+echo "基础开发工具安装完成。"
+}
 
 
-# 安装编程语言开发环境
-install_development_environment() {
-    # ------------------------------------------------------------------------------
-    # https://ubuntu.com/toolchains
-    sudo dnf install -y nodejs
-    # npm config get registry
-    # 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
-    # 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
-    # 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
-    npm config set registry https://registry.npmmirror.com/
-    # 将目录所有权改为当前用户，否则如下命令将因为权限问题执行失败
-    sudo chown -R $(whoami):$(whoami) /usr/local
-    # Claude Code 是一款存在于终端中的代理编码工具，理解你的代码库，并通过自然语言命令帮助你执行例行任务、
-    # 解释复杂代码和处理 git 工作流程，从而更快地完成代码。在你的终端、IDE或Github上的标签@claude中使用。
-    # https://www.npmjs.com/package/@anthropic-ai/claude-code
-    npm install -g @anthropic-ai/claude-code
-    # https://openclaw.cc/
-    npm install -g openclaw
-    # 推荐安装的全局工具包
-    # https://docs.deno.org.cn/
-    npm install -g deno
-    # deno init --npm vite my-vue-app --template vue-ts
-    # vite - 下一代前端构建工具（通常项目局部安装，但全局也有用）
-    npm install -g typescript vite eslint prettier
-    # npm 列出所有全局安装的包
-    # npm list -g --depth=0
-    # 执行更新命令，更新所有可更新的全局包
-    # npm update -g
-    
-    # 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
-    # bun - 现代的 JavaScript 运行时和包管理器
-    # https://www.npmjs.com/package/bun
-    npm install -g bun
-    # bun create vite my-vue-app --template vue-ts
-    echo "🐍 你刚安装的 bun 版本号为：$(bun --version)"
-    # bun 自行升级	bun upgrade
-    # bun run config --help
-    # bun --config
-# 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
-cat << EOF | tee $HOME/.bunfig.toml
-[install]
-# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为	https://developer.aliyun.com/mirror/NPM
-registry = "https://registry.npmmirror.com/"
-EOF
-    # which node
-    # whereis node
-    # whereis bun
-    # 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
-    # 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
-    # 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
-    # ------------------------------------------------------------------------------
-
-
-# ------------------------------------------------------------------------------
-# 通过 dnf 安装 (推荐)
+configure_languages() {
+echo "正在配置编程语言环境 (Node, Java, Go, Rust, Zig)..."
+echo "配置 Java、Maven 环境..."
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-java/
-sudo dnf install -y java-25-openjdk maven maven4 maven4-openjdk25
-echo "🐍 你刚安装的 java 版本号为：$(java --version)"
-echo "🐍 你刚安装的 maven 版本号为：$(mvn --version)"
-echo "🐍 你刚安装的 maven4 版本号为：$(mvn4 --version)"
 # whereis maven
+# whereis maven4
 # nautilus admin:/usr/share/maven
+# sudo dnf install -y java-25-openjdk maven maven4 maven4-openjdk25 kotlin
+# 使用 Android Studio 需要提前安装 gradle 和  kotlin
+# https://sdkman.io/    执行以下命令时，推荐开启 VPN 否则容易失败并且下载速度极慢
+rm -rf $HOME/.sdkman
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk version
+# sdkman 自我检查更新，刷新 sdkman 候选者元数据、更新所有已经安装的工具，例如：java、gradle、maven 等
+sdk selfupdate && sdk update && sdk upgrade
+# 通过 SDKMAN! 安装的工具（Java、Kotlin、Maven、Gradle 等）完全不需要手动配置环境变量。SDKMAN! 的核心设计就是自动接管并动态注入这些变量。可以直接 echo $JAVA_HOME
+# 通过运行以下命令来安装您选择的最新稳定版本SDK（例如Java JDK）：
+sdk install java
+echo $JAVA_HOME
+sdk install maven
+echo $MAVEN_HOME
+sdk install mvnd
+echo $MVND_HOME
+sdk install kotlin
+echo $KOTLIN_HOME
+sdk install gradle
+echo $GRADLE_HOME
+sdk current
+# 在脚本中使用SDKMAN时，获取SDK所在的绝对路径通常很有用（类似于macOS上的java_home命令）。为此，我们有home命令。
+# sdk home java 25.0.3-tem
+# /home/lcqh/.sdkman/candidates/java/current
+# sdk home kotlin 2.3.21
+# /home/lcqh/.sdkman/candidates/kotlin/current
+# sdk home maven 3.9.15
+# /home/lcqh/.sdkman/candidates/maven/current
+# sdk home mvnd 1.0.5
+# /home/lcqh/.sdkman/candidates/mvnd/current
+# sdk home gradle 9.5.1
+# /home/lcqh/.sdkman/candidates/gradle/current
+echo "你刚安装的 java 版本号为：$(java --version)"
+echo "你刚安装的 maven 版本号为：$(mvn --version)"
+echo "你刚安装的 mvnd 版本号为：$(mvnd --version)"
+echo "你刚安装的 kotlin 版本号为：$(kotlin -version)"
+echo "你刚安装的 gradle 版本号为：$(gradle --version)"
 # 配置 maven 阿里云 aliyun 加速镜像	https://maven.aliyun.com/mvn/guide
 # -v (verbose)：详细模式。
 # 作用：每创建一个目录，都会在终端打印一条提示信息。让用户知道命令到底执行了什么
 # -p (parents)：父目录模式。
 # 作用 ：如果指定的路径中父目录不存在，会自动递归创建。如果目录已经存在，不会报错，而是静默成功
 mkdir -vp $HOME/.m2
+if [ ! -f $HOME/.m2/settings.xml ]; then
+# IDEA 配置 “Maven 主路径” 为 /usr/share/maven 直接复制到输入框即可
 # tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
-cat << EOF | tee -a $HOME/.m2/settings.xml
-<?xml version="1.0" encoding="UTF-8"?>
-
-<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
-
-  <mirrors>
-    <mirror>
-      <id>aliyunmaven</id>
-      <mirrorOf>*</mirrorOf>
-      <name>阿里云公共仓库</name>
-      <url>https://maven.aliyun.com/repository/public</url>
-    </mirror>
-  </mirrors>
-
+cat << EOF | tee $HOME/.m2/settings.xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings
+    xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd"
+>
+    <mirrors>
+        <mirror>
+            <id>aliyunmaven</id>
+            <mirrorOf>*</mirrorOf>
+            <name>阿里云公共仓库</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </mirror>
+    </mirrors>
 </settings>
 EOF
-# 甚至可以使用大括号展开来创建有规律的目录
-mkdir -vp $HOME/编程/{Java,Rust,Cpp,Python,TypeScript,Database}
-# https://gitcn.org/
-# https://gitcn.org/topics
-# https://gitcn.org/top
-
-# https://github.com/openjdk/jdk
-# https://github.com/topics/java
-# https://dev.java/
-
-# https://github.com/rust-lang/rust
-# https://gitcn.org/topics/rust
-# https://gitcn.org/trending?lang=Rust
-# https://rust-lang.org/zh-CN/
-
-# https://github.com/topics/c
-# https://github.com/topics/python
-mkdir -vp $HOME/编程/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis}
-# https://github.com/sqlite/sqlite
-# https://www.sqlite.net.cn/
-
-# https://github.com/mysql/mysql-server
-# https://www.mysql.com/cn/
-
-# https://github.com/MariaDB/server
-# https://mariadb.org.cn/
-
-# https://github.com/postgres/postgres
-# https://postgresql.ac.cn/
-
-# https://github.com/pingcap/tidb
-# https://docs.pingcap.com/zh/
-
-# https://github.com/oceanbase/oceanbase
-# https://www.oceanbase.com/product/opensource
-
-# https://github.com/redis/redis
-# https://www.redis.net.cn/
-# IDEA 配置 “Maven 主路径” 为 /usr/share/maven 直接复制到输入框即可
-# ------------------------------------------------------------------------------
+fi
 
 
-# ------------------------------------------------------------------------------
-# 第七步：安装 Rust
-echo "🦀 安装 Rust..."
-# Rust Web 常用的框架 Axum 目前排名性能总榜 7，需要使用 pg 数据库，数据来自性能测试网站	https://www.techempower.com/benchmarks
-# 配置 crates.io 国内中科大 ustc 加速镜像源	 https://mirrors.ustc.edu.cn/help/crates.io-index.html
-# 配置 crates.io 国内阿里云 aliyun 加速镜像源	https://developer.aliyun.com/mirror/rustup 
-# 配置 rustup 使用阿里云的加速镜像源，从而 加速 Rust 工具链（如 rustc、cargo）的下载和更新
-# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
-cat << EOF | tee -a ~/.bash_profile
-# 配置中科大 ustc 的 Rust Toolchain 反向代理 	https://mirrors.ustc.edu.cn/help/rust-static.html
-# 指定 Rust 工具链和组件的下载地址（如 rustc,cargo,rust-std 等）
-export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
-# 指定 rustup 自身更新元数据的地址（即 rustup 如何检查自身版本、下载新版本）
-export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
-
-# 配置阿里云 aliyun 的 Rust Toolchain 反向代理 	https://developer.aliyun.com/mirror/rustup
-# export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup
-# export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup
+echo "配置 Node.js 生态..."
+sudo dnf install -y nodejs
+# npm config get registry
+# 执行后，npm 会自动帮你把配置写入 ~/.npmrc 文件，没必要手动编辑 ~/.npmrc 文件。
+# 但需要注意的是，该配置的 npm 加速镜像只对当前用户有效，对于使用 sudo 的 npm 无效，例如  sudo npm install -g bun
+# 配置 npm 国内阿里云 aliyun 加速镜像源，地址为	https://developer.aliyun.com/mirror/NPM
+npm config set registry https://registry.npmmirror.com/
+# 将目录所有权改为当前用户，否则如下命令将因为权限问题执行失败
+# 修复 /usr/local 权限以便全局安装
+if [ -d "/usr/local" ]; then
+    sudo chown -R $(whoami):$(whoami) /usr/local
+fi
+# 安装 Bun
+# npm 列出所有全局安装的包
+# npm list -g --depth=0
+# 执行更新命令，更新所有可更新的全局包
+# npm update -g
+# 安装 Bun 运行时环境	https://www.bunjs.cn/docs/installation
+# bun - 现代的 JavaScript 运行时和包管理器
+# https://www.npmjs.com/package/bun
+npm install -g bun typescript
+# bun create vite --help
+# -i, --immediate	自动安装依赖并启动  dev 开发环境
+# bun create vite my-vue-app --template vue-ts --immediate
+# bun 自行升级	bun upgrade
+# bun run config --help
+# bun --config
+echo "Bun 已安装: $(bun --version)"
+# 将 bunfig.toml 作为隐藏文件添加到用户主目录	https://www.bunjs.cn/docs/runtime/bunfig
+cat << EOF | tee "$HOME"/.bunfig.toml
+# 使用配置文件 bunfig.toml 配置 Bun 的行为 https://bun.zhcndoc.com/runtime/bunfig
+[install]
+# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，
+# 地址为 https://developer.aliyun.com/mirror/NPM
+registry = "https://registry.npmmirror.com/"
 EOF
-source ~/.bash_profile
-# cat ~/.bash_profile
+# which node
+# whereis node
+# whereis bun
+# 将 IDEA 的 JS/TS 默认运行时环境从 nodejs 改为 bun 操作如下：
+# 1、设置 -> 语言和框架 -> Bun -> /usr/local/bin/bun
+# 2、设置 -> 语言和框架 -> Node.js -> Node解释器 -> /usr/local/bin/bun
 
-# 用 shell 执行从标准输入来的脚本，并把 -y 作为参数传给那个脚本，告诉它：自动安装，不要问我！
-# 自动确认所有提示，使用默认设置安装（相当于 yes）
-# 使用官方安装脚本
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+echo "配置 Rust 环境..."
+# https://developer.fedoraproject.org/tech/languages/rust/rust-installation.html
+# https://linuxcapable.com/how-to-install-rust-programming-language-on-fedora-linux/
+# 设置 Rustup 镜像，参考：https://developer.aliyun.com/mirror/rustup
+echo '
+# 设置 Rustup 镜像，参考：https://developer.aliyun.com/mirror/rustup
+export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup
+export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup
+' >> ~/.bash_profile
+source ~/.bash_profile
 # 使用阿里云安装脚本
 curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
-# 激活 Rust 环境
 . "$HOME/.cargo/env"
-# rustup update
+rustup update
+rustup toolchain install stable
+# 配置 Cargo 镜像        
 # 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
-# -v (verbose)：详细模式。
-# 作用：每创建一个目录，都会在终端打印一条提示信息。让用户知道命令到底执行了什么
-# -p (parents)：父目录模式。
-# 作用 ：如果指定的路径中父目录不存在，会自动递归创建。如果目录已经存在，不会报错，而是静默成功。
-#  ${MAVEN_HOME:-$HOME/.m2} 这是 Shell 参数扩展（Parameter Expansion） 语法，格式为 ${变量名:-默认值}
-# 作用：检查环境变量 MAVEN_HOME 是否已设置且非空。如果是：使用 MAVEN_HOME 的值作为目录路径。如果否（未设置或为空）：使用默认值 $HOME/.m2
-mkdir -vp ${CARGO_HOME:-$HOME/.cargo}
+mkdir -vp "$HOME/.cargo"
+# cat $HOME/.cargo/config.toml
 # tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
-cat << EOF | tee ${CARGO_HOME:-$HOME/.cargo}/config.toml
-# 配置 Cargo 国内加速镜像源，可选：ustc、aliyun、tuna 此处默认选择 ustc
+cat << EOF | tee $HOME/.cargo/config.toml
+# 配置 Cargo 国内加速镜像源，可选：aliyun、ustc、tuna 此处默认选择 aliyun
 # 使用稀疏协议（sparse）减少元数据下载量，大幅加速
 [source.crates-io]
-replace-with = 'ustc'
+replace-with = 'aliyun'
 
-# ustc 中科大 crates.io 镜像 	https://mirrors.ustc.edu.cn/help/crates.io-index.html
-[source.ustc]
-registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
-[registries.ustc]
-index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
-
-# aliyun 阿里云 crates.io 镜像	https://developer.aliyun.com/mirror/rustup 
+# aliyun 阿里云 crates.io 镜像 https://developer.aliyun.com/mirror/rustup
 [source.aliyun]
 registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
 [registries.aliyun]
 index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+
+# ustc 中科大 crates.io 镜像 https://mirrors.ustc.edu.cn/help/crates.io-index.html
+[source.ustc]
+registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+[registries.ustc]
+index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
-# cat $HOME/.cargo/config.toml
+# 使用 Android Studio 需要提前安装 gradle 和  kotlin
+# 创建 ANDROID_HOME 和 NDK_HOME 环境变量目录
+mkdir -vp "$HOME/.android/Sdk/ndk"
+# https://tauri.app/zh-cn/start/prerequisites/#android
+# https://linuxcapable.com/how-to-set-java-environment-path-in-fedora-linux/
+# 配置全局 Gradle 设置：Settings -> Build,Execution,Deploy -> Build Tools -> Gradle 修改如下内容：
+# 1、Gradle user home：/home/lcqh/.sdkman/candidates/gradle/current
+# 2、勾选启用，Enable parallel Gradle model fetching for Gradle 7.4+
+# 3、Distribution：从默认的 Wrapper 改为 Local installation
+# 4、Version：改为安装的 JDK 对应版本，例如 25
 
-# https://crates.io/
-# https://crates.io/crates/leptos
-# https://crates.io/crates/tauri
-# https://crates.io/crates/tokio
-# https://crates.io/crates/hyper
-# https://crates.io/crates/axum
-# https://crates.io/crates/axum-valid
-# https://crates.io/crates/axum-extra
-# https://crates.io/crates/axum-test
-# https://crates.io/crates/axum-login
-# https://crates.io/crates/axum-anyhow
-# https://crates.io/crates/tower
-# https://crates.io/crates/tower-http
-# https://crates.io/crates/tower-sessions
-# https://crates.io/crates/tower_governor
-# https://crates.io/crates/reqwest
-# https://crates.io/crates/tonic
-# https://crates.io/crates/sqlx
-# https://crates.io/crates/sea-orm
-# https://crates.io/crates/redis
-# https://crates.io/crates/deadpool
-# https://crates.io/crates/deadpool-redis
-# https://crates.io/crates/deadpool-postgres
-# https://crates.io/crates/fred
-# https://crates.io/crates/serde
-# https://crates.io/crates/serde_json
-# https://crates.io/crates/validator
-# https://crates.io/crates/jsonwebtoken
-# https://crates.io/crates/uuid
-# https://crates.io/crates/chrono
-# https://crates.io/crates/dotenvy
-# https://crates.io/crates/config
-# https://crates.io/crates/tokio-cron-scheduler
-# https://crates.io/crates/lettre
-# https://crates.io/crates/captcha
-# https://crates.io/crates/thiserror
-# https://crates.io/crates/anyhow
-# https://crates.io/crates/axum-anyhow
-# https://crates.io/crates/rand
-# https://crates.io/crates/image
-# https://crates.io/crates/aws-sdk-s3
-# https://crates.io/crates/object_store
-# https://crates.io/crates/utoipa
-# https://crates.io/crates/utoipa-gen
-# https://crates.io/crates/base64
-# https://crates.io/crates/bcrypt
-# https://crates.io/crates/oauth2
-# https://crates.io/crates/tracing
-# https://crates.io/crates/tracing-subscriber
-# https://crates.io/crates/console-subscriber
-# https://crates.io/crates/opentelemetry
-# https://crates.io/crates/opentelemetry-otlp
-# https://crates.io/crates/tracing-opentelemetry
-# https://crates.io/crates/axum-tracing-opentelemetry
-# https://crates.io/crates/rnacos
-# https://crates.io/crates/nacos-sdk
-# https://crates.io/crates/metrics
-# https://crates.io/crates/metrics-exporter-prometheus
-# https://crates.io/crates/prometheus
-# https://crates.io/crates/metrics-prometheus
-# https://crates.io/crates/lapin
-# https://crates.io/crates/rdkafka
-# https://crates.io/crates/rocketmq-rust
-# https://crates.io/crates/rocketmq-client-rust
-# https://crates.io/crates/rust_decimal
-# https://crates.io/crates/sysinfo
-# https://crates.io/crates/clap
-# https://crates.io/crates/regex
-# ------------------------------------------------------------------------------
+# Tauri 开发 Android 应用需要配置如下内容，具体参考：https://tauri.app/zh-cn/start/prerequisites/#android
+# 使用 rustup 添加 Android 编译目标：
+rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+# 打开 Android Studio 、创建一个应用、点击设置、点击 SDK Manager、选择 SDK Tools 然后勾选下面 5 个工具
+# Android SDK Platform
+# Android SDK Platform-Tools
+# NDK (Side by side)
+# Android SDK Build-Tools
+# Android SDK Command-line Tools
+
+# No target device found.	错误处理
+# 1、点击 Android Studio 右侧工具栏中的手机图标。
+# 2、选择 " + " 号
+# 3、点击 "Create Virtual Device"。
+# 4、选择设备类型（如 Pixel 3a XL），点击 "Next"。
+# 5、下载并安装系统镜像。
+
+bun create tauri-app --help
+bun create tauri-app tauri-app \
+--template vue-ts \
+--manager bun \
+--yes
+
+1、模板已创建！要开始，请运行：
+cd tauri-app
+bun install
+bun run tauri android init
+2、对于桌面开发，运行：
+bun run tauri dev
+3、对于 Android 开发，运行：
+bun run tauri android dev
+# 项目目录 src-tauri/gen/android/gradle/wrapper/gradle-wrapper.properties 中的 gradle 下载版本为 8.14.3
+# 运行报错根本原因：你本地使用的是 JDK 25，但 Tauri 中使用的  Gradle 8.14.3 最高只支持运行在 Java 24 及以下 版本，解决办法如下：
+# 安装 JDK 21（如果尚未安装）
+sdk install java 21.0.11-tem
+# 临时切换当前终端
+sdk use java 21.0.11-tem
+# 设置为默认版本（推荐）
+sdk default java 21.0.11-tem
 
 
-# https://course.ziglang.cc/
-# https://github.com/ziglang/zig
-# https://github.com/zigtools/zls
-# https://zigtools.org/zls/install/
-sudo dnf install -y zig
-echo "🐍 你刚安装的 zig 版本号为：$(zig version)"
-
-
-# ------------------------------------------------------------------------------
-# 第六步：安装 Go 语言
-echo "🐹 安装 Go 语言..."
+# 3. Go
+echo "配置 Go 环境..."
 # Go 国内加速镜像	https://learnku.com/go/wikis/38122
 # golang 中文学习文档	https://golang.halfiisland.com/
 # golang 官方网站	https://golang.google.cn/
 # golang 公共软件包仓库	https://pkg.go.dev/
 sudo dnf install -y golang
-echo "🐍 你刚安装的 golang 版本号为：$(go version)"
+echo "你刚安装的 golang 版本号为：$(go version)"
 # Go 1.13+：默认启用，无需额外配置。但使用  go env GO111MODULE 显示为空
 # 并不代表 Go Modules 未开启，而是表示你没有显式配置该变量，Go 将使用内部默认值
 # 设置为 auto（推荐，Go 1.13+ 默认逻辑）
@@ -647,18 +775,18 @@ go env -w GOSUMDB=sum.golang.google.cn
 # go env GOPROXY
 # go env GOSUMDB
 # 设置 GOPATH 为 ~/go
-mkdir -p $HOME/.go
+mkdir -vp $HOME/.go
 go env -w GOPATH=$HOME/.go
 # 查看当前环境
 # go env GOPATH
-# ------------------------------------------------------------------------------
 
 
-# ------------------------------------------------------------------------------
+# 6. podman、podman-compose
+echo "安装配置 podman、podman-compose 环境..."
 sudo dnf install -y podman podman-compose
 # 启用用户级 socket
 systemctl --user enable --now podman.socket
-# systemctl --user status podman
+systemctl --user status podman.socket --no-pager
 # https://github.com/containers/podman/blob/cea9340242f3f6cf41f20fb0b6239aa3db5decd6/docs/tutorials/socket_activation.md
 # cat /usr/lib/systemd/user/podman.socket
 # ls $XDG_RUNTIME_DIR/podman/podman.sock
@@ -670,10 +798,15 @@ systemctl --user enable --now podman.socket
 # podman login
 # cat /etc/containers/registries.conf
 # 备份到同目录（添加 .bak 后缀）
+if [ -f "/etc/containers/registries.conf.bak" ]; then
+    echo "registries.conf.bak 备份文件存在，不再重复备份"
+else
+echo "registries.conf.bak 备份文件不存在，开始备份"
 sudo cp /etc/containers/registries.conf{,.bak}
 # 检查 .bak 文件是否存在
 # ls -l /etc/containers
 # 从同目录 .bak 文件恢复
+# nautilus admin:/etc/containers
 # sudo cp /etc/containers/registries.conf{.bak,}
 # tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | sudo tee -a /etc/containers/registries.conf
@@ -699,15 +832,14 @@ location = "docker.1ms.run"
 # 是否允许不安全的 HTTP 连接（生产环境建议 false）
 insecure = false
 EOF
+fi
 # 创建网络
-podman network create podman-net
-podman pull redis:latest
-# https://pgtune.leopard.in.ua/
-podman pull postgres:latest
+# podman network create podman-net
 # Pods 是一个 podman 的前端。它的用户界面使用 libadwaita 并力求符合 GNOME 的设计原则
 # 打开 Pods 软件，点击 “新建连接” 然后选择使用默认的 “Unix Socket” 点击 Connect
-# IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择 Unix 套接字 ，然后下拉选择 rootless 版地址
-flatpak install -y flathub com.github.marhkb.Pods
+# IDEA 连接 Podman：按 Ctrl+Alt+S 打开设置，然后选择 构建、执行、部署 | Docker。点击 "添加"按钮 以添加 Docker 配置。选择  Podman 然后直接点击确定
+    
+    
 # 在 Fedora 上使用 Kubernetes 官方文档 https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes/
 # Fedora 40（及更新版本）安装 Kubernetes 建议 https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-non-versioned/#sect-fedora-40-recommendations
 # Kubelet 是节点上的 Kubernetes 运行时。对应 kubernetes 包
@@ -718,7 +850,7 @@ flatpak install -y flathub com.github.marhkb.Pods
 sudo dnf install -y kubernetes kubernetes-kubeadm kubernetes-client
 sudo systemctl enable --now kubelet
 # 查看 kubelet 服务状态
-# systemctl status kubelet
+systemctl status kubelet --no-pager
 # kubelet 每个节点都在运行的服务，管理本节点上的所有 Pod 和容器
 echo "🐍 你安装的 kubernetes 版本号为：$(kubelet --version)"
 # Kubeadm 初始化集群并将新节点加入集群
@@ -730,113 +862,1240 @@ echo "🐍 你安装的 k8s 命令行工具 kubectl 版本号为：$(kubectl ver
 # 有关群集的信息存储在 kubeconfig 文件中。 IntelliJ IDEA 会检测默认的 kubeconfig 文件，这个文件通常位于 $HOME/.kube/config （此位置可以通过 KUBECONFIG 环境变量更改）。
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-kubeadm/
 # 使用 kubeadm 初始化 Kubernetes 集群
-flatpak install -y flathub dev.skynomads.Seabird
-# ------------------------------------------------------------------------------
+echo "编程语言环境配置完成。"
+    
+
+# 在 Fedora 系统中安装 PostgreSQL 数据库
+# https://docs.stg.fedoraproject.org/zh_Hans/quick-docs/postgresql/
+# https://linuxcapable.com/how-to-install-postgresql-14-on-fedora-linux/
+# sudo dnf info postgresql-server
+# 查看已安装包的依赖
+# rpm -qR postgresql-server
+# 查看未安装包（仓库中）的依赖
+# dnf repoquery --requires postgresql-server
+# postgresql server 服务器的安装和初始化与其他软件包和其他 Linux 发行版略有不同。本文档旨在总结与近期 Fedora Linux 版本相关的基本安装步骤
+sudo dnf install -y postgresql-server postgresql-contrib
+# PostgreSQL server 服务器默认未运行且被禁用。要设置启动时启动，请运行：
+sudo systemctl enable postgresql
+# 安装后需要填充数据库初始数据。数据库初始化可以通过以下命令完成。它创建配置文件 postgresql.conf 和 pg_hba.conf
+# * Initializing database in '/var/lib/pgsql/data'
+# * Initialized, logs are in /var/lib/pgsql/initdb_postgresql.log
+sudo postgresql-setup --initdb --unit postgresql
+# 要手动启动 PostgreSQL 服务器，请运行
+sudo systemctl start postgresql
+# 查看 PostgreSQL 数据库服务的当前运行状态，并且强制一次性显示所有信息，不进行分页截断
+systemctl status postgresql --no-pager
+# 现在你需要为用户创建一个用户和数据库。这需要通过你系统上的 Postgres 用户账户运行
+# sudo -u postgres psql
+# 顺便给 postgres 用户添加密码可能是个好主意：
+# \password postgres
+# 从这里你可以创建 postgres 用户和数据库。这里，我们假设你的电脑用户账户叫做 lenny。注意：你也可以在 shell 里用 createuser lenny 和 createdb --owner=lenny carl 运行这个
+# CREATE USER lenny WITH PASSWORD 'leonard';
+# CREATE DATABASE my_project OWNER lenny;
+# PostgreSQL 运行在 5432 端口（或者你 postgresql.conf 中设置的其他端口）。在防火墙里你可以这样打开：
+sudo firewall-cmd --permanent --add-port=5432/tcp
+sudo firewall-cmd --reload
+# 如上所述，postgresql服务器使用两个主要配置文件
+# sudo ls /var/lib/pgsql/data && sudo cat /var/lib/pgsql/data/postgresql.conf
+# sudo ls /var/lib/pgsql/data && sudo cat /var/lib/pgsql/data/pg_hba.conf
+# 如果你想让 postgres 接受网络连接，你应该更换 postgresql.conf 中的 listen_addresses 属性值从 localhost 改成 *
+sudo cp /var/lib/pgsql/data/postgresql.conf{,.bak}
+sudo cp /var/lib/pgsql/data/pg_hba.conf{,.bak}
+# sudo grep -n 'listen_addresses = ' /var/lib/pgsql/data/postgresql.conf
+sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /var/lib/pgsql/data/postgresql.conf
+# sudo grep -n 'port = 5432' /var/lib/pgsql/data/postgresql.conf
+sudo sed -i "s/#port = 5432/port = 5432/g" /var/lib/pgsql/data/postgresql.conf
+# 如果 local 或 host 那行显示的是 peer 或 ident，需要改为 md5 或 scram-sha-256：
+sudo sed -i.bak 's/ident/scram-sha-256/g; s/peer/scram-sha-256/g' /var/lib/pgsql/data/pg_hba.conf
+# 重启 PostgreSQL
+# 修改配置后，必须重载配置才能生效。由于修改了监听地址，建议重启服务：
+sudo systemctl restart postgresql
+systemctl status postgresql --no-pager
+# 切换到 postgres 用户并启动 psql 客户端
+sudo -u postgres psql
+ALTER USER postgres WITH PASSWORD '479368';
+# 重启后，你可以用以下命令检查监听状态：
+sudo netstat -tulnp | grep 5432
+# sudo cat /var/lib/pgsql/data/pg_hba.conf
+# 一旦你的数据库设置好，你需要配置对数据库服务器的访问权限。这可以通过编辑文件 /var/lib/pgsql/data/pg_hba.conf 来完成。文件中有类似这样的规则：
+
+
+# 在 Fedora 系统中安装 MySQL / MariaDB 数据库
+# https://docs.stg.fedoraproject.org/zh_Hans/quick-docs/installing-mysql-mariadb/
+# https://github.com/MariaDB/server
+# 在 Fedora 上安装  MariaDB 系统
+sudo dnf install -y mariadb-server
+# 登录时启动   MariaDB 服务并启用：
+sudo systemctl enable mariadb
+sudo systemctl start mariadb
+# 查找默认密码，出于安全考虑，MySQL 生成一个临时根密钥。请注意，MySQL 的安全策略甚至比 MariaDB 更严格
+sudo grep 'temporary password' /var/log/mysqld.log
+# 首次使用前配置 MySQL
+# 然后，根据你喜欢的方式回答安全问题。或者干脆全部回答 “是”
+sudo mysql_secure_installation
+# 使用  MySQL
+sudo mysql -u root -p
+
+
+# https://github.com/valkey-io/valkey
+# https://linuxcapable.com/install-redis-on-fedora-linux/
+# 对大多数用户来说，推荐 Valkey，因为它默认 Fedora 仓库中发布，无需第三方配置，并且保持完整的Redis协议兼容性。只有在你对Redis本身有特定需求时，才从Remi安装Redis。
+sudo dnf install -y valkey
+# valkey-server --version
+sudo systemctl enable --now valkey
+# 配置 Valkey
+# sudo ls /etc/valkey && sudo cat /etc/valkey/valkey.conf
+sudo cp /etc/valkey/valkey.conf{,.bak}
+# sudo grep 'requirepass ' /etc/valkey/valkey.conf
+sudo sed -i "s/# requirepass foobared/requirepass 479368/g" /etc/valkey/valkey.conf
+# 为了提高耐久性，启用 AOF 记录每一次写操作：
+# sudo grep 'appendonly ' /etc/valkey/valkey.conf
+sudo sed -i "s/appendonly no/appendonly yes/g" /etc/valkey/valkey.conf
+# cat << EOF | sudo tee /etc/valkey/users.acl
+# =============================================================================
+# Redis ACL 配置文件 (users.acl)
+# 适用项目: mall-cloud 微服务电商系统
+# 维护者: 运维/架构组
+# =============================================================================
+
+# =============================================================================
+# 1. 默认用户 (Default User)
+# 安全建议：生产环境中强烈建议禁用默认用户，强制所有服务使用命名用户登录。
+# =============================================================================
+# off: 禁用该用户，拒绝任何未指定用户名的连接
+user default off
+
+# =============================================================================
+# 2. 超级管理员 (Super Admin)
+# 用途：仅供运维人员、DBA 或自动化脚本使用。
+# =============================================================================
+# - on: 启用
+# - >Super@Secure#2026: 设置强密码（明文，建议后续替换为 SHA256 哈希值）
+# - ~*: 允许访问所有 Key
+# - +@all: 允许执行所有命令
+# - +@admin: 显式允许管理命令
+# - +@dangerous: 允许执行危险命令（如 FLUSHALL, KEYS, DEBUG 等）
+# user admin on >Super@Secure#2026 ~* +@all +@admin +@dangerous
+
+# =============================================================================
+# 3. 用户/认证服务 (User & Auth Service)
+# 对应微服务: user-service, auth-server
+# 业务场景: 用户注册登录、JWT Token 管理、黑名单、Session 存储。
+# =============================================================================
+# - ~user:*: 允许操作用户数据
+# - ~auth:*: 允许操作认证数据
+# - ~session:*: 允许操作会话数据
+# - ~token:blacklist:*: 允许操作 Token 黑名单 (退出登录用)
+# - +@all: 由于是核心数据源，给予该服务较全的权限，但排除危险操作
+# - -@dangerous: 禁止危险命令
+# user auth-service on >Auth@Service! ~user:* ~auth:* ~session:* ~token:blacklist:* +@all -@dangerous
+
+# =============================================================================
+# 4. 订单服务 (Order Service)
+# 对应微服务: order-service
+# 业务场景: 处理订单创建、支付状态查询。需要读写订单数据，且有时需要关联查询用户基础信息。
+# =============================================================================
+# - ~order:*: 允许访问以 "order:" 开头的所有键 (如 order:1001)
+# - ~user:profile:*: 允许访问用户档案数据 (用于订单详情展示买家信息)
+# - +@read: 允许读操作 (GET, HGET, LRANGE...)
+# - +@write: 允许写操作 (SET, HSET, LPUSH...)
+# - +@transaction: 允许事务操作 (MULTI, EXEC)
+# - -FLUSHALL: 严禁清空数据库
+# - -CONFIG: 严禁修改 Redis 配置
+# - -KEYS: 严禁使用 KEYS 命令 (防止阻塞主线程)
+# user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
+# EOF
+
+# /etc/valkey/users.acl 文件不支持任何的 # 注释，中文、英文都不行
+# nautilus admin:/etc/valkey
+cat << EOF | sudo tee /etc/valkey/users.acl
+user default off
+user admin on >479368 ~* +@all +@admin +@dangerous
+user auth-service on >Auth@Service! ~user:* ~auth:* ~session:* ~token:blacklist:* +@all -@dangerous
+user order-service on >Order@2026! ~order:* ~user:profile:* +@read +@write +@transaction -FLUSHALL -CONFIG -KEYS
+EOF
+# valkey-cli --user admin --pass 479368
+# ACL LIST
+
+# sudo cat /etc/valkey/users.acl
+# sudo grep -n "aclfile" /etc/valkey/valkey.conf
+sudo sed -i "s/# aclfile /aclfile /g" /etc/valkey/valkey.conf
+# sudo sed 's|^aclfile /etc/valkey/users\.acl|# &|' /etc/valkey/valkey.conf
+sudo systemctl restart valkey
+systemctl status valkey --no-pager
+# journalctl -xeu valkey.service --no-pager | tail -n 30    
+# 此外，通过连接CLI并发送PING命令来验证服务器响应命令：
+# valkey-cli -a 479368 ping
+# 此外，要查看详细服务器信息，请连接到CLI并执行INFO命令：
+# valkey-cli -a 479368 INFO SERVER
+# 设置好密码后，连接 CLI 时请进行认证：
+# valkey-cli -a 479368
+# 创建专用防火墙区域
+# 首先，专门为 Valkey 或 Redis 流量创建一个新区域：
+sudo firewall-cmd --permanent --new-zone=valkey
+# 允许从特定 IP 地址访问
+# 接下来，添加应有访问权限的受信任 IP 地址：
+# 记得用你客户的 IP 地址替换 192.168.1.100 。对每个需要访问的 IP 重复此命令
+sudo firewall-cmd --permanent --zone=valkey --add-source=192.168.1.100
+# 然后，开放默认端口 6379 允许 TCP 流量：
+sudo firewall-cmd --permanent --zone=valkey --add-port=6379/tcp
+# 最后，重新加载防火墙以应用新规则：
+sudo firewall-cmd --reload
 }
 
 
-# 安装基础应用软件
-install_basic_application_software() {
-    # 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
-    # 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
+# 安装 gnome shell 扩展插件
+install_gnome_extensions() {
+# ------------------------------------------------------------------------------
+# dnf list gnome-shell-extension*
+# gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
+# gsettings list-schemas
+# gsettings list-schemas | grep 'org.gnome.shell.extensions'
+# gsettings list-recursively org.gnome.desktop.interface
+# gsettings list-recursively org.gnome.desktop.wm.preferences
+# 列出所有系统级扩展
+# gnome-extensions list --system
+# 查看所有系统级扩展的文件目录
+# nautilus admin:/usr/share/gnome-shell/extensions
+sudo dnf remove -y \
+gnome-shell-extension-window-list \
+gnome-shell-extension-launch-new-instance
+sudo dnf install -y \
+gnome-shell-extension-appindicator \
+gnome-shell-extension-auto-move-windows \
+gnome-shell-extension-background-logo \
+gnome-shell-extension-blur-my-shell \
+gnome-shell-extension-caffeine \
+gnome-shell-extension-dash-to-dock \
+gnome-shell-extension-forge \
+gnome-shell-extension-gsconnect \
+gnome-shell-extension-just-perfection \
+gnome-shell-extension-light-style \
+gnome-shell-extension-drive-menu \
+gnome-shell-extension-user-theme \
+gnome-shell-extension-workspace-indicator
+# https://github.com/lcqh2635/gnome-shell-extensions
+sudo dnf copr enable lcqh2635/gnome-shell-extensions
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:lcqh2635:gnome-shell-extensions.repo
+sudo dnf install -y \
+gnome-shell-extension-add-to-desktop.noarch \
+gnome-shell-extension-alphabetical-grid.noarch \
+gnome-shell-extension-appmenu-is-back.noarch \
+gnome-shell-extension-clipboard-indicator.noarch \
+gnome-shell-extension-compiz-magic.noarch \
+gnome-shell-extension-coverflow-alt-tab.noarch \
+gnome-shell-extension-customize-ibus.noarch \
+gnome-shell-extension-ddterm.noarch \
+gnome-shell-extension-desktop-icons-ng.noarch \
+gnome-shell-extension-disable-unredirect.noarch \
+gnome-shell-extension-hide-top-bar.noarch \
+gnome-shell-extension-night-theme-switcher.noarch \
+gnome-shell-extension-quick-settings-tweaks.noarch \
+gnome-shell-extension-rounded-screen-corners.noarch \
+gnome-shell-extension-rounded-window-corners.noarch \
+gnome-shell-extension-screencast-extra-feature.noarch \
+gnome-shell-extension-search-light.noarch \
+gnome-shell-extension-status-area-horizontal-spacing.noarch \
+gnome-shell-extension-top-bar-organizer.noarch \
+gnome-shell-extension-vitals.noarch \
+gnome-shell-extension-weather-oclock.noarch
+# ls /usr/share/glib-2.0/schemas/
+    
+    # Auto Move Windows
+    # gsettings list-recursively org.gnome.shell.extensions.auto-move-windows
+    gsettings set org.gnome.shell.extensions.auto-move-windows application-list "['jetbrains-toolbox.desktop:1', 'jetbrains-idea-62993215-707e-404d-9a7c-b2e595f35fa6.desktop:1', 'jetbrains-rustrover-150f2c1b-2bd9-4306-97e7-2bc711731347.desktop:1', 'jetbrains-webstorm-438e488a-1597-484e-b6ea-e9935bebb250.desktop:1', 'jetbrains-goland-d6242613-2f2e-4847-a243-19dc05529fca.desktop:1', 'jetbrains-datagrip-d81f105e-144e-4ef3-943d-1171bda2c629.desktop:1', 'jetbrains-pycharm-c8b885ec-b50e-4a8a-9408-cba329de5d43.desktop:1', 'jetbrains-studio-1a3645b2-82e4-4794-b038-c5c084909e0d.desktop:1', 'com.sublimehq.SublimeText.desktop:1', 'org.gnome.Ptyxis.desktop:1', 're.sonny.Playhouse.desktop:1', 'me.iepure.devtoolbox.desktop:1', 'io.github.mightycreak.Diffuse.desktop:1', 'com.github.marhkb.Pods.desktop:1', 'dev.skynomads.Seabird.desktop:1', 'qemu.desktop:1', 'org.gnome.Builder.desktop:1', 'org.gnome.SystemMonitor.desktop:1', 'org.mozilla.firefox.desktop:2', 'com.google.Chrome.desktop:2', 'org.gnome.Epiphany.desktop:2', 'org.gnome.TextEditor.desktop:2', 'io.github.alainm23.planify.desktop:2', 'org.gnome.gitlab.somas.Apostrophe.desktop:2', 'Clash Verge.desktop:2', 'v2rayn.desktop:2', 'md.obsidian.Obsidian.desktop:2', 'io.typora.Typora.desktop:2', 'org.gnome.Papers.desktop:2', 'com.qq.QQ.desktop:3', 'com.github.gmg137.netease-cloud-music-gtk.desktop:3', 'com.github.neithern.g4music.desktop:3']"
+    # gsettings reset-recursively org.gnome.shell.extensions.auto-move-windows
 
-    # 浏览并安装GNOME Shell扩展以定制你的桌面
-    flatpak install -y flathub com.mattjakeman.ExtensionManager
-    # 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
-    flatpak install -y flathub io.github.kolunmi.Bazaar
-    # Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
-    flatpak install -y flathub com.github.tchx84.Flatseal
-    # Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
-    flatpak install -y flathub io.github.flattool.Warehouse
-    # 卸载Flatpak时，可能会在电脑上留下一些文件。Flatsweep 帮助您轻松清除未安装 Flatpak 残留在系统上的残留物
-    flatpak install -y flathub io.github.giantpinkrobots.flatsweep
-    # Evolution 是一款个人信息管理应用，提供集成的邮件、日历和地址簿功能
-    flatpak install -y flathub org.gnome.Evolution
-    # 一款高级用户工具，允许在支持fwupd的设备上更新、重装和降级固件
-    flatpak install -y flathub org.gnome.Firmware
-    # 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
-    flatpak install -y flathub io.github.realmazharhussain.GdmSettings
-    # 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
-    flatpak install -y flathub io.gitlab.adhami3310.Impression
-    # 用干净、无干扰的标记删除编辑器专注于你的写作
-    flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
-    # 忘记忘记事情
-    flatpak install -y flathub io.github.alainm23.planify
-    # 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
-    flatpak install -y flathub io.github.sitraorg.sitra
-    # Refine 帮助发现 GNOME 中的高级和实验性功能
-    flatpak install -y flathub page.tesk.Refine
-    # 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
-    flatpak install -y flathub com.github.neithern.g4music
-    # 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
-    # netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
-    flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
-    # 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
-    flatpak install -y flathub it.mijorus.gearlever
-    # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
-    flatpak install -y flathub com.google.Chrome
-    # Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
-    flatpak install -y flathub re.sonny.Playhouse
-    # Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
+    # Background Logo
+    # gsettings list-recursively org.fedorahosted.background-logo-extension
+    gsettings set org.fedorahosted.background-logo-extension logo-always-visible true
+    # gsettings reset-recursively org.fedorahosted.background-logo-extension
+    
+    # Blur My Shell
+    # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell
+    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell
+    # 1、管线		以下配置是 ‘管线’ 这个菜单项下面的配置内容
+    # gsettings get org.gnome.shell.extensions.blur-my-shell pipelines
+    # gsettings reset org.gnome.shell.extensions.blur-my-shell pipelines
+    # gsettings set org.gnome.shell.extensions.blur-my-shell pipelines "{'pipeline-overview': {'name': <'pipeline overview'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_24286504481826'>, 'params': <@a{sv} {}>}>]>}, 'pipeline-panel-light': {'name': <'pipeline panel light'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_000000000001'>, 'params': <{'radius': <30>, 'brightness': <1>, 'unscaled_radius': <100>}>}>, <{'type': <'corner'>, 'id': <'effect_000000000002'>, 'params': <{'radius': <24>, 'corners_bottom': <false>}>}>, <{'type': <'color'>, 'id': <'effect_11444492989407'>, 'params': <{'color': <(1.0, 1.0, 1.0, 0.20000000000000001)>}>}>, <{'type': <'noise'>, 'id': <'effect_65216760835902'>, 'params': <@a{sv} {}>}>]>}, 'pipeline-panel-dark': {'name': <'pipeline panel dark'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_34582829524533'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_01633318478434'>, 'params': <{'corners_bottom': <false>, 'radius': <24>}>}>, <{'type': <'color'>, 'id': <'effect_61396509891604'>, 'params': <{'color': <(0.0, 0.0, 0.0, 0.20000000000000001)>}>}>, <{'type': <'noise'>, 'id': <'effect_05167466921904'>, 'params': <@a{sv} {}>}>]>}, 'pipeline-dock-light': {'name': <'pipeline dock light'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_69102858487382'>, 'params': <{'unscaled_radius': <100>, 'brightness': <1>}>}>, <{'type': <'corner'>, 'id': <'effect_89248773469157'>, 'params': <{'radius': <24>, 'corners_bottom': <true>}>}>]>}, 'pipeline-dock-dark': {'name': <'pipeline dock dark'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_63269999366132'>, 'params': <{'brightness': <1>, 'unscaled_radius': <100>}>}>, <{'type': <'corner'>, 'id': <'effect_88027249213595'>, 'params': <{'radius': <24>}>}>]>}}"
+    # gsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'
+    # gsettings set org.gnome.shell.extensions.blur-my-shell.overview pipeline 'pipeline-overview'
+    # gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'
+    # 2、面板		以下配置是 ‘面板’ 这个菜单项下面的配置内容
+    # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.panel
+    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell.panel
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel force-light-text true
+    gsettings set org.gnome.shell.extensions.blur-my-shell.panel style-panel 1
+    gsettings set org.gnome.shell.extensions.blur-my-shell.hidetopbar compatibility true
+    # 3、概览		以下配置是 ‘概览’ 这个菜单项下面的配置内容
+    gsettings set org.gnome.shell.extensions.blur-my-shell.appfolder style-dialogs 2
+    # 4、任务栏		以下配置是 ‘任务栏’ 这个菜单项下面的配置内容
+    gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock style-dash-to-dock 1
+    
+    # 5、应用程序	以下配置是 ‘应用程序’ 这个菜单项下面的配置内容
+    # gsettings list-recursively org.gnome.shell.extensions.blur-my-shell.applications
+    # gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell.applications
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications blur true
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications sigma 50
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications brightness 1.0
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications opacity 255
+    gsettings set org.gnome.shell.extensions.blur-my-shell.applications dynamic-opacity false
+    # gsettings set org.gnome.shell.extensions.blur-my-shell.applications whitelist "['org.gnome.Settings', 'org.gnome.Nautilus', 'org.gnome.Software', 'org.gnome.TextEditor', 'org.gnome.Ptyxis', 'org.gnome.SystemMonitor', 'org.gnome.tweaks', 'org.gnome.Extensions', 'org.gnome.Shell.Extensions', 'org.gnome.SystemMonitor', 'org.gnome.Yelp', 'org.gnome.Tour', 'org.gnome.Maps', 'org.gnome.Gtranslator', 'org.gnome.Firmware', 'org.gnome.Calculator', 'org.gnome.Contacts', 'org.gnome.Calendar', 'org.gnome.clocks', 'org.gnome.Loupe', 'org.gnome.Papers', 'org.gnome.Decibels', 'org.gnome.font-viewer', 'org.gnome.Showtime', 'org.gnome.Weather', 'org.gnome.Builder', 'org.gnome.SimpleScan', 'org.gnome.Characters', 'org.gnome.baobab', 'org.gnome.Logs', 'org.gnome.Snapshot', 'org.gnome.gitlab.somas.Apostrophe', 'io.github.kolunmi.Bazaar', 'io.github.giantpinkrobots.flatsweep', 'io.github.realmazharhussain.GdmSettings', 'io.gitlab.adhami3310.Impression', 'io.github.alainm23.planify', 'io.github.sitraorg.sitra', 'io.github.flattool.Warehouse', 'com.github.tchx84.Flatseal', 'com.github.neithern.g4music', 'com.github.marhkb.Pods', 'it.mijorus.gearlever', 'com.usebottles.bottles', 'com.mattjakeman.ExtensionManager', 'org.freedesktop.MalcontentControl', 're.sonny.Playhouse', 'page.tesk.Refine', 'dev.skynomads.Seabird', 'v2rayN', 'com.gitee.gmg137.NeteaseCloudMusicGtk4', 'jetbrains-toolbox', 'Timeshift-gtk']"
+    # 6、其它		以下配置是 ‘其它’ 这个菜单项下面的配置内容
+    gsettings set org.gnome.shell.extensions.blur-my-shell.coverflow-alt-tab blur false
+    
+    # Dash To Dock
+    # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
+    # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
+    gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
+    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+    gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+    gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+    gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
+    
+    # Forge
+    # gsettings list-recursively org.gnome.shell.extensions.forge
+    # 默认不启用窗口平铺模式
+    gsettings set org.gnome.shell.extensions.forge tiling-mode-enabled false
+    gsettings set org.gnome.shell.extensions.forge focus-border-toggle false
+    # gsettings reset-recursively org.gnome.shell.extensions.forge
+    
+    # Just Perfection
+    # gsettings list-recursively org.gnome.shell.extensions.just-perfection
+    # gsettings set org.gnome.shell.extensions.just-perfection activities-button false
+    gsettings set org.gnome.shell.extensions.just-perfection accessibility-menu false
+    gsettings set org.gnome.shell.extensions.just-perfection world-clock false
+    gsettings set org.gnome.shell.extensions.just-perfection weather false
+    gsettings set org.gnome.shell.extensions.just-perfection events-button false
+    # 概览中工作区切换区缩略图，此处设置为隐藏
+    gsettings set org.gnome.shell.extensions.just-perfection workspace false
+    gsettings set org.gnome.shell.extensions.just-perfection workspace-wrap-around true
+    gsettings set org.gnome.shell.extensions.just-perfection window-demands-attention-focus true
+    gsettings set org.gnome.shell.extensions.just-perfection startup-status 0
+    # gsettings set org.gnome.shell.extensions.just-perfection accent-color-icon false
+    gsettings set org.gnome.shell.extensions.just-perfection animation 7
+    # gsettings reset-recursively org.gnome.shell.extensions.just-perfection
+    
+    # System Monitor
+    # gsettings list-recursively org.gnome.shell.extensions.system-monitor
+    gsettings set org.gnome.shell.extensions.system-monitor show-memory false
+    gsettings set org.gnome.shell.extensions.system-monitor show-swap false
+    gsettings set org.gnome.shell.extensions.system-monitor show-upload false
+    # gsettings reset-recursively org.gnome.shell.extensions.system-monitor
+    
+    # User Themes
+    # gsettings list-recursively org.gnome.shell.extensions.user-theme
+    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
+    # gsettings reset-recursively org.gnome.shell.extensions.user-theme
+    gsettings list-recursively org.gnome.Weather
+    
+    # dnf list gnome-shell-extension*
+    # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
+    # gsettings list-schemas
+    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
+    # gsettings list-recursively org.gnome.desktop.interface
+    # gsettings list-recursively org.gnome.desktop.wm.preferences
+    # 列出所有用户级扩展
+    # gnome-extensions list --user
+    # 查看所有用户级扩展的文件目录
+    # nautilus ~/.local/share/gnome-shell/extensions
+    GITHUB_PROXY_URL="https://gh-proxy.org/"
+    if [ -d "$HOME/下载/extensions" ]; then
+        rm -rf "$HOME/下载/extensions"
+    fi
+    if [ ! -d "$HOME/下载/extensions" ]; then
+        sudo dnf install -y gettext meson just
+        mkdir -vp ~/下载/extensions && cd ~/下载/extensions
+        cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.*.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/stuarthayhurst/alphabetical-grid-extension.git
+        cd ~/下载/extensions/alphabetical-grid-extension && make build && make install && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/fthx/appmenu-is-back.git
+        cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/ionutbortis/gnome-bedtime-mode.git
+        cd ~/下载/extensions/gnome-bedtime-mode && ./scripts/install.sh && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/maniacx/Bluetooth-Battery-Meter.git
+        cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
+        cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
+        cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/dsheeler/CoverflowAltTab.git
+        cd ~/下载/extensions/CoverflowAltTab && make all && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/StorageB/custom-command-menu.git
+        cd ~/下载/extensions && zip -FSr custom-command-menu.zip custom-command-menu/* && gnome-extensions install -f custom-command-menu.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/openSUSE/Customize-IBus.git
+        cd ~/下载/extensions/Customize-IBus && make install && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/ddterm/gnome-shell-extension-ddterm.git
+        cd ~/下载/extensions/gnome-shell-extension-ddterm && meson setup build-dir && ninja -C build-dir bundle && ninja -C build-dir user-install && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/Exeos/disable-unredirect.git
+        cd ~/下载/extensions/disable-unredirect && make zip && gnome-extensions install -f extension.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/marcinjahn/gnome-do-not-disturb-while-screen-sharing-or-recording-extension.git
+        cd ~/下载/extensions/gnome-do-not-disturb-while-screen-sharing-or-recording-extension && npm i && npm run build && npm run linkdist && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/purejava/fedora-update.git
+        cd ~/下载/extensions && zip -FSr fedora-update.zip fedora-update/* && gnome-extensions install -f fedora-update.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/Schneegans/Fly-Pie.git
+        cd ~/下载/extensions/Fly-Pie && make install && cd ~/下载/extensions
+        git clone --depth=1 https://gitlab.com/Czarlie/gnome-fuzzy-app-search.git
+        cd ~/下载/extensions/gnome-fuzzy-app-search && make install && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/gTile/gTile.git
+        cd ~/下载/extensions/gTile && npm ci && npm run build:dist && npm run install:extension && cd ~/下载/extensions
+        git clone --depth=1 https://gitlab.com/smedius/desktop-icons-ng.git
+        cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/tuxor1337/hidetopbar.git
+        cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/Aryan20/Logomenu.git
+        cd ~/下载/extensions/Logomenu && make install && cd ~/下载/extensions
+        git clone --depth=1 https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
+        cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/paperwm/PaperWM.git
+        cd ~/下载/extensions/PaperWM && make install && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/stuarthayhurst/privacy-menu-extension.git
+        cd ~/下载/extensions/privacy-menu-extension && make build && make install && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/qwreey/quick-settings-tweaks.git
+        cd ~/下载/extensions/quick-settings-tweaks && npm i && TARGET=dev ./install.sh create-release && gnome-extensions install -f target/quick-settings-tweaks@qwreey.shell-extension.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/lennart-k/gnome-rounded-corners.git
+        cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/flexagoon/rounded-window-corners.git
+        cd ~/下载/extensions/rounded-window-corners && just install && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/WSID/gnome-shell-screencast-extra-feature.git
+        cd ~/下载/extensions/gnome-shell-screencast-extra-feature && ./build.sh && gnome-extensions install -f screencast.extra.feature@wissle.me.shell-extension.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/icedman/search-light.git
+        cd ~/下载/extensions/search-light && make && cd ~/下载/extensions
+        git clone --depth=1 https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
+        cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.shell-extension.zip && cd ~/下载/extensions
+        git clone --depth=1 https://gitlab.gnome.org/june/top-bar-organizer.git
+        cd ~/下载/extensions/top-bar-organizer && npm i && ./package.sh && gnome-extensions install -f top-bar-organizer@julian.gse.jsts.xyz.shell-extension.zip && cd ~/下载/extensions
+        git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/CleoMenezesJr/weather-oclock.git
+        cd ~/下载/extensions/weather-oclock && make install && cd ~/下载/extensions
+        
+        cd ~/下载
+        # 解决用户 Gnome 扩展无法使用 gsettings 的问题
+        for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
+            EXT_ID=$(basename "$EXT_DIR")
+            echo "处理扩展: $EXT_ID"
+            if [ -d "$EXT_DIR/schemas" ]; then
+                glib-compile-schemas "$EXT_DIR/schemas"
+                mkdir -p ~/.local/share/glib-2.0/schemas/
+                cp "$EXT_DIR/schemas"/*.xml ~/.local/share/glib-2.0/schemas/
+            fi
+        done
+        glib-compile-schemas ~/.local/share/glib-2.0/schemas/
+        
+    fi
+        # 删除临时文件夹
+        rm -rf ~/下载/extensions
+        
+        # Bedtime Mode
+        # gsettings list-recursively org.gnome.shell.extensions.bedtime-mode
+        gsettings set org.gnome.shell.extensions.bedtime-mode automatic-schedule true
+        gsettings set org.gnome.shell.extensions.bedtime-mode schedule-start-hours 23
+        gsettings set org.gnome.shell.extensions.bedtime-mode schedule-end-hours 8
+        gsettings set org.gnome.shell.extensions.bedtime-mode ondemand-button-visibility 'active-schedule'
+        # gsettings reset-recursively org.gnome.shell.extensions.bedtime-mode
+        
+        # Coverflow Alt-Tab
+        # gsettings list-recursively org.gnome.shell.extensions.coverflowalttab
+        gsettings set org.gnome.shell.extensions.coverflowalttab switcher-looping-method 'Carousel'
+        gsettings set org.gnome.shell.extensions.coverflowalttab hide-panel false
+        # 设置背景黯淡因素，越大越暗
+        gsettings set org.gnome.shell.extensions.coverflowalttab dim-factor 0.0
+        gsettings set org.gnome.shell.extensions.coverflowalttab animation-time 0.5
+        # gsettings set org.gnome.shell.extensions.coverflowalttab easing-function 'ease-out-quint'
+        gsettings set org.gnome.shell.extensions.coverflowalttab preview-to-monitor-ratio 0.7
+        # gsettings reset-recursively org.gnome.shell.extensions.coverflowalttab
+        
+        # Custom Command Menu
+        # gsettings list-recursively org.gnome.shell.extensions.custom-command-list
+        gsettings set org.gnome.shell.extensions.custom-command-list command1 "('更新系统', 'ptyxis -- /bin/sh -c \"pkexec dnf upgrade; echo Done - Press enter to exit; read _\"', 'view-refresh-symbolic', true)"
+        gsettings set org.gnome.shell.extensions.custom-command-list command2 "('亮色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'default'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\", 'night-light-symbolic', true)"
+        gsettings set org.gnome.shell.extensions.custom-command-list command3 "('暗色主题', \"gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'\ngsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\", 'night-light-disabled-symbolic', true)"
+        # gsettings reset-recursively org.gnome.shell.extensions.custom-command-list
+        
+        # Customize-IBus
+        # gsettings list-recursively org.gnome.shell.extensions.customize-ibus
+        gsettings set org.gnome.shell.extensions.customize-ibus use-input-indicator false
+        gsettings set org.gnome.shell.extensions.customize-ibus input-indicator-only-on-toggle true
+        gsettings set org.gnome.shell.extensions.customize-ibus use-candidate-box-right-click true
+        gsettings set org.gnome.shell.extensions.customize-ibus use-popup-animation true
+        gsettings set org.gnome.shell.extensions.customize-ibus enable-orientation true
+        gsettings set org.gnome.shell.extensions.customize-ibus use-candidate-reposition true
+        gsettings set org.gnome.shell.extensions.customize-ibus use-candidate-scroll true
+        gsettings set org.gnome.shell.extensions.customize-ibus menu-ibus-preference true
+        gsettings set org.gnome.shell.extensions.customize-ibus enable-auto-switch false
+        # gsettings reset-recursively org.gnome.shell.extensions.customize-ibus
+        
+        # ddterm，默认的切换快捷键 F12
+        # gsettings list-recursively org.gnome.shell.extensions.ddterm
+        gsettings set org.gnome.shell.extensions.ddterm background-opacity 1.0
+        gsettings set org.gnome.shell.extensions.ddterm show-animation-duration 0.3
+        gsettings set org.gnome.shell.extensions.ddterm hide-animation-duration 0.2
+        # gsettings set org.gnome.shell.extensions.ddterm window-size 0.6
+        gsettings set org.gnome.shell.extensions.ddterm hide-when-focus-lost true
+        gsettings set org.gnome.shell.extensions.ddterm hide-window-on-esc true
+        # gsettings reset-recursively org.gnome.shell.extensions.ddterm
+        
+        # gTile
+        # gsettings list-recursively org.gnome.shell.extensions.gtile
+        gsettings set org.gnome.shell.extensions.gtile grid-sizes '4x4,6x4,8x6'
+        # gsettings reset-recursively org.gnome.shell.extensions.gtile
+        
+        # Gtk4 Desktop Icons NG
+        # gsettings list-recursively org.gnome.shell.extensions.gtk4-ding
+        gsettings set org.gnome.shell.extensions.gtk4-ding show-home false
+        gsettings set org.gnome.shell.extensions.gtk4-ding show-trash false
+        gsettings set org.gnome.shell.extensions.gtk4-ding show-volumes false
+        # gsettings reset-recursively org.gnome.shell.extensions.gtk4-ding
+        
+        # Hide Top Bar
+        # gsettings list-recursively org.gnome.shell.extensions.hidetopbar
+        # 设置鼠标触发灵敏度（true/false）
+        gsettings set org.gnome.shell.extensions.hidetopbar mouse-sensitive true
+        gsettings set org.gnome.shell.extensions.hidetopbar animation-time-autohide 0.5
+        gsettings set org.gnome.shell.extensions.hidetopbar animation-time-overview 0.5
+        # 窗口被激活时不要总是显示 panel
+        gsettings set org.gnome.shell.extensions.hidetopbar enable-active-window false
+        # gsettings reset-recursively org.gnome.shell.extensions.hidetopbar
+        
+        # Logo Menu
+        # gsettings list-recursively org.gnome.shell.extensions.logo-menu
+        gsettings set org.gnome.shell.extensions.logo-menu menu-button-icon-image 1
+        gsettings set org.gnome.shell.extensions.logo-menu menu-button-icon-size 20
+        gsettings set org.gnome.shell.extensions.logo-menu show-activities-button false
+        # gsettings reset-recursively org.gnome.shell.extensions.logo-menu
+        
+        # Night Theme Switcher
+        # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.color-scheme
+        # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
+        # gsettings list-recursively org.gnome.shell.extensions.nightthemeswitcher.time
+        # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
+        # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
+        gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands enabled true
+        # 使用 WhiteSur-*-solid 不透明 GTK 主题版本
+        # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunrise
+        gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunrise "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-light'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-light'"
+        # gsettings get org.gnome.shell.extensions.nightthemeswitcher.commands sunset
+        gsettings set org.gnome.shell.extensions.nightthemeswitcher.commands sunset "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'\ngsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'\ngsettings set org.gnome.shell.extensions.blur-my-shell.panel pipeline 'pipeline-panel-dark'\ngsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock pipeline 'pipeline-dock-dark'"
+        # gsettings reset-recursively org.gnome.shell.extensions.nightthemeswitcher.commands
+        
+        # Quick Settings Tweaks
+        # 控制 GNOME 顶部面板快捷设置菜单（Quick Settings）的弹出样式和动画效果
+        # gsettings list-recursively org.gnome.shell.extensions.quick-settings-tweaks
+        # 启用或禁用 覆盖式菜单样式（即快捷设置面板以独立浮层形式弹出，而非传统的下拉样式）。
+        gsettings set org.gnome.shell.extensions.quick-settings-tweaks overlay-menu-enabled true
+        # gsettings reset-recursively org.gnome.shell.extensions.quick-settings-tweaks
+        
+        # Rounded Window Corners Reborn
+        # gsettings list-recursively org.gnome.shell.extensions.rounded-window-corners-reborn
+        gsettings set org.gnome.shell.extensions.rounded-window-corners-reborn global-rounded-corner-settings "{'padding': <{'left': uint32 1, 'right': 1, 'top': 1, 'bottom': 1}>, 'keepRoundedCorners': <{'maximized': false, 'fullscreen': false}>, 'borderRadius': <uint32 15>, 'smoothing': <0.5>, 'borderColor': <(0.5, 0.5, 0.5, 1.0)>, 'enabled': <true>}"
+        # gsettings reset-recursively org.gnome.shell.extensions.rounded-window-corners-reborn
+        
+        # Search Light
+        # gsettings list-recursively org.gnome.shell.extensions.search-light
+        gsettings set org.gnome.shell.extensions.search-light shortcut-search "['<Super>s']"
+        gsettings set org.gnome.shell.extensions.search-light border-radius 6
+        gsettings set org.gnome.shell.extensions.search-light blur-background true
+        # gsettings reset-recursively org.gnome.shell.extensions.search-light
+        
+        # Status Area Horizontal Spacing
+        # gsettings list-recursively org.gnome.shell.extensions.status-area-horizontal-spacing
+        gsettings set org.gnome.shell.extensions.status-area-horizontal-spacing hpadding 5
+        # gsettings reset-recursively org.gnome.shell.extensions.status-area-horizontal-spacing
+        
+        # Top Bar Organizer
+        # gsettings list-recursively org.gnome.shell.extensions.top-bar-organizer
+        gsettings set org.gnome.shell.extensions.top-bar-organizer left-box-order "['LogoMenu', 'apps-menu', 'places-menu', 'command-menu', 'appmenu-indicator']"
+        gsettings set org.gnome.shell.extensions.top-bar-organizer center-box-order "['dateMenu']"
+        gsettings set org.gnome.shell.extensions.top-bar-organizer right-box-order "['system-monitor@gnome-shell-extensions.gcampax.github.com', 'workspace-indicator', 'gTile@vibou', 'FedoraUpdateIndicator', 'ddterm', 'BedtimeModeToggleButton', 'clipboardIndicator', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings']"
+        # gsettings reset-recursively org.gnome.shell.extensions.top-bar-organizer
+        
+        # User Avatar In Quick Settings
+        # gsettings list-recursively org.gnome.shell.extensions.quick-settings-avatar
+        gsettings set org.gnome.shell.extensions.quick-settings-avatar avatar-position 1
+        # gsettings reset-recursively org.gnome.shell.extensions.quick-settings-avatar
+        
+        # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
+        # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
+        # gnome-session-quit --logout --no-prompt
+        # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
+        # gnome-session-quit --logout
+}
+
+set_theme_example() {
+    # 启用系统 GNOME 扩展
+    # AppIndicator and KStatusNotifierItem Support
+    # Apps Menu
+    # Auto Move Windows
+    # Background Logo
+    # Blur my Shell
+    # Caffeine
+    # Dash to Dock
+    # Forge
+    # GSConnect
+    # Just Perfection
+    # Light Style
+    # No overview at start-up
+    # Places Status Indicator
+    # Removable Drive Menu
+    # User Themes
+    # Workspace Indicator
+    gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
+    gnome-extensions enable apps-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable auto-move-windows@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable background-logo@fedorahosted.org
+    gnome-extensions enable blur-my-shell@aunetx
+    gnome-extensions enable caffeine@patapon.info
+    gnome-extensions enable dash-to-dock@micxgx.gmail.com
+    gnome-extensions enable forge@jmmaranan.com
+    gnome-extensions enable gsconnect@andyholmes.github.io
+    gnome-extensions enable just-perfection-desktop@just-perfection
+    gnome-extensions enable light-style@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable no-overview@fthx
+    gnome-extensions enable places-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+    gnome-extensions enable workspace-indicator@gnome-shell-extensions.gcampax.github.com
+    # 列出所有系统级扩展
+    # gnome-extensions list --system
+    # dnf list gnome-shell-extension*
+    
+    # 启用用户 GNOME 扩展
+    # Add to Desktop
+    # Alphabetical App Grid
+    # App menu is back
+    # Bluetooth Battery Meter
+    # Clipboard Indicator
+    # Compiz alike magic lamp effect
+    # Coverflow Alt-Tab
+    # Custom Command Menu
+    # Customize IBus
+    # ddterm
+    # Disable Unredirect
+    # Do Not Disturb While Screen Sharing Or Recording
+    # Fedora Linux Update Indicator
+    # Fly-Pie
+    # GNOME Fuzzy App Search
+    # gTile
+    # Gtk4 Desktop Icons NG (DING)
+    # Hide Top Bar
+    # Logo Menu
+    # Night Theme Switcher
+    # PaperWM
+    # Privacy Quick Settings
+    # User Avatar In Quick Settings
+    # Quick Settings Tweaks
+    # Rounded Corners
+    # Rounded Window Corners Reborn
+    # Search Light
+    # Screencast extra Feature
+    # Status Area Horizontal Spacing
+    # Top Bar Organizer
+    # Weather O'Clock
+    gnome-extensions enable add-to-desktop@tommimon.github.com
+    gnome-extensions enable AlphabeticalAppGrid@stuarthayhurst
+    gnome-extensions enable appmenu-is-back@fthx
+    gnome-extensions enable Bluetooth-Battery-Meter@maniacx.github.com
+    gnome-extensions enable clipboard-indicator@tudmotu.com
+    gnome-extensions enable compiz-alike-magic-lamp-effect@hermes83.github.com
+    gnome-extensions enable CoverflowAltTab@palatis.blogspot.com
+    gnome-extensions enable custom-command-list@storageb.github.com
+    gnome-extensions enable customize-ibus@hollowman.ml
+    gnome-extensions enable ddterm@amezin.github.com
+    gnome-extensions enable disable-unredirect@exeos
+    gnome-extensions enable update-extension@purejava.org
+    gnome-extensions enable flypie@schneegans.github.com
+    gnome-extensions enable gnome-fuzzy-app-search@gnome-shell-extensions.Czarlie.gitlab.com
+    gnome-extensions enable gtk4-ding@smedius.gitlab.com
+    gnome-extensions enable hidetopbar@mathieu.bidon.ca
+    gnome-extensions enable logomenu@aryan_k
+    gnome-extensions enable nightthemeswitcher@romainvigier.fr
+    gnome-extensions enable PrivacyMenu@stuarthayhurst
+    gnome-extensions enable quick-settings-avatar@d-go
+    gnome-extensions enable quick-settings-tweaks@qwreey
+    gnome-extensions enable Rounded_Corners@lennart-k
+    gnome-extensions enable rounded-window-corners@fxgn
+    gnome-extensions enable screencast.extra.feature@wissle.me
+    gnome-extensions enable search-light@icedman.github.com
+    gnome-extensions enable status-area-horizontal-spacing@mathematical.coffee.gmail.com
+    gnome-extensions enable top-bar-organizer@julian.gse.jsts.xyz
+    gnome-extensions enable weatheroclock@CleoMenezesJr.github.io
+    # 列出所有用户级扩展
+    # gnome-extensions list --user
+    
+    # ArcMenu
+    # Vitals
+    # Bedtime Mode
+    # Battery Health Charging
+    # Bing Wallpaper
+    # Burn My Windows
+    # CHC-E (Custom Hot Corners - Extended)
+    # Compiz windows effect
+    # In Picture
+    # Lunar Calendar 农历
+    # Shortcuts
+    # Smart Auto Move NG
+    # Kiwi Menu
+    # Kiwi is not Apple
+    # Open Bar
+    # Dash2Dock Animated
+    # Copyous
+    # Media Controls
+    # Focus changer
+    # SoundBar
+    # Brightness control using ddcutil
+    # Accent Icons
+    # Light/Dark cursor theme
+    # Accent icons theme
+    # Accent user theme
+    # Accent gtk theme
+    # Custom Command Toggle
+    # Custom Command Menu
+    # Window Desaturation
+    # Live Lock Screen
+    # Show Desktop Button
+    # Extension List
+    # Quick Settings Audio Panel
+    # RebootToUEFI
+    # Application Hotkeys
+    # Battery Power Mode Indicator
+    # Edit Desktop Files
+    # Applications Overview Tooltip
+    # Desktop Lyric
+    
+    # 这是一款专为 GNOME Shell 设计的动态壁纸扩展
+    # https://github.com/jeffshee/gnome-ext-hanabi
+    git clone --depth=1 https://github.com/jeffshee/gnome-ext-hanabi.git
+    git clone --depth=1 https://github.com/ayasa520/gnome-ext-hanabi.git
+    https://github.com/ayasa520/gnome-ext-hanabi/blob/master/docs/fedora-41.md
+    cd gnome-ext-hanabi && ./run.sh install
+    
+    
+    # gnome-extensions 直接使用可以查看扩展的所有命令的作用
+    # gnome-extensions help
+    # help      	打印帮助
+    # version   	打印版本
+    # enable    	启用扩展
+    # disable   	禁用扩展
+    # reset     	重置扩展
+    # uninstall 	卸载扩展
+    # list      	列出扩展
+    # info      	显示扩展信息
+    # show      	显示扩展信息
+    # prefs     	打开扩展首选项
+    # create    	创建扩展
+    # pack      	打包扩展
+    # install   	安装扩展包
+    # gnome-extensions create [选项…]
+    # --uuid=UUID                	新扩展的唯一标识符
+    # --name=名称                			新扩展的用户可见名称
+    # --description=描述         		扩展功能的简短描述
+    # --gettext-domain=域        		扩展使用的 gettext 域
+    # --settings-schema=架构     		扩展使用的 GSettings 方案
+    # --template=模板            		新扩展使用的模板
+    # --prefs                    	包括 prefs.js 模版
+    # -i, --interactive          	以交互方式输入扩展信息
+    # -q, --quiet                	不要打印错误信息
+
+
+    git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/florintanasa/light-dark-cursor-theme.git
+    git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/florintanasa/accent-icons-theme.git
+    git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/florintanasa/accent-user-theme.git
+    git clone --depth=1 ${GITHUB_PROXY_URL}https://github.com/florintanasa/accent-gtk-theme.git
+    
+    git clone --depth=1 git@github.com:lcqh2635/auto-switch-themes.git
+    # git add . && git commit -m 'backup' && git push
+    # Workbench 是一个具有超过一百个 GNOME 平台 JavaScript 演示的交互式工具
     flatpak install -y flathub re.sonny.Workbench
-    # 这是一组功能强大但易于使用的工具，用于解决最常见的日常开发问题
-    flatpak install -y flathub me.iepure.devtoolbox
-    # Diffuse 是一个用于比较和合并文本文件的图形工具。它可以从 Bazaar、CVS、Darcs、Git、Mercurial、Monotone、RCS 和 Subversion 仓库中获取要比较的文件
-    flatpak install -y flathub io.github.mightycreak.Diffuse
-    # Bottles 允许你在 Linux 上运行 Windows 软件，比如应用程序和游戏
-    flatpak install -y flathub com.usebottles.bottles
-    # Builder 是一个为 GNOME 积极开发的集成开发环境。它将对关键 GNOME 技术（如 GTK、GLib 和 GNOME API）的集成支持与任何开发者都会欣赏的功能相结合
-    flatpak install -y flathub org.gnome.Builder
-    # 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
-    flatpak install -y flathub de.haeckerfelix.Fragments
-    # GNOME的网页浏览器，与桌面紧密集成，界面简单直观，让你能够专注于网页。如果你在寻找一个简单、干净、美丽的网页视图，这款浏览器就是你的首选
-    flatpak install -y flathub org.gnome.Epiphany
-    flatpak install -y flathub com.qq.QQ
-    flatpak install -y flathub com.tencent.WeChat
-    # OSTREE_DEBUG_HTTP=1 flatpak install -y flathub me.iepure.devtoolbox
+    # gnome-extensions create help
+    # gsettings set org.gnome.desktop.interface accent-color 'blue'
+    # GNOME Shell Extensions 开发文档			https://gjs.guide/extensions/
+    # GNOME Shell Extensions metadata.json 文档		https://gjs.guide/extensions/overview/anatomy.html
+    # 以交互式地开始创建扩展：
+    # 新扩展已成功创建在目录 $HOME/.local/share/gnome-shell/extensions/auto-switch-themes@lcqh2635
+    # nautilus admin:/usr/share/gnome-shell/extensions
+    # nautilus $HOME/.local/share/gnome-shell/extensions
+    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
+    # 1、创建扩展
+    # https://gjs.guide/extensions/development/creating.html
+    gnome-extensions create \
+    --uuid="auto-switch-themes@lcqh2635.github.com" \
+    --name="Auto Switch Themes" \
+    --description="Automatically switch cursor, icon, user, gtk theme according to the accent color activated by the system" \
+    --gettext-domain="auto-switch-themes" \
+    --settings-schema="org.gnome.shell.extensions.auto-switch-themes" \
+    --interactive \
+    --prefs
+    # rm -f $HOME/.local/share/gnome-shell/extensions/auto-switch-themes@lcqh2635
+    # 2、测试扩展
+    # 在 GNOME 49 及更高版本上，您可能需要安装 mutter-devel
+    sudo dnf install -y mutter-devel
+    dbus-run-session gnome-shell --devkit --wayland
+    # gnome-extensions uninstall auto-switch-themes@lcqh2635
+    
+    # 1、准备翻译
+    # https://gjs.guide/extensions/development/translations.html
+    mkdir -vp ~/.local/share/gnome-shell/extensions/auto-switch-themes@lcqh2635/{locale,utils,icons,ui,preferences}
+    # 2、扫描可翻译的字符串
+    # Gettext 使用 POT 文件（可移植对象模板）来存储所有可翻译字符串的列表。您可以通过使用 xgettext 扫描您的扩展源代码来生成 POT 文件：
+    # 翻译者可以使用 .pot 文件，通过 Gtranslator 或 POEdit 等程序创建为其语言翻译的 .po 文件。
+    cd ~/.local/share/gnome-shell/extensions/auto-switch-themes@lcqh2635
+    xgettext --from-code=UTF-8 --output=po/auto-switch-themes@lcqh2635.pot *.js
+    # 3、编译翻译
+    gnome-extensions pack --podir=po auto-switch-themes@lcqh2635
+    # 4、下一步
+    # 在开发用户界面时，请记住您的扩展现在可能被用于从左到右或从右到左书写的语言。
+    # 您可能还想考虑使用 Weblate https://weblate.org/zh-hans/ 或 Crowdin https://crowdin.com/ 等翻译服务注册您的项目。
+    
+    # 偏好设置
+    # https://gjs.guide/extensions/development/preferences.html
+    # 为您的扩展创建一个偏好设置窗口，允许用户配置扩展的外观和行为。它还可以包含文档、变更日志和其他信息。
+    # 用户界面将使用GTK4和Adwaita创建，这些工具包含许多专门用于设置和配置的元素。你可以考虑查阅GNOME人类界面指南，或参考组件库以获取灵感。
+    
+    # 可访问性
+    # https://gjs.guide/extensions/development/accessibility.html
+    
+    # 针对旧版 GNOME 版本
+    # https://gjs.guide/extensions/development/targeting-older-gnome.html
+    # "shell-version": [ "48", "49", "50" ]
+    
+    # TypeScript 和 LSP
+    # 本页面将指导您使用 TypeScript 创建扩展，这将使自动补全功能在您的编辑器中正常工作。
+    # 这里提供的设置与编辑器无关，并且将适用于任何支持语言服务器协议（LSP）或具有某些内部等效功能的编辑器。
+    # https://gjs.guide/extensions/development/typescript.html
+}
 
-    # ------------------------------------------------------------------------------
-    # 1. 进入下载目录 (假设你的安装包在这里)
-    cd ~/下载
-    # JetBrains 的 API 返回的 JSON 中包含 多个架构的下载链接，你的 grep 命令会匹配 所有 包含 jetbrains-toolbox-*.tar.gz 的链接，
-    # 而 head -1 恰好取到了第一个（可能是 arm64）
-    # 关键：| grep -v 'arm64' 会过滤掉包含 "arm64" 的链接
-    wget -O jetbrains-toolbox.tar.gz "$(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release' | grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | grep -v 'arm64' | head -1)"
-    # 2. 创建一个专门放软件的目录 (例如在 home 目录下创建一个 apps 文件夹)
-    mkdir -p ~/.apps
-    # 3. 解压到刚才创建的目录
-    # 注意：将 jetbrains-toolbox*.tar.gz 替换为你实际下载的文件名，可以用 Tab 键自动补全
-    tar -xvf jetbrains-toolbox*.tar.gz -C ~/.apps
-    # nautilus ~/.apps
-    # 1. 进入解压后的文件夹
-    cd ~/.apps/jetbrains-toolbox-*/bin
-    # 2. 赋予执行权限 (防止提示权限不足)
-    chmod +x jetbrains-toolbox
-    # 3. 启动程序
-    ./jetbrains-toolbox
-    # https://3.jetbra.in/
-    # https://github.com/jonssonyan/3.jetbra.in
-    # https://account.jetbrains.com/licenses
-    cd ~/下载
-    wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
-    unzip jetbra-*.zip && mv jetbra ~/.jetbra
-    # nautilus ~/.jetbra
-    # 自动配置  jetbrains 代码编辑器 vmoptions
-    ~/.jetbra/scripts/install.sh
-    # ------------------------------------------------------------------------------
+# 所有系统级别（对所有用户有效）的主题都存放在以下根目录中：
+# nautilus admin:/usr/share/themes
+# nautilus admin:/usr/share/icons
+# sudo rm -rf /usr/share/icons/WhiteSur*
+# ------------------------------------------------------------------------------
+# 模块 6: 主题与美化 (WhiteSur)
+# ------------------------------------------------------------------------------
+install_theme_whitesur() {
+    # https://github.com/topics/macos-tahoe
+    # https://github.com/kayozxo/GNOME-macOS-Tahoe
+    # https://github.com/taj-ny/kwin-effects-forceblur
+    
+    # 帮助新手和专家一起轻松自动化构建终极 macOS 虚拟机，由 KVM 驱动。现在支持 macOS Tahoe
+    # https://github.com/Coopydood/ultimate-macOS-KVM
+    
+    
+    # MacTahoe-icon-theme 内包含 MacTahoe cursors theme，执行命令时，两种主题会一并安装
+    # https://www.opendesktop.org/p/2299216/
+    # https://github.com/vinceliuice/MacTahoe-icon-theme
+    # https://github.com/vinceliuice/MacTahoe-icon-theme/tree/main/cursors
+    git clone --depth=1 https://github.com/vinceliuice/MacTahoe-icon-theme.git && cd MacTahoe-icon-theme
+    sudo ./install.sh -d /usr/share/icons -t default -b
+    # sudo ./install.sh -r
+    # nautilus admin:/usr/share/icons
+    # sudo rm -rf /usr/share/icons/MacTahoe*
+    git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git && cd WhiteSur-gtk-theme
+    ./install.sh -l -o solid
+    ./tweaks.sh -f flat
+    ./tweaks.sh -F -o solid
+    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
+    gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
+    gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
+    
+    # MacTahoe-gtk-theme 内包含 MacTahoe wallpapers，但需要手动额外安装
+    # https://www.gnome-look.org/p/2299211
+    # https://github.com/vinceliuice/MacTahoe-gtk-theme
+    # git clone --depth=1 https://github.com/vinceliuice/MacTahoe-gtk-theme.git
+    # 使用 ACL 访问控制列表
+    sudo dnf install acl
+    # 赋予当前用户对系统指定目录的读写权限：
+    sudo setfacl -R -m u:$USER:rw /usr/share/themes
+    # nautilus ~/.config/gtk-4.0
+    # nautilus admin:/usr/share/themes
+    # sudo rm -rf /usr/share/themes/MacTahoe*
+    ./install.sh -o solid -t all -b -l
+    ./install.sh -t all -l --shell -i fedora -h smaller --round
+    sudo cp -r ~/.themes/MacTahoe* /usr/share/themes/
+    rm -rf ~/.themes
+    # ./tweaks.sh -f monterey
+    # sudo ./tweaks.sh -g -i fedora -b default
+    sudo flatpak override --filesystem=xdg-config/gtk-3.0
+    sudo flatpak override --filesystem=xdg-config/gtk-4.0
+    ./tweaks.sh -F
+    # MacTahoe-Dark-solid-blue
+    gsettings set org.gnome.shell.extensions.user-theme name 'MacTahoe-Dark-solid-blue'
+    gsettings set org.gnome.desktop.interface gtk-theme 'MacTahoe-Dark-solid-blue'
+    gsettings set org.gnome.desktop.wm.preferences theme 'MacTahoe-Dark-solid-blue'
+    # nautilus ~/.local/share/gnome-background-properties
+    # mkdir -vp ~/.local/share/gnome-background-properties
+    # ./wallpaper/install-gnome-backgrounds.sh
+    
+    # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
+    # gnome-session-quit --logout
+
+
+    # https://github.com/EliverLara/Space
+    # https://www.gnome-look.org/p/2131750
+    # gsettings set org.gnome.desktop.interface gtk-theme "Space"
+    # gsettings set org.gnome.desktop.wm.preferences theme "Space"
+
+    THEME_DIR="$HOME/下载/WhiteSur-themes"
+    if [ ! -d "$THEME_DIR" ]; then
+        echo "正在下载并安装 WhiteSur 主题..."
+        gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+        mkdir -vp "$THEME_DIR"
+        cd "$THEME_DIR"
+        # 克隆主题仓库 (使用浅克隆加速)
+        REPOS=(
+            "${GITHUB_PROXY_URL}https://github.com/vinceliuice/WhiteSur-cursors.git"
+            "${GITHUB_PROXY_URL}https://github.com/vinceliuice/WhiteSur-icon-theme.git"
+            "${GITHUB_PROXY_URL}https://github.com/vinceliuice/WhiteSur-gtk-theme.git"
+        )
+        for repo in "${REPOS[@]}"; do
+            name=$(basename "$repo" .git)
+            if [ ! -d "$name" ]; then
+                git clone --depth=1 "$repo"
+            fi
+        done
+        git clone --depth=1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git && cd WhiteSur-gtk-theme
+        # 安装光标
+        cd WhiteSur-cursors && sudo ./install.sh && cd ..
+        gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+        # 安装图标
+        # cd WhiteSur-icon-theme && ./install.sh && cd ..
+        # cd WhiteSur-icon-theme && sudo ./install.sh -d /usr/share/icons -t all && cd ..
+        cd WhiteSur-icon-theme && sudo ./install.sh -d /usr/share/icons -t all && cd ..
+        # -d --dest 指定主题目的地目录（默认：$HOME/.local/share/icons）
+        # -t --theme 指定主题颜色变体 [默认/紫色/粉色/红色/橙色/黄色/绿色/灰色/all]（默认：蓝色 blue）
+        # -b --bold 安装加粗面板图标版本
+        # sudo ./install.sh -d /usr/share/icons -t all -b
+        # sudo ./install.sh -r
+        gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
+        # 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
+        # grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
+        # sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
+        sed -i 's/0\.96/1/g' WhiteSur-gtk-theme/src/sass/_colors.scss
+        # 安装 GTK 主题
+        cd WhiteSur-gtk-theme
+        ./install.sh -l -o solid
+        # nautilus ~/.config/gtk-4.0
+        # 
+        # Fix for libadwaita (not perfect)
+        # https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/913
+        # 白天：	ln -fs $HOME/.config/gtk-4.0/gtk-Light.css $HOME/.config/gtk-4.0/gtk.css
+	# 晚上:		ln -fs $HOME/.config/gtk-4.0/gtk-Dark.css $HOME/.config/gtk-4.0/gtk.css
+        # Do not run '-l --libadwaita' option with sudo!
+        # ./install.sh -l -c dark        # Default is the dark theme for libadwaita
+        # ./install.sh -l -c light       # install light theme for libadwaita
+        # 将 /usr/share/themes 及其子文件的所有权都交给了你的用户账户
+        # nautilus admin:/usr/share/themes
+        ./install.sh -l -c dark -o solid && sudo ./install.sh -d /usr/share/themes -o solid -t all && cd ..
+        # ./install.sh -l -c light && sudo ./install.sh -d /usr/share/themes -o solid -t all && cd ..
+        
+        gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
+        gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
+        gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
+        # 简单处理 Firefox 进程，避免安装脚本报错
+        if pgrep -x "firefox" > /dev/null; then
+            echo "Firefox 正在运行，尝试关闭以应用主题..."
+            pkill firefox
+            sleep 2
+        fi
+        ./tweaks.sh -f flat
+        ./tweaks.sh -F -o solid
+        # 应用自定义背景
+        sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-noon.jpg"
+        rm -rf "$THEME_DIR"
+        echo "WhiteSur 主题安装完成。请在 GNOME Tweaks 中手动选择主题。"
+    else
+        echo "WhiteSur 主题已经安装，无需再次安装。"
+    fi
+}
+
+# 卸载主题
+uninstall_theme() {
+    cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh -r
+    cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh -r
+    cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
+}
+
+
+# 重置系统主题配置
+reset_theme() {
+# 查看已安装包的依赖
+# rpm -qR adwaita-fonts-all
+# 查看未安装包（仓库中）的依赖
+# dnf repoquery --requires adwaita-fonts-all
+gsettings get org.gnome.desktop.interface font-name
+gsettings get org.gnome.desktop.interface document-font-name
+gsettings get org.gnome.desktop.interface monospace-font-name
+gsettings get org.gnome.desktop.wm.preferences titlebar-font
+gsettings get org.gnome.desktop.interface font-hinting
+gsettings get org.gnome.desktop.interface font-antialiasing
+
+gsettings reset org.gnome.desktop.interface font-name
+gsettings reset org.gnome.desktop.interface document-font-name
+gsettings reset org.gnome.desktop.interface monospace-font-name
+gsettings reset org.gnome.desktop.wm.preferences titlebar-font
+gsettings reset org.gnome.desktop.interface font-hinting
+gsettings reset org.gnome.desktop.interface font-antialiasing
+    
+gsettings set org.gnome.desktop.interface font-name 'Adwaita Sans 12'
+gsettings set org.gnome.desktop.interface document-font-name 'Adwaita Sans 12'
+gsettings set org.gnome.desktop.interface monospace-font-name 'Adwaita Mono 12'
+gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Adwaita Sans Bold 12'
+    
+gsettings reset org.gnome.desktop.interface cursor-theme
+gsettings reset org.gnome.desktop.interface icon-theme
+gsettings reset org.gnome.shell.extensions.user-theme name
+gsettings reset org.gnome.desktop.interface gtk-theme
+gsettings reset org.gnome.desktop.wm.preferences theme
+gsettings reset org.gnome.desktop.sound theme-name
+}
+
+set_theme_example() {
+# nautilus ~/.config/gtk-4.0
+# Fix for libadwaita (not perfect)
+# https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/913
+# 白天：	ln -fs $HOME/.config/gtk-4.0/gtk-Light.css $HOME/.config/gtk-4.0/gtk.css
+# 晚上:	ln -fs $HOME/.config/gtk-4.0/gtk-Dark.css $HOME/.config/gtk-4.0/gtk.css
+
+gsettings set org.gnome.desktop.interface color-scheme 'default'
+gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
+gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
+gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
+gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
+ln -fs $HOME/.config/gtk-4.0/gtk-Light.css $HOME/.config/gtk-4.0/gtk.css
+
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
+gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
+gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
+gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
+gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
+ln -fs $HOME/.config/gtk-4.0/gtk-Dark.css $HOME/.config/gtk-4.0/gtk.css
+}
+
+# ------------------------------------------------------------------------------
+# 模块 8: Git 配置
+# ------------------------------------------------------------------------------
+configure_git() {
+    # 将上面生成的 SSH 密钥复制到剪切板，需要安装 wl-clipboard 工具
+    # cat ~/.ssh/id_rsa.pub | wl-copy
+    # 配置 Gitee 密钥	https://gitee.com/profile/sshkeys
+    # 配置 Github 密钥	https://github.com/settings/keys
+    # cd ~/文档 && git clone git@github.com:lcqh2635/linux-setup.git
+    # cd ~/下载 && git clone https://gitee.com/lcqh2635/init-fedora.git
+    # cd ~/下载 && git clone https://gh-proxy.org/https://github.com/lcqh2635/linux-setup.git
+    if [ ! -f "$HOME/.ssh/id_rsa.pub" ]; then
+        echo "配置 Git..."
+        # 这里使用占位符，实际使用时建议用户手动修改或通过参数传入
+        read -p "请输入您的 Git 用户名 (默认 lcqh2635): " GIT_NAME
+        GIT_NAME=${GIT_NAME:-lcqh2635}
+
+        read -p "请输入您的 Git 邮箱 (默认 lcqh2635@gmail.com): " GIT_EMAIL
+        GIT_EMAIL=${GIT_EMAIL:-lcqh2635@gmail.com}
+
+        git config --global user.name "$GIT_NAME"
+        git config --global user.email "$GIT_EMAIL"
+
+        echo "生成 SSH 密钥..."
+        ssh-keygen -t rsa -b 4096 -C "lcqh2635@gmail.com" -f "$HOME/.ssh/id_rsa" -N ""
+        echo "公钥内容已复制到剪贴板 (需 wl-clipboard)，请添加到 GitHub/Gitee。"
+        cat "$HOME/.ssh/id_rsa.pub" | wl-copy
+        cat "$HOME/.ssh/id_rsa.pub"
+    else
+        echo "SSH 密钥已存在，跳过生成。"
+    fi
+}
+
+
+# ------------------------------------------------------------------------------
+# 模块 7: JetBrains 工具箱 (官方安装)
+# ------------------------------------------------------------------------------
+install_jetbrains_toolbox() {
+    cd "$HOME/下载"
+    
+# 启用第三方优质库	https://copr.fedorainfracloud.org
+# 基于以下 Github 仓库创建一个 Fedora Copr 用户仓库	git clone --depth=1 git@github.com:lcqh2635/fedora.git
+# https://copr.fedorainfracloud.org/coprs/lcqh2635/gnome-shell-extensions/
+# sudo dnf copr enable -y lcqh2635/gnome-shell-extensions
+# https://copr.fedorainfracloud.org/coprs/lcqh2635/fedora-software-extras/
+# sudo dnf copr enable -y lcqh2635/fedora-software-extras
+# https://copr.fedorainfracloud.org/coprs/lcqh2635/jetbrains/
+# sudo dnf copr enable -y lcqh2635/jetbrains
+
+# git clone --depth=1 https://github.com/kris3713/YACR.git
+# git clone --depth=1 https://github.com/OskarKarpinski/rpm.git
+# git clone --depth=1 https://github.com/xariann-pkg/fedora-tools.git
+# https://copr.fedorainfracloud.org/coprs/holeprof/fedora-extended/packages/
+# https://copr.fedorainfracloud.org/coprs/tigro/fedora44/packages/
+
+
+# https://www.jetbrains.com/toolbox-app/
+# 包含 jetbrains-toolbox 仓库
+# dnf repolist
+# https://copr.fedorainfracloud.org/coprs/mindset/Mindset-Apps/
+sudo dnf copr enable -y mindset/Mindset-Apps
+sudo dnf update
+sudo dnf install -y jetbrains-toolbox
+sudo dnf remove -y jetbrains-toolbox && sudo dnf autoremove -y
+sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:mindset:Mindset-Apps.enabled=0
+sudo rm -f /etc/yum.repos.d/copr:copr.fedorainfracloud.org:mindset:Mindset-Apps
+
+# https://copr.fedorainfracloud.org/coprs/zliced13/YACR/
+# cat /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:zliced13:YACR.repo
+sudo dnf copr enable -y zliced13/YACR
+# 禁用仓库 ( 对应 enabled=0 )
+sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:zliced13:YACR.enabled=0
+# 删除仓库
+sudo rm -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:zliced13:YACR.repo
+# 使用 sudo dnf config-manager addrepo 改写，上面写法的等效替代
+# 综合参考示例，可参考： 
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora.repo
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/jetbrains-toolbox.repo
+# 如果你希望 baseurl 中包含变量（如 $releasever、$basearch），关键在于引号的使用。
+# 你需要使用单引号（'）将 URL 包裹起来。如果使用双引号，Shell 会在命令传递给 DNF 之前尝试解析并替换这些变量（通常会导致变量为空或报错）
+sudo dnf config-manager addrepo \
+--id=jetbrains-toolbox \
+--save-filename=jetbrains-toolbox.repo \
+--set=name='Jetbrains Toolbox $releasever - $basearch' \
+--set=baseurl='https://download.copr.fedorainfracloud.org/results/zliced13/YACR/fedora-$releasever-$basearch/' \
+--set=enabled=1 \
+--set=countme=1 \
+--set=enabled_metadata=1 \
+--set=metadata_expire=7d \
+--set=type=rpm-md \
+--set=gpgcheck=1 \
+--set=gpgkey="https://download.copr.fedorainfracloud.org/results/zliced13/YACR/pubkey.gpg" \
+--set=repo_gpgcheck=0 \
+--set=skip_if_unavailable=True \
+--overwrite
+# 更新系统软件包并安装对应软件
+sudo dnf update
+sudo dnf install -y jetbrains-toolbox postman
+# sudo dnf reinstall -y jetbrains-toolbox postman
+# 禁用仓库 ( 对应 enabled=0 )
+sudo dnf config-manager setopt jetbrains-toolbox.enabled=0
+# 删除仓库
+sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
+
+
+# https://copr.fedorainfracloud.org/coprs/holeprof/fedora-extended/
+sudo dnf copr enable -y holeprof/fedora-extended
+# 更新系统软件包并安装对应软件
+sudo dnf update
+sudo dnf install -y jetbrains-toolbox extension-manager fedora-update gdm-settings obsidian zen-browser
+# sudo dnf install -y dnf5-autosnapper protonplus themechanger
+# sudo dnf reinstall -y jetbrains-toolbox postman
+# 禁用仓库 ( 对应 enabled=0 )
+sudo dnf config-manager setopt jetbrains-toolbox.enabled=0
+# 删除仓库
+sudo rm -f /etc/yum.repos.d/jetbrains-toolbox.repo
+
+# git clone --depth=1 git@github.com:lcqh2635/jetbrains.git
+# git clone --depth=1 https://github.com/M3DZIK/rpm.git
+# https://copr.fedorainfracloud.org/coprs/medzik/jetbrains/
+# sudo dnf copr enable medzik/jetbrains
+# dnf list goland
+# sudo dnf install -y intellij-idea-ultimate
+# sudo dnf install -y goland webstorm rustrover datagrip android-studio pycharm-professional
+    
+    # 方法：尝试列出匹配的文件，如果有任何输出，说明存在
+    if compgen -G "$HOME/.apps/jetbrains-toolbox-*" > /dev/null; then
+        echo "✅ 已找到 JetBrains Toolbox 目录，跳过安装。"
+    else
+        echo "正在安装 JetBrains Toolbox..."
+	# 获取最新正式版链接 (排除 arm64)
+	DOWNLOAD_URL=$(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release' | \
+		grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | \
+		grep -v 'arm64' | head -1)
+	if [ -z "$DOWNLOAD_URL" ]; then
+	    echo "无法获取 JetBrains Toolbox 下载链接。"
+	    return 1
+	fi
+        wget -O jetbrains-toolbox.tar.gz "$DOWNLOAD_URL"
+        mkdir -vp "$HOME/.apps"
+        # jetbrains-toolbox 官方安装教程  https://www.jetbrains.com/help/toolbox-app/installation.html#manual_installation
+        tar -xzf jetbrains-toolbox.tar.gz -C "$HOME/.apps"
+	# 找到解压后的目录并运行
+	TOOLBOX_DIR=$(find "$HOME/.apps" -maxdepth 1 -type d -name "jetbrains-toolbox-*" | head -1)
+	if [ -n "$TOOLBOX_DIR" ]; then
+	    chmod +x "$TOOLBOX_DIR/bin/jetbrains-toolbox"
+	    echo "启动 JetBrains Toolbox..."
+	    # 在后台运行
+	    "$TOOLBOX_DIR/bin/jetbrains-toolbox" &
+	    echo "JetBrains Toolbox 已启动。请按照界面提示完成后续配置。"
+	    echo "注意：本脚本不包含自动激活破解补丁，请使用正版授权或学生认证。"
+	else
+	    echo "解压 JetBrains Toolbox 失败。"
+	fi
+        rm -rf jetbrains-toolbox*
+        
+        # https://3.jetbra.in/
+        # https://github.com/jonssonyan/3.jetbra.in
+        # https://account.jetbrains.com/licenses
+        if compgen -G "$HOME/下载/jetbra-*" > /dev/null; then
+            echo "✅ 已找到 jetbra 目录，跳过下载和安装。"
+        else
+            echo "正在安装 jetbra 工具x..."
+            wget https://3.jetbra.in/files/jetbra-5a50fc03d68a014f893b7fc3aa465380d59f9095.zip
+            unzip jetbra-*.zip && mv jetbra ~/.jetbra
+            # nautilus ~/.jetbra
+            rm -rf jetbra*
+            # cat ~/.jetbra/vmoptions/idea.vmoptions
+        fi
+        echo "JetBrains Toolbox 已经安装"
+    fi
+    	    # https://plugins.jetbrains.com/
+    	    # https://www.jetbrains.com/zh-cn/help/idea/tuning-the-ide.html
+	    # https://www.jetbrains.com/zh-cn/help/idea/2026.1/getting-started.html?keymap=GNOME
+	    # 生效机制：IntelliJ IDEA 启动时，会优先读取用户配置目录（~/.config/JetBrains/IntelliJIdea2026.1/）下的 idea64.vmoptions 文件。
+	    # 如果这个文件存在，IDEA 就会忽略安装目录 （~/.local/share/JetBrains/Toolbox/apps/intellij-idea/）下的那个文件。
+	    
+	    # 全局默认配置，优先级低。仅当用户目录没有该文件时生效。
+	    # 持久性：不稳定。使用 Toolbox 更新或重装 IDEA 时，该文件可能会被重置或覆盖。
+	    # 作用：定义 IDEA 出厂时的默认内存、GC 策略等参数。作为用户自定义配置的参考
+	    # ~/.local/share/JetBrains/Toolbox/apps/intellij-idea/bin/idea64.vmoptions
+	    # nautilus ~/.local/share/JetBrains/Toolbox/apps
+	    
+	    # 用户自定义配置，优先级高。启动时会覆盖安装目录的配置。
+	    # 持久性：持久。独立于软件安装，更新 IDEA 版本后配置通常会保留或迁移。
+	    # 作用：存放你修改后的个性化参数。
+	    # ~/.config/JetBrains/IntelliJIdea2026.1/idea64.vmoptions
+	    # nautilus ~/.local/share/JetBrains/Toolbox/apps
+	    
+	    # 自动配置  jetbrains 代码编辑器 vmoptions
+            # --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
+	    # --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
+	    
+	    # IDEA 默认的虚拟机配置参数
+	    # cat ~/.local/share/JetBrains/Toolbox/apps/intellij-idea/bin/idea64.vmoptions
+	    # 用户自定义的 IDEA 虚拟机配置参数，可以扩展和覆盖 IDEA 默认的配置
+	    # cat ~/.config/JetBrains/IntelliJIdea*/idea64.vmoptions
+	    # https://3.jetbra.in/
+	    # -javaagent:/home/lcqh/.jetbra/ja-netfilter.jar=jetbrains
 }
 
 # VPN 相关软件和订阅来源
+# https://gitclone.com/
 # https://gh-proxy.com/
-# https://github.akams.cn/
-# https://ghproxylist.com/
-# https://www.freeclashnode.com/
 install_vpn() {
     # 进入到下载目录
     cd ~/下载
+    # Github 加速工具
+    # https://github.com/docmirror/dev-sidecar
+    # https://github.com/docmirror/dev-sidecar/releases
+    
     # https://v2rayn.co/
     # https://github.com/2dust/v2rayN/releases
     # 使用教程	https://v2rayn.co/v2rayn-tutorial/
+    
+    
+    # 从下面这两个节点网站一次性复制多条 v2rayN 节点，然后打开 v2rayN 点击配置项，然后点击 “从剪切板导入分享链接” 这会一次性批量导入节点
+    # 然后鼠标右键，点击 “一键生成策略组 -> 全部配置项”，然后点击刚生成的 “策略组” 鼠标右键，点击 “编辑”， 
+    # 然后可以选择 “策略组类型”，例如：最低延迟、故障转移、负载均衡，等等策略
+    # https://v2raynode.github.io/
+    # https://www.freeclashnode.com/
+    # v2rayN 使用体验优化配置：点击 v2rayN “设置 -> 参数设置 -> v2rayN 设置” 打开 “启用流量统计“、”显示实时速度“ 这两个开关
+    
     # 1、点击顶部菜单栏的 “订阅分组”，选择 “订阅分组设置”，在弹出的窗口中点击 "添加"，
     # 2、添加订阅节点完成后回到主界面，点击 “订阅分组” -> “更新全部订阅 (不通过代理)” 操作完成后，你应该能看到列表中出现了一排节点
     # 3、开启代理与模式选择。这是最关键的一步，决定了电脑是否已经处于代理加速状态
@@ -850,10 +2109,41 @@ install_vpn() {
     	# 作用：接管整机流量。对于一些不遵循系统代理的浏览器插件、游戏或特定软件非常有用
     	# 建议：普通网页浏览不需要开启，仅在某些软件无法正常代理时开启
     # 核心选择：v2rayN 支持切换 Xray-core、sing-box 等核心。目前大部分订阅链接都支持 Xray，保持默认即可
-    wget "https://gh-proxy.org/https://github.com/2dust/v2rayN/releases/download/7.18.0/v2rayN-linux-rhel-64.rpm"
-    sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
-    wget "https://gh-proxy.org/https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.6/Clash.Verge-2.4.6-1.x86_64.rpm"
-    sudo dnf install -y ./Clash.Verge-2.4.6-1.x86_64.rpm
+    if rpm -q "v2rayN" > /dev/null 2>&1; then
+        echo "✅ v2rayN 已安装"
+        # 这里可以执行后续操作
+    else
+        echo "❌ v2rayN 未安装，开始下载并安装 v2rayN"
+        wget "$(curl -s https://api.github.com/repos/2dust/v2rayN/releases/latest | \
+          grep -o 'https://github.com/2dust/v2rayN/releases/download/[^"]*v2rayN-linux-rhel-64\.rpm' | \
+          head -n 1 | \
+          sed "s|https://github.com|${GITHUB_PROXY_URL}https://github.com|")"
+        sudo dnf install -y ./v2rayN-linux-rhel-64.rpm
+    fi
+
+    # https://clashverge.net/clash-verge/
+    # https://github.com/clash-verge-rev/clash-verge-rev
+    if rpm -q "clash-verge" > /dev/null 2>&1; then
+        echo "✅ Clash.Verge 已安装"
+        # 这里可以执行后续操作
+    else
+        echo "❌ Clash.Verge 未安装，开始下载并安装 Clash.Verge"
+        wget "$(curl -s https://api.github.com/repos/clash-verge-rev/clash-verge-rev/releases/latest | \
+            grep -o 'https://github.com/clash-verge-rev/clash-verge-rev/releases/download/[^"]*x86_64\.rpm' | \
+            head -n 1 | \
+            sed "s|https://github.com|${GITHUB_PROXY_URL}https://github.com|")"
+        sudo dnf install -y ./Clash.Verge-*.x86_64.rpm
+    fi
+    
+    # 🩵 一个免费的、开源的应用商店，用于 GitHub 发布 — 一键浏览、发现和安装应用。
+    # 由 Kotlin 和 Compose Multiplatform 为 Android 和桌面（Linux、MacOS、Windows）提供支持。
+    # https://github.com/OpenHub-Store/GitHub-Store
+    wget "$(curl -s https://api.github.com/repos/OpenHub-Store/GitHub-Store/releases/latest | \
+        grep -o 'https://github.com/OpenHub-Store/GitHub-Store/releases/download/[^"]*x86_64\.rpm' | \
+        head -n 2 | \
+        sed "s|https://github.com|https://edgeone.gh-proxy.org/https://github.com|")"
+    sudo dnf install -y ./GitHub-Store-*.x86_64.rpm
+    
     # https://github.com/hiddify/hiddify-app/blob/main/README_cn.md
     # 一款基于 Sing-box 通用代理工具的跨平台代理客户端。Hiddify 提供了较全面的代理功能，例如自动选择节点、TUN 模式、使用远程配置文件等。Hiddify 无广告，并且代码开源。
     # 它为大家自由访问互联网提供了一个支持多种协议的、安全且私密的工具。多种订阅链接和配置文件格式支持： Sing-box、V2ray、Clash、Clash meta
@@ -862,276 +2152,149 @@ install_vpn() {
     	# https://pPiPDy.mcsslk.xyz/fa998be69a450c433133472d2ddd7a68
     	# https://woDF6n.tosslk.xyz/2c58cc7fb6edb08f1b88e0ce07f03f78
     # 对于 AppImage 格式应用的安装，先打开 AppImage 安装管理器 Gear Lever 这个软件 flatpak run it.mijorus.gearlever 配置 AppImage 安装目录为 ~/.apps 然后点击 + 添加下面的 AppImage 应用
-    wget "https://gh-proxy.org/https://github.com/hiddify/hiddify-app/releases/download/v4.1.1/Hiddify-Linux-x64-AppImage.AppImage"
-}
-
-
-# 安装 gnome shell 扩展插件
-install_gnome_extensions() {
-    # ------------------------------------------------------------------------------
-    # dnf list gnome-shell-extension*
-    # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
-    # gsettings list-schemas
-    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
-    # gsettings list-recursively org.gnome.desktop.interface
-    # gsettings list-recursively org.gnome.desktop.wm.preferences
-    # 列出所有系统级扩展
-    # gnome-extensions list --system
-    # 查看所有系统级扩展的文件目录
-    # nautilus admin:/usr/share/gnome-shell/extensions
-    sudo dnf remove -y \
-    gnome-shell-extension-apps-menu \
-    gnome-shell-extension-places-menu \
-    gnome-shell-extension-window-list \
-    gnome-shell-extension-launch-new-instance
-    sudo dnf install -y \
-    gnome-shell-extension-appindicator \
-    gnome-shell-extension-auto-move-windows \
-    gnome-shell-extension-blur-my-shell \
-    gnome-shell-extension-caffeine \
-    gnome-shell-extension-dash-to-dock \
-    gnome-shell-extension-forge \
-    gnome-shell-extension-gsconnect \
-    gnome-shell-extension-just-perfection \
-    gnome-shell-extension-light-style \
-    gnome-shell-extension-no-overview \
-    gnome-shell-extension-drive-menu \
-    gnome-shell-extension-user-theme \
-    gnome-shell-extension-workspace-indicator
-    
-    # dnf list gnome-shell-extension*
-    # gsettings 修改的是当前用户的 GNOME 配置，必须由 桌面用户（而非 root）执行。如果脚本通过 sudo 运行，命令会被忽略
-    # gsettings list-schemas
-    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
-    # gsettings list-recursively org.gnome.desktop.interface
-    # gsettings list-recursively org.gnome.desktop.wm.preferences
-    # 列出所有用户级扩展
-    # gnome-extensions list --user
-    # 查看所有用户级扩展的文件目录
-    # nautilus ~/.local/share/gnome-shell/extensions
-    sudo dnf install -y gettext meson just
-    mkdir -p ~/下载/extensions && cd ~/下载/extensions
-    git clone https://gitlab.com/smedius/desktop-icons-ng.git
-    git clone https://gitlab.com/paddatrapper/shortcuts-gnome-extension.git
-    git clone https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension.git
-    git clone https://gitlab.com/p91paul/status-area-horizontal-spacing-gnome-shell-extension.git
-    git clone https://gh-proxy.org/https://github.com/fthx/appmenu-is-back.git
-    git clone https://gh-proxy.org/https://github.com/Tommimon/add-to-desktop.git
-    git clone https://gh-proxy.org/https://github.com/Exeos/disable-unredirect.git
-    git clone https://gh-proxy.org/https://github.com/tuxor1337/hidetopbar.git
-    git clone https://gh-proxy.org/https://github.com/lennart-k/gnome-rounded-corners.git
-    git clone https://gh-proxy.org/https://github.com/flexagoon/rounded-window-corners.git
-    git clone https://gh-proxy.org/https://github.com/maniacx/Bluetooth-Battery-Meter.git
-    git clone https://gh-proxy.org/https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator.git
-    git clone https://gh-proxy.org/https://github.com/hermes83/compiz-alike-magic-lamp-effect.git
-    git clone https://gh-proxy.org/https://github.com/icedman/search-light.git
-    git clone https://gh-proxy.org/https://github.com/StorageB/custom-command-menu.git
-    git clone https://gh-proxy.org/https://github.com/openSUSE/Customize-IBus.git
-    git clone https://gh-proxy.org/https://github.com/purejava/fedora-update.git
-    git clone https://gh-proxy.org/https://github.com/tuberry/desktop-lyric.git
-    git clone https://gh-proxy.org/https://github.com/kem-a/kiwi-kemma.git
-    cd ~/下载/extensions/desktop-icons-ng && ./scripts/local_install.sh
-    cd ~/下载/extensions/shortcuts-gnome-extension && ./shortcuts.sh install
-    cd ~/下载/extensions/nightthemeswitcher-gnome-shell-extension && meson setup builddir --prefix=~/.local && meson install -C builddir
-    cd ~/下载/extensions/status-area-horizontal-spacing-gnome-shell-extension && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    cd ~/下载/extensions && zip -FSr appmenu-is-back.zip appmenu-is-back/* && gnome-extensions install -f appmenu-is-back.zip
-    cd ~/下载/extensions/add-to-desktop && ./build.sh && gnome-extensions install -f output/add-to-desktop@tommimon.github.com.v15.shell-extension.zip
-    cd ~/下载/extensions/disable-unredirect && make install
-    cd ~/下载/extensions/hidetopbar && make && gnome-extensions install -f hidetopbar.zip
-    cd ~/下载/extensions/gnome-rounded-corners && make && gnome-extensions install -f Rounded_Corners@lennart-k.zip
-    cd ~/下载/extensions/rounded-window-corners && just install
-    cd ~/下载/extensions/Bluetooth-Battery-Meter && ./install.sh
-    cd ~/下载/extensions/gnome-shell-extension-clipboard-indicator && make bundle && gnome-extensions install -f bundle.zip
-    cd ~/下载/extensions/compiz-alike-magic-lamp-effect && ./zip.sh && gnome-extensions install -f compiz-alike-magic-lamp-effect@hermes83.github.com.zip
-    cd ~/下载/extensions/search-light && make
-    cd ~/下载/extensions/custom-command-menu && ./buildforupload.sh && gnome-extensions install -f status-area-horizontal-spacing@mathematical.coffee.gmail.com.zip
-    cd ~/下载/extensions/Customize-IBus && make install
-    cd ~/下载/extensions && mv fedora-update update-extension@purejava.org && zip -r update-extension@purejava.org.zip update-extension@purejava.org && gnome-extensions install -f update-extension@purejava.org.zip
-    cd ~/下载/extensions/desktop-lyric && meson setup build && meson install -C build
-    cd ~/下载/extensions && mv kiwi-kemma kiwi@kemma && zip -r kiwi@kemma.zip kiwi@kemma && gnome-extensions install -f kiwi@kemma.zip
-    # 系统级别构建安装，默认 --prefix=/usr/local
-    # meson setup build -Dtarget=system && meson install -C build
-
-    # 解决用户 Gnome 扩展无法使用 gsettings 的问题
-    for EXT_DIR in ~/.local/share/gnome-shell/extensions/*/; do
-        EXT_ID=$(basename "$EXT_DIR")
-        echo "处理扩展: $EXT_ID"
-        if [ -d "$EXT_DIR/schemas" ]; then
-            glib-compile-schemas "$EXT_DIR/schemas"
-            mkdir -p ~/.local/share/glib-2.0/schemas/
-            cp "$EXT_DIR/schemas"/*.xml ~/.local/share/glib-2.0/schemas/
-        fi
-    done
-    glib-compile-schemas ~/.local/share/glib-2.0/schemas/
-    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
-    # ------------------------------------------------------------------------------
-    
-    # gsettings list-recursively org.gnome.shell.extensions.kiwi
-    gsettings set org.gnome.shell.extensions.kiwi transparent-on-moving false
-    # gsettings reset-recursively org.gnome.shell.extensions.kiwi
-    # gnome-extensions enable kiwi@kemma
-    
-    # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
-    # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
-    # gnome-session-quit --logout --no-prompt
-    # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
-    # gnome-session-quit --logout
-}
-
-
-# 更新 dnf 包列表、升级 dnf 包、 删除无用依赖
-sudo dnf upgrade --refresh -y && sudo dnf autoremove -y
-
-
-# 安装 gnome shell 扩展插件
-install_and_configure_theme() {
-    # ------------------------------------------------------------------------------
-    # dnf list *fonts*
-    # Noto Fonts（思源黑体/宋体 的谷歌版本）
-    # Noto Sans（无衬线体，类似思源黑体）：界面清晰，适合屏幕显示。
-    # Noto Serif（衬线体，类似思源宋体）：适合长篇文档阅读。
-    # JetBrains Mono JetBrains 公司专门为 IDE 设计的字体。字母宽度大，容易区分 1、l、I，默认支持连字符，非常耐看。
-    # 系统界面（中文）	Noto Sans CJK SC	谷歌思源黑体，字库全，笔画均衡，与 Inter 风格协调
-    # 文档阅读/写作		Noto Serif CJK SC	思源宋体，适合长时间阅读，衬线带来轻松的纸质感
-    # 编程/终端		JetBrains Mono		字母区分度高，支持连字，视觉疲劳度低
-    # fonts-noto-cjk 这个软件包直接提供了思源黑体和思源宋体在 Ubuntu 系统中的标准版本
-    # Noto Sans CJK SC （思源黑体——简体中文）
-    # Noto Serif CJK SC （思源宋体——简体中文）
-    sudo dnf install -y \
-    google-noto-sans-cjk-fonts \
-    google-noto-serif-cjk-fonts \
-    adobe-source-han-sans-cn-fonts \
-    adobe-source-han-serif-cn-fonts \
-    jetbrains-mono-fonts
-    # 设置 GNOME 桌面的默认界面字体，影响范围：应用程序菜单、按钮、标签、对话框等 UI 元素的字体
-    gsettings set org.gnome.desktop.interface font-name 'Noto Sans CJK SC Regular 11'
-    # 设置文档类内容的默认字体，影响范围：文本编辑器、帮助文档、网页内容（某些应用中）等以“文档”形式展示的内容
-    gsettings set org.gnome.desktop.interface document-font-name 'Noto Serif CJK SC Regular 11'
-    # 设置等宽字体，影响范围：终端、代码编辑器
-    gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrains Mono Regular 11'
-    # 设置窗口标题栏字体，影响范围：所有应用程序窗口顶部的标题文字
-    gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans CJK SC Bold 11'
-    # 抗锯齿：rggb（LCD 显示器常用）或 grayscale
-    gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
-    # 微调：full（较好）或 slight
-    gsettings set org.gnome.desktop.interface font-hinting 'slight'
-
-    mkdir -vp ~/下载/WhiteSur-themes && cd ~/下载/WhiteSur-themes
-    git clone https://gh-proxy.org/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
-    git clone https://gh-proxy.org/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
-    # 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
-    # grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
-    # sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
-    sed -i 's/0\.96/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/src/sass/_colors.scss
-    sed -i 's/0\.95/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/light.css
-    sed -i 's/0\.95/1/g' ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/other/firefox/WhiteSur/colors/dark.css
-    cd ~/下载/WhiteSur-themes/WhiteSur-wallpapers && ./install-wallpapers.sh && sudo ./install-gnome-backgrounds.sh
-    # gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/Ventura/Ventura-timed.xml'
-    cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh
-    cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh
-    # 在执行 ./tweaks.sh -f flat 安装 Firefox 主题时，Firefox 不能正在运行
-    if pgrep firefox > /dev/null; then
-        print_info "Firefox 正在运行，正在杀死进程..."
-        pkill firefox && sleep 3
+    if [ -f "$HOME/.apps/appimages/Hiddify-Linux-x64-AppImage.AppImage" ]; then
+        echo "✅ Hiddify 已安装"
+        # 这里可以执行后续操作
     else
-        print_info "Firefox 未在运行..."
-        # 快速启动 Firefox 并在 3 秒后杀死它
-        firefox & sleep 3 && pkill firefox
+        echo "❌ Hiddify 未安装，开始下载并安装 Hiddify"
+        mkdir -vp ~/.apps/appimages && cd ~/.apps/appimages
+        wget "$(curl -s https://api.github.com/repos/hiddify/hiddify-app/releases/latest | \
+            grep -o 'https://github.com/hiddify/hiddify-app/releases/download/[^"]*Linux-x64.*\.AppImage' | \
+            head -n 1 | \
+            sed "s|https://github.com|${GITHUB_PROXY_URL}https://github.com|")"
+        # 1. 赋予执行权限
+        chmod +x Hiddify-Linux-x64-*.AppImage
+        # 2. 运行程序
+        ./Hiddify-Linux-x64-*.AppImage
+        cd ~/下载
     fi
-    # firefox not yet initialized error
-    # https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1384
-    # git clone https://cdn.gh-proxy.org/https://github.com/Sayanduary/WhiteSur-gtk-theme.git
-    # 为 libadwaita 安装，默认是普通暗色主题
-    cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f flat -F -o solid
-    # cd ~/下载/WhiteSur-gtk-theme && ./install.sh -l -o solid && ./tweaks.sh -f monterey -F -o solid
-    # 使用自定义背景
-    # sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/Ventura-light.jpg"
-    sudo ~/下载/WhiteSur-themes/WhiteSur-gtk-theme/tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-noon.jpg"
-    # 如果文件都在当前目录
-    cd ~/下载 && rm -rf WhiteSur-*
-    # cd ~/下载/WhiteSur-themes && rm -rf WhiteSur-{cursors,icon-theme,gtk-theme}
+    
 
-    # 安装 Ubuntu 的声音主题
-    sudo dnf install -y yaru-sound-theme
-    gsettings set org.gnome.desktop.sound theme-name 'Yaru'
+# https://github.com/lassekongo83/adw-gtk3
+# 将 GNOME 最新的默认视觉风格（Libadwaita）移植到旧的 GTK 3 应用程序上
+# 让那些基于 GTK 3 的老程序也能拥有和新一代 GNOME 应用（如设置、文件、终端等）几乎一模一样的外观。
+sudo dnf install -y adw-gtk3-theme
+# flatpak list --all
+# 搜索远程仓库的应用/运行时
+# flatpak search org.gtk.Gtk3theme
+flatpak install -y org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark
+# mask 屏蔽更新和自动安装
+sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3
+sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
+# https://wiki.archlinux.org.cn/title/Uniform_look_for_Qt_and_GTK_applications
+# mkdir -vp ~/.config/Kvantum
+# sudo dnf install -y kvantum
+echo "正在安装 Flatpak 常用应用程序..."
+# 不推荐在 flatpak install 命令前加 sudo 这样不需要 root 权限，不会影响系统其他用户，卸载或管理时也不需要密码，更安全。
+# 对于个人日常使用，请去掉 sudo。这样不需要每次输入密码、更方便、更安全，也符合 Flatpak 的设计初衷
+
+# 为 Linux 上的 Flathub 提供支持的 Flatpak 应用商店
+flatpak install -y flathub io.github.kolunmi.Bazaar
+# Flatseal 是一种图形工具，用于审查和修改 Flatpak 应用程序中的权限
+flatpak install -y flathub com.github.tchx84.Flatseal
+# Warehouse 提供了一个简单的用户界面来控制复杂的 Flatpak 选项，而且完全无需借助命令行
+flatpak install -y flathub io.github.flattool.Warehouse
+# 更改 GDM 设置； 应用主题和背景、更改光标主题、图标主题和夜灯设置等
+flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+# Microsoft Edge 网络浏览器
+flatpak install -y flathub com.microsoft.Edge
+# Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
+flatpak install -y flathub com.google.Chrome
+# 轻松地将磁盘镜像写入你的硬盘。选择一张图片，插入你的硬盘，就可以开始了
+flatpak install -y flathub io.gitlab.adhami3310.Impression
+# 一个易用的BitTorrent客户端。片段可以通过BitTorrent点对点文件共享协议传输文件，例如视频、音乐或Linux发行版的安装映像
+flatpak install -y flathub de.haeckerfelix.Fragments
+# 用干净、无干扰的标记删除编辑器专注于你的写作
+flatpak install -y flathub org.gnome.gitlab.somas.Apostrophe
+# 忘记忘记事情
+flatpak install -y flathub io.github.alainm23.planify
+# 一款极简的Markdown阅读与写作应用
+flatpak install -y flathub io.typora.Typora
+# 你可以从拥有简洁友好的用户界面的在线来源获取字体。Sitra为安装、卸载和预览字体提供了无缝体验
+flatpak install -y flathub io.github.sitraorg.sitra
+# Refine 帮助发现 GNOME 中的高级和实验性功能
+flatpak install -y flathub page.tesk.Refine
+# Rewaita通过用流行的配色方案为您的Adwaita应用增添新意
+flatpak install -y flathub io.github.swordpuffin.rewaita
+# 一款用 GTK4 编写的轻量级音乐播放器，专注于大型音乐收藏
+flatpak install -y flathub com.github.neithern.g4music
+# 开启桌面歌词功能需要的依赖 https://github.com/osdlyrics/osdlyrics
+# netease-cloud-music-gtk 是使用 Rust + GTK 开发的网易云音乐客户端，专为 Linux 系统打造
+flatpak install -y flathub com.github.gmg137.netease-cloud-music-gtk
+# 一个轻松管理 AppImages 的工具！齿轮杆可以帮你整理和管理 AppImage 文件，生成桌面条目和应用元数据，原地更新应用，或将多个版本并排保存
+flatpak install -y flathub it.mijorus.gearlever
+# Playhouse 让原型制作、教学、设计、学习和构建网页内容变得简单
+flatpak install -y flathub re.sonny.Playhouse
+# Workbench 是用来学习和用 GNOME 技术做原型设计的，无论是第一次动手还是构建和测试 GTK 用户界面
+flatpak install -y flathub re.sonny.Workbench
+flatpak install -y flathub com.github.marhkb.Pods
+# flatpak install -y flathub dev.skynomads.Seabird
+# Thunderbird 是一款免费且开源的电子邮件、新闻源、聊天和日历客户端
+flatpak install -y flathub org.mozilla.Thunderbird
+flatpak install -y flathub dev.zed.Zed
+flatpak install -y flathub io.neovim.nvim
+# 设置 Dock 栏应用图标
+gsettings set org.gnome.shell favorite-apps "['org.mozilla.firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.TextEditor.desktop', 'org.gnome.Ptyxis.desktop', 'org.gnome.Settings.desktop', 'org.gnome.SystemMonitor.desktop', 'com.microsoft.Edge.desktop', 'org.gnome.tweaks.desktop']"
+echo "Flatpak 应用安装完成。"
 }
 
-# 卸载主题
-uninstall_theme() {
-    cd ~/下载/WhiteSur-themes/WhiteSur-wallpapers && ./install-wallpapers.sh -u && sudo ./install-gnome-backgrounds.sh -u
-    cd ~/下载/WhiteSur-themes/WhiteSur-cursors && ./install.sh
-    cd ~/下载/WhiteSur-themes/WhiteSur-icon-theme && ./install.sh
-    cd ~/下载/WhiteSur-themes/WhiteSur-gtk-theme && ./install.sh -r && ./tweaks.sh -f -r && ./tweaks.sh -F -r
+
+
+# ------------------------------------------------------------------------------
+# 模块 9: 安装并配置  Oh My Zsh
+# ------------------------------------------------------------------------------
+configure_ohmyzsh() {
+    if rpm -q "zsh" > /dev/null 2>&1; then
+        echo "✅ zsh 已安装"
+        # 这里可以执行后续操作
+    else
+        echo "❌ zsh 未安装，开始下载并安装 zsh"
+        # 安装 Zsh
+        # https://linuxcapable.com/how-to-install-zsh-on-fedora-linux/
+        sudo dnf install -y zsh zsh-autocomplete zsh-autosuggestions zsh-syntax-highlighting 
+        echo 'source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh' >> ~/.zshrc
+        echo 'source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' >> ~/.zshrc
+        source ~/.zshrc
+        # 将 Zsh 设为默认 Shell，使用 chsh 将登录壳改为 Zsh：
+        # 提示时输入密码。该更改将在你登出再重新登录，或在当前会话中手动启动 Zsh 后生效：
+        chsh -s $(which zsh)
+        # chsh -s $(which bash)
+        # 登出再重新登录后，确认 Zsh 是你的默认 shell：
+        echo $SHELL
+        # 安装 Oh My Zsh
+        # 前提条件，应该提前安装 zsh、curl、git，如果没有预装（运行 zsh --version 确认）
+        # https://github.com/ohmyzsh/ohmyzsh
+        # 脚本会将你现有的 ~/.zshrc 备份到 ~/.zshrc.pre-oh-my-zsh，并创建一个新的配置文件。如果提示更改默认壳，如果之前跳过了，请输入 y
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    fi
 }
-
-# 重置系统字体配置
-reset_font() {
-    gsettings reset org.gnome.desktop.interface font-name
-    gsettings reset org.gnome.desktop.interface document-font-name
-    gsettings reset org.gnome.desktop.interface monospace-font-name
-    gsettings reset org.gnome.desktop.wm.preferences titlebar-font
-    gsettings reset org.gnome.desktop.interface font-antialiasing
-    gsettings reset org.gnome.desktop.interface font-hinting
-}
-
-# 重置系统主题配置
-reset_theme() {
-    gsettings reset org.gnome.desktop.interface cursor-theme
-    gsettings reset org.gnome.desktop.interface icon-theme
-    gsettings reset org.gnome.shell.extensions.user-theme name
-    gsettings reset org.gnome.desktop.interface gtk-theme
-    gsettings reset org.gnome.desktop.wm.preferences theme
-    gsettings reset org.gnome.desktop.sound theme-name
-}
-
-set_theme_example() {
-    gsettings set org.gnome.desktop.interface color-scheme 'default'
-    gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
-    gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-light'
-    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Light-solid'
-    gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Light-solid'
-    gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Light-solid'
-    gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
-
-    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-    gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
-    gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
-    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
-    gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
-    gsettings set org.gnome.desktop.wm.preferences theme 'WhiteSur-Dark-solid'
-    gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
-}
-
 
 set_grub2_theme() {
-# https://github.com/VandalByte/grub-tweaks
-# 安装 GRUB2 主题，并配置多系统时的扫描
-# https://www.gnome-look.org/browse?cat=109&ord=rating
-sudo cp /etc/default/grub /etc/default/grub.bak
-sudo cp -r /boot/grub/ /boot/grub.bak # 防止配置失效导致系统无法启动‌
-sudo dnf install -y grub2-breeze-theme
-# https://github.com/VandalByte/darkmatter-grub2-theme/
-git clone --depth 1 https://gh-proxy.org/https://github.com/VandalByte/darkmatter-grub2-theme.git && cd darkmatter-grub2-theme
-# 安装主体
-sudo python3 darkmatter-theme.py -i
-# 卸载主题
-sudo python3 darkmatter-theme.py -u
-
-# 设置GRUB显示分辨率
-# 首先找到你的屏幕分辨率
-sudo dnf install -y xdpyinfo lsb_release
-xdpyinfo | awk '/dimensions/{print $2}'
-# 打开文件 /etc/default/grub，编辑行 GRUB_GFXMODE=[宽度]x[高度]x32以匹配你的分辨率
-
-# 备份到同目录（添加 .bak 后缀）
-sudo cp /etc/default/grub{,.bak}
-# 检查 .bak 文件是否存在
-# ls /etc/default && cat /etc/default/grub
-# 从同目录 .bak 文件恢复
-# sudo cp /etc/default/grub{.bak,}
-# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
+    # https://github.com/VandalByte/grub-tweaks
+    # 安装 GRUB2 主题，并配置多系统时的扫描
+    # https://www.gnome-look.org/browse?cat=109&ord=rating
+    sudo cp /etc/default/grub /etc/default/grub.bak
+    sudo cp -r /boot/grub/ /boot/grub.bak # 防止配置失效导致系统无法启动‌
+    sudo dnf install -y grub2-breeze-theme
+    # https://github.com/VandalByte/darkmatter-grub2-theme/
+    git clone --depth 1 https://gh-proxy.org/https://github.com/VandalByte/darkmatter-grub2-theme.git
+    cd darkmatter-grub2-theme
+    # 安装主体
+    sudo python3 darkmatter-theme.py -i
+    # 卸载主题
+    # sudo python3 darkmatter-theme.py -u
+    # 设置GRUB显示分辨率
+    # 首先找到你的屏幕分辨率
+    sudo dnf install -y xdpyinfo lsb_release
+    xdpyinfo | awk '/dimensions/{print $2}'
+    # 打开文件 /etc/default/grub，编辑行 GRUB_GFXMODE=[宽度]x[高度]x32以匹配你的分辨率
+    # 备份到同目录（添加 .bak 后缀）
+    sudo cp /etc/default/grub{,.bak}
+    # 检查 .bak 文件是否存在
+    # ls /etc/default && cat /etc/default/grub
+    # 从同目录 .bak 文件恢复
+    # sudo cp /etc/default/grub{.bak,}
+    # tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
 cat << EOF | sudo tee /etc/default/grub
 # ==============================================================================
 # Fedora GRUB2 配置文件示例 (/etc/default/grub)
@@ -1244,535 +2407,10 @@ GRUB_GFXPAYLOAD_LINUX=keep
 # GRUB_THEME="/boot/grub2/themes/dark-matter/theme.txt
 EOF
 
-# sudo ls /boot/grub2 && sudo cat /boot/grub2/grub.cfg
-# 重新生成 GRUB 配置文件：保存并退出编辑器后，运行以下命令让更改生效并扫描 Windows：
-sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+    # sudo ls /boot/grub2 && sudo cat /boot/grub2/grub.cfg
+    # 重新生成 GRUB 配置文件：保存并退出编辑器后，运行以下命令让更改生效并扫描 Windows：
+    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 }
-
-
-# 定义颜色输出
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# 日志函数
-log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
-log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
-log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
-log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
-
-# 检测是否以 root 运行整个脚本（不推荐，因为 gsettings 需要用户环境）
-if [[ $EUID -eq 0 ]]; then
-    log_error "请不要使用 sudo 运行此脚本。脚本会在需要时自动请求 sudo 权限。"
-    exit 1
-fi
-
-# 获取当前用户
-CURRENT_USER=$(whoami)
-HOME_DIR="/home/${CURRENT_USER}"
-
-# ------------------------------------------------------------------------------
-# 辅助函数
-# ------------------------------------------------------------------------------
-
-# 检查命令是否存在
-check_command() {
-    command -v "$1" >/dev/null 2>&1
-}
-
-# 询问用户确认
-confirm_action() {
-    local prompt="${1:-确定继续吗？}"
-    read -p "${YELLOW}${prompt} (y/n): ${NC}" -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        log_warn "用户取消操作。"
-        return 1
-    fi
-    return 0
-}
-
-# 等待网络连通性
-wait_for_network() {
-    log_info "检查网络连接..."
-    if ! ping -c 1 -W 2 mirrors.ustc.edu.cn &> /dev/null; then
-        log_warn "网络连接似乎有问题，请检查后重试。"
-        # 不强制退出，尝试继续
-    else
-        log_success "网络连接正常。"
-    fi
-}
-
-# ------------------------------------------------------------------------------
-# 模块 1: 系统基础配置 (GNOME Settings)
-# ------------------------------------------------------------------------------
-configure_basics_gsettings() {
-    log_info "正在配置 GNOME 桌面基础设置..."
-
-    # 设置强调色为蓝色
-    gsettings set org.gnome.desktop.interface accent-color 'blue'
-    # 设置新窗口居中显示
-    gsettings set org.gnome.mutter center-new-windows true
-    # 显示星期几
-    gsettings set org.gnome.desktop.interface clock-show-weekday true
-    # 设置电量百分比
-    gsettings set org.gnome.desktop.interface show-battery-percentage true
-    # 设置夜灯温度（色温，范围 1000~10000，默认约 2700 色温严重偏黄，越小越黄）
-    gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
-    # 开启夜灯
-    gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
-    # 设置窗口按钮位置 (右)
-    gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-    # 禁用动态工作区
-    gsettings set org.gnome.mutter dynamic-workspaces false
-    # 设置工作区数量为3（奇数确保有中间位）
-    gsettings set org.gnome.desktop.wm.preferences num-workspaces 3
-    # 预设工作区名称
-    gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
-
-    # nautilus ~/.local/share/backgrounds/
-    cd ~/下载
-    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-light.jpg"
-    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-dark.jpg"
-    wget "https://gitee.com/lcqh2635/linux/raw/master/壁纸/wallpaper-noon.jpg"
-    cp -v ~/下载/wallpaper-light.jpg ~/.local/share/backgrounds/
-    cp -v ~/下载/wallpaper-dark.jpg ~/.local/share/backgrounds/
-    cp -v ~/下载/wallpaper-noon.jpg ~/.local/share/backgrounds/
-    # gsettings list-recursively org.gnome.desktop.background
-    gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/share/backgrounds/wallpaper-light.jpg"
-    gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/.local/share/backgrounds/wallpaper-dark.jpg"
-
-    # 快捷键优化
-    log_info "配置自定义快捷键..."
-    # 自定义快捷键优化，Alt 管理工作区、Super 管理窗口
-    # gsettings list-recursively org.gnome.desktop.wm.keybindings
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
-    gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
-    # 切换当前工作区所有的窗口的显示与隐藏，可以替代 Show Desktop Button 扩展插件的功能
-    gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
-    gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
-    gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
-    gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
-    # Alt + Super 移动当前工作取得窗口到左右其他工作区
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
-    gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
-
-    log_success "GNOME 基础配置完成。"
-}
-
-# 模块 2: 软件源加速与 DNF 优化
-# ------------------------------------------------------------------------------
-configure_repos_and_dnf() {
-    log_info "正在配置软件源加速与 DNF 优化..."
-        # 定义镜像列表
-        # 格式：显示名称|域名基础路径|RPMSync基础路径
-        # 注意：USTC 和 TUNA 的 rpmfusion 路径略有不同，这里做统一处理或特殊判断
-        declare -a MIRRORS=(
-            "USTC (中国科技大学 - 推荐)"|"mirrors.ustc.edu.cn/fedora"|"mirrors.ustc.edu.cn/rpmfusion"
-            "TUNA (清华大学)"|"mirrors.tuna.tsinghua.edu.cn/fedora"|"mirrors.tuna.tsinghua.edu.cn/rpmfusion"
-            "Aliyun (阿里云)"|"mirrors.aliyun.com/fedora"|"mirrors.aliyun.com/rpmfusion"
-            "Default (保持官方 Metalink 自动选择)"|"NONE"|"NONE"
-        )
-
-
-
-    # 1. 备份并替换 Fedora 官方源为中科大镜像
-    log_info "替换 Fedora 主仓库镜像 (USTC)..."
-    # Fedora 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源。操作前请做好相应备份
-    # 配置 Ubuntu 国内加速镜像，在所有的国内加速镜像中 ustc 中科大是同步更新最及时，并且下载速度也飞快的一个加速镜像站点，优先使用它！
-    # https://mirrors.ustc.edu.cn/help/fedora.html
-    # https://developer.aliyun.com/mirror/fedora
-    # https://mirrors.tuna.tsinghua.edu.cn/help/fedora/
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora.repo
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-updates.repo
-    # 将上述两个文件先做个备份，根据 Fedora 系统版本分别替换为下面内容，之后通过 sudo dnf makecache 命令更新本地缓存，即可使用所选择的软件源镜像。
-    sudo sed -e 's|^metalink=|#metalink=|g' \
-             -e 's|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g' \
-             -i.bak \
-             /etc/yum.repos.d/fedora.repo \
-             /etc/yum.repos.d/fedora-updates.repo
-    # 2. 安装 RPM Fusion 源 (使用 USTC 镜像)
-    log_info "安装并配置 RPM Fusion 源..."
-    # RPM Fusion 默认使用 metalink 来根据用户发出请求的 IP 选择合适的镜像，通常情况下并不需要手动换源
-    # 中国科技大学 RPMFusion 镜像源	https://mirrors.ustc.edu.cn/help/rpmfusion.html
-    # 使用下列命令（在 bash 或兼容 shell 中），可以同时启用其 free 和 nonfree 软件源
-    sudo dnf install -y --nogpgcheck \
-        https://mirrors.ustc.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-        https://mirrors.ustc.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    # 修改 RPM Fusion 源为 USTC
-    # 安装成功后，可使用下列命令备份并修改 /etc/yum.repos.d/ 目录下以 rpmfusion 开头，以 .repo 结尾的文件。
-    # 具体而言，需要将文件中 metalink= 开头的行注释掉，取消 baseurl= 开头的行的注释
-    # 并将等号后面链接中的 http://download1.rpmfusion.org 替换为 https://mirrors.ustc.edu.cn/rpmfusion：
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free.repo
-    # ls /etc/yum.repos.d && cat /etc/yum.repos.d/rpmfusion-free-updates.repo
-    sudo sed -e 's|^metalink=|#metalink=|g' \
-             -e 's|^#baseurl=http://download1.rpmfusion.org|baseurl=https://mirrors.ustc.edu.cn/rpmfusion|g' \
-             -i.bak \
-             /etc/yum.repos.d/rpmfusion*.repo
-    # 3. 启用 Google Chrome 仓库 (可选，按需开启)
-    log_info "正在关闭 google-chrome、copr:copr.fedorainfracloud.org:phracek:PyCharm 两个第三方软件仓库..."
-    # Fedora 安装 Chromium 或 Google Chrome 浏览器
-    # https://docs.fedoraproject.org/zh_Hans/quick-docs/installing-chromium-or-google-chrome-browsers/
-    # 安装第三方仓库
-    # sudo dnf install -y fedora-workstation-repositories
-    # 禁用 Google Chrome 仓库，由于从该仓库中安装的 Google Chrome 只有一个暗色主题，无法根据系统切换主题，所以禁用
-    sudo dnf config-manager setopt google-chrome.enabled=0
-    # 启用 Google Chrome 仓库：
-    # sudo dnf config-manager setopt google-chrome.enabled=1
-    # 最后，安装  Google Chrome 浏览器：
-    # sudo dnf install -y google-chrome-stable
-    # sudo dnf remove -y google-chrome-stable
-    # 创建一个 Google Chrome 扩展，复刻 Dev Toolbox 的功能
-    # https://docs.fedoraproject.org/zh_Hans/quick-docs/adding-or-removing-software-repositories-in-fedora/
-    # dnf config-manager --help
-    # 查看所有仓库
-    # dnf repolist --all
-    # 禁用仓库
-    sudo dnf config-manager setopt copr:copr.fedorainfracloud.org:phracek:PyCharm.enabled=0
-    # 在 DNF 5 中，彻底移除第三方仓库的最标准方法依然是手动删除对应的 .repo 文件，下列会打印与每个 Yum 仓库关联的仓库 ID 列表
-    # grep -E "^\[.*]" /etc/yum.repos.d/*
-    # 删除仓库文件
-    sudo rm /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
-    # 4. 清理并重建缓存
-    log_info "重建 DNF 缓存..."
-    # 删除文件后，必须清理 DNF 缓存以生效
-    sudo dnf clean all
-    # 重建 DNF 缓存
-    sudo dnf makecache
-
-    # 5. 优化 DNF 速度 (并行下载 + 最快镜像)
-    log_info "优化 DNF 下载速度..."
-    # 兼容 DNF 4 和 DNF 5 的配置方式
-    # https://linuxcapable.com/increase-dnf-speed-on-fedora-linux/
-    # 当Fedora上DNF感觉很慢时，等待通常来自两个原因：保守的下载行为和镜像选择与你的网络路径不匹配。
-    # 要提高 Fedora 的 DNF 速度，可以启用并行下载并测试 fastestmirror，这样大规模更新和多包安装时可以减少一次只等待一个包的时间。
-    # 当前的Fedora版本使用DNF5，最简洁的更改方式是使用 dnf config-manager setopt，而不是先在编辑器中打开/etc/dnf/dnf.conf。
-    # 这样可以保持更改的可重复性，清晰显示当前运行时的值，并且方便之后降低max_parallel_downloads或关闭fastestmirror=true。
-    # https://mirrormanager.fedoraproject.org/
-    # https://dnf-plugins-core.readthedocs.io/en/latest/
-    # https://github.com/rpm-software-management/dnf5
-    # 先从安全刷新开始，这样你可以用当前的元数据对比后续运行。--assumeno 标志会预览交易并在 DNF 安装任何东西前退出
-    sudo dnf upgrade --refresh --assumeno -y
-    # 在Fedora上，DNF默认为max_parallel_downloads=3，fastestmirror=False。这安全且可预测，但当连接稳定且镜像路径良好时，下载速度可能会明显受影响。
-    # Fedora已经给出了DNF工作镜像列表，所以fastestmirror=True值得测试，但不值得当作绝对标准。如果启用后刷新速度变慢，就关闭该选项，保持并行下载。
-    # 这会把数值写入你的主配置文件，地址是 /etc/dnf/dnf.conf。如果你之后检查文件，应该会在[main]下方看到这些行：
-    sudo dnf config-manager setopt max_parallel_downloads=10 fastestmirror=True
-    # 现在验证当前运行时的值，而不仅仅是检查文件内容：
-    dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
-    # 执行一次 DNF 操作（如检查更新），观察输出信息。如果配置成功，你会看到类似以下的提示，表明它正在检测镜像速度：
-    sudo dnf check-update
-    # ls /etc/dnf && cat /etc/dnf/dnf.conf
-
-    log_success "软件源与 DNF 配置完成。"
-}
-
-# ------------------------------------------------------------------------------
-# 模块 3: 系统更新与基础清理
-# ------------------------------------------------------------------------------
-system_update_and_cleanup() {
-    # 移除预装但不常用的软件
-    log_info "移除预装的冗余软件..."
-    sudo dnf remove -y mediawriter libreoffice-* abrt* || true
-
-    log_info "正在更新系统并清理无用包..."
-    # 你刚刚修改了软件源（从官方 metalink 切换到了中科大/阿里云等固定镜像）。如果不加 --refresh，DNF 可能会继续使用旧的、缓存的元数据（这些元数据可能指向旧的镜像地址或包含旧的包列表），
-    # 导致升级失败、包找不到或仍然从旧源下载。--refresh 强制 DNF 忽略本地缓存，重新从新配置的镜像下载最新的元数据。
-    # 只有在以下特殊情况下，你才需要在日常更新时加上 --refresh：
-    	# 1、修改了 .repo 文件：比如你刚才手动启用/禁用了某个仓库，或者像我们脚本里那样换了镜像源
-    	# 2、怀疑缓存损坏：当你运行 dnf upgrade 报错，提示“元数据不匹配”、“GPG 校验失败”或“找不到包”，但你知道网络上肯定有这个包时。此时执行 sudo dnf upgrade --refresh 可以修复缓存
-    	# 3、急需刚刚发布的软件/安全补丁：假设某个严重安全漏洞在 10 分钟前修复并推送到仓库了，而你昨天的缓存还没过期。为了立刻拿到这个补丁，你可以强制刷新。但通常等待几小时让缓存自然过期也是可接受的
-    	# 4、长时间未开机：如果你这台电脑关机了几个月没开，本地缓存肯定过期了。虽然 DNF 会自动检测到过期并刷新，但显式加上 --refresh 也没坏处，只是略显多余
-    # 但是对于日常的系统更新，推荐命令：sudo dnf upgrade -y 这会直接读取本地缓存的元数据（通常只有几 MB），瞬间完成分析，然后只下载需要更新的软件包
-    sudo dnf upgrade --refresh -y
-    sudo dnf autoremove -y
-
-    log_success "系统更新完成。"
-}
-
-# ------------------------------------------------------------------------------
-# 模块 4: 开发环境与工具链安装
-# ------------------------------------------------------------------------------
-install_dev_tools() {
-    log_info "正在安装基础开发工具链..."
-
-    # 基础工具组
-    sudo dnf group install -y "Development Tools" "C Development Tools and Libraries" "RPM Development Tools"
-
-    # 常用命令行工具
-    sudo dnf install -y \
-        git wget curl unzip p7zip \
-        fastfetch wl-clipboard \
-        gnome-tweaks gnome-browser-connector \
-        libadwaita-demo \
-        podman podman-compose \
-        kubernetes kubernetes-kubeadm kubernetes-client
-
-    # 多媒体编解码器
-    log_info "安装多媒体编解码器..."
-    sudo dnf group install -y multimedia
-    sudo dnf install -y gstreamer1-plugin-openh264 mozilla-openh264
-    sudo dnf swap -y ffmpeg-free ffmpeg --allowerasing
-    sudo dnf swap -y mesa-va-drivers mesa-va-drivers-freeworld --allowerasing
-    sudo dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld --allowerasing
-    sudo dnf install -y libva-utils vulkan-tools
-
-    log_success "基础开发工具安装完成。"
-}
-
-configure_languages() {
-    log_info "正在配置编程语言环境 (Node, Java, Go, Rust, Zig)..."
-
-    # 1. Node.js & Bun & Web Tools
-    log_info "配置 Node.js 生态..."
-    sudo dnf install -y nodejs
-    npm config set registry https://registry.npmmirror.com/
-
-    # 修复 /usr/local 权限以便全局安装
-    if [ -d "/usr/local" ]; then
-        sudo chown -R $(whoami):$(whoami) /usr/local
-    fi
-
-    # 安装 Bun
-    if ! check_command bun; then
-        npm install -g bun
-        cat << EOF > $HOME/.bunfig.toml
-[install]
-registry = "https://registry.npmmirror.com/"
-EOF
-        log_info "Bun 已安装: $(bun --version)"
-    fi
-
-    # 安装全局 Web 工具
-    npm install -g typescript vite eslint prettier deno
-
-    # 2. Java & Maven
-    log_info "配置 Java 环境..."
-    sudo dnf install -y java-21-openjdk maven # 建议使用 LTS 版本 21，而非最新的 25 (除非确实需要)
-    mkdir -p $HOME/.m2
-    if [ ! -f $HOME/.m2/settings.xml ]; then
-        cat << EOF > $HOME/.m2/settings.xml
-<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
-  <mirrors>
-    <mirror>
-      <id>aliyunmaven</id>
-      <mirrorOf>*</mirrorOf>
-      <name>阿里云公共仓库</name>
-      <url>https://maven.aliyun.com/repository/public</url>
-    </mirror>
-  </mirrors>
-</settings>
-EOF
-    fi
-
-    # 3. Go
-    log_info "配置 Go 环境..."
-    sudo dnf install -y golang
-    go env -w GO111MODULE=on
-    go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
-    go env -w GOSUMDB=sum.golang.google.cn
-    mkdir -p $HOME/go
-
-    # 4. Rust
-    log_info "配置 Rust 环境..."
-    if ! check_command rustc; then
-        export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
-        export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
-        curl --proto '=https' --tlsv1.2 -sSf https://mirrors.ustc.edu.cn/rust/rustup-init.sh | sh -s -- -y
-        source "$HOME/.cargo/env"
-
-        # 配置 Cargo 镜像
-        mkdir -p $HOME/.cargo
-        cat << EOF > $HOME/.cargo/config.toml
-[source.crates-io]
-replace-with = 'ustc'
-[source.ustc]
-registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
-EOF
-        log_info "Rust 已安装: $(rustc --version)"
-    fi
-
-    # 5. Zig
-    log_info "配置 Zig 环境..."
-    sudo dnf install -y zig
-
-    # 创建项目目录结构
-    mkdir -p $HOME/Projects/{Java,Rust,Cpp,Python,TypeScript,Database}
-    mkdir -p $HOME/Projects/Database/{SQLite,MySQL,Postgres,Redis}
-
-    log_success "编程语言环境配置完成。"
-}
-
-# ------------------------------------------------------------------------------
-# 模块 5: Flatpak 应用安装
-# ------------------------------------------------------------------------------
-configure_flatpak() {
-    log_info "正在配置 Flatpak 并安装应用..."
-
-    # 添加/更新 Flathub 源 (使用 USTC 镜像)
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-    sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
-    flatpak update --appstream
-
-    # 允许 Flatpak 访问主机主题
-    sudo flatpak override --filesystem=xdg-data/themes:ro
-    sudo flatpak override --filesystem=xdg-data/icons:ro
-    sudo flatpak override --filesystem=$HOME/.themes:ro
-    sudo flatpak override --filesystem=$HOME/.icons:ro
-
-    # 定义要安装的应用列表
-    FLATPAK_APPS=(
-        "com.mattjakeman.ExtensionManager"
-        "com.github.tchx84.Flatseal"
-        "org.gnome.Evolution"
-        "com.github.neithern.g4music"
-        "com.github.gmg137.netease-cloud-music-gtk"
-        "com.google.Chrome"
-        "com.qq.QQ"
-        "com.tencent.WeChat"
-        "org.gnome.Builder"
-        "com.usebottles.bottles"
-        "io.github.marhkb.Pods"
-    )
-
-    for app in "${FLATPAK_APPS[@]}"; do
-        log_info "安装 Flatpak 应用: $app"
-        flatpak install -y flathub "$app" || log_warn "安装 $app 失败，跳过。"
-    done
-
-    log_success "Flatpak 应用安装完成。"
-}
-
-# ------------------------------------------------------------------------------
-# 模块 6: 主题与美化 (WhiteSur)
-# ------------------------------------------------------------------------------
-install_theme_whitesur() {
-    log_info "正在下载并安装 WhiteSur 主题..."
-
-    THEME_DIR="$HOME/下载/WhiteSur-themes"
-    mkdir -p "$THEME_DIR"
-    cd "$THEME_DIR"
-
-    # 克隆主题仓库 (使用浅克隆加速)
-    REPOS=(
-        "https://github.com/vinceliuice/WhiteSur-wallpapers.git"
-        "https://github.com/vinceliuice/WhiteSur-cursors.git"
-        "https://github.com/vinceliuice/WhiteSur-icon-theme.git"
-        "https://github.com/vinceliuice/WhiteSur-gtk-theme.git"
-    )
-
-    for repo in "${REPOS[@]}"; do
-        name=$(basename "$repo" .git)
-        if [ ! -d "$name" ]; then
-            git clone --depth=1 "$repo"
-        fi
-    done
-
-    # 安装壁纸
-    cd WhiteSur-wallpapers && ./install-wallpapers.sh && sudo ./install-gnome-backgrounds.sh && cd ..
-
-    # 安装光标
-    cd WhiteSur-cursors && ./install.sh && cd ..
-
-    # 安装图标
-    cd WhiteSur-icon-theme && ./install.sh && cd ..
-
-    # 安装 GTK 主题
-    cd WhiteSur-gtk-theme
-    # 简单处理 Firefox 进程，避免安装脚本报错
-    if pgrep -x "firefox" > /dev/null; then
-        log_warn "Firefox 正在运行，尝试关闭以应用主题..."
-        pkill firefox
-        sleep 2
-    fi
-
-    ./install.sh -l -o solid
-    ./tweaks.sh -f flat -F -o solid
-
-    # 应用自定义背景
-    sudo ./tweaks.sh -g -b "$HOME/.local/share/backgrounds/wallpaper-noon.jpg"
-    cd ..
-
-    log_success "WhiteSur 主题安装完成。请在 GNOME Tweaks 中手动选择主题。"
-}
-
-apply_theme_settings() {
-    log_info "应用主题设置..."
-    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-    gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors'
-    gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur-dark'
-    gsettings set org.gnome.shell.extensions.user-theme name 'WhiteSur-Dark-solid'
-    gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark-solid'
-    gsettings set org.gnome.desktop.sound theme-name 'Yaru'
-}
-
-# ------------------------------------------------------------------------------
-# 模块 7: JetBrains 工具箱 (官方安装)
-# ------------------------------------------------------------------------------
-install_jetbrains_toolbox() {
-    log_info "正在安装 JetBrains Toolbox..."
-
-    cd "$HOME/下载"
-    # 获取最新正式版链接 (排除 arm64)
-    DOWNLOAD_URL=$(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release' | \
-                   grep -o 'https://download.jetbrains.com/toolbox/jetbrains-toolbox-[^\"]*\.tar\.gz' | \
-                   grep -v 'arm64' | head -1)
-
-    if [ -z "$DOWNLOAD_URL" ]; then
-        log_error "无法获取 JetBrains Toolbox 下载链接。"
-        return 1
-    fi
-
-    wget -O jetbrains-toolbox.tar.gz "$DOWNLOAD_URL"
-
-    mkdir -p "$HOME/.apps"
-    tar -xzf jetbrains-toolbox.tar.gz -C "$HOME/.apps"
-
-    # 找到解压后的目录并运行
-    TOOLBOX_DIR=$(find "$HOME/.apps" -maxdepth 1 -type d -name "jetbrains-toolbox-*" | head -1)
-    if [ -n "$TOOLBOX_DIR" ]; then
-        chmod +x "$TOOLBOX_DIR/jetbrains-toolbox"
-        log_info "启动 JetBrains Toolbox..."
-        # 在后台运行
-        "$TOOLBOX_DIR/jetbrains-toolbox" &
-        log_success "JetBrains Toolbox 已启动。请按照界面提示完成后续配置。"
-        log_warn "注意：本脚本不包含自动激活破解补丁，请使用正版授权或学生认证。"
-    else
-        log_error "解压 JetBrains Toolbox 失败。"
-    fi
-}
-
-# ------------------------------------------------------------------------------
-# 模块 8: Git 配置
-# ------------------------------------------------------------------------------
-configure_git() {
-    log_info "配置 Git..."
-    # 这里使用占位符，实际使用时建议用户手动修改或通过参数传入
-    read -p "请输入您的 Git 用户名 (默认 lcqh2635): " GIT_NAME
-    GIT_NAME=${GIT_NAME:-lcqh2635}
-
-    read -p "请输入您的 Git 邮箱 (默认 lcqh2635@gmail.com): " GIT_EMAIL
-    GIT_EMAIL=${GIT_EMAIL:-lcqh2635@gmail.com}
-
-    git config --global user.name "$GIT_NAME"
-    git config --global user.email "$GIT_EMAIL"
-
-    if [ ! -f "$HOME/.ssh/id_rsa.pub" ]; then
-        log_info "生成 SSH 密钥..."
-        ssh-keygen -t rsa -b 4096 -C "$GIT_EMAIL" -f "$HOME/.ssh/id_rsa" -N ""
-        log_info "公钥内容已复制到剪贴板 (需 wl-clipboard)，请添加到 GitHub/Gitee。"
-        cat "$HOME/.ssh/id_rsa.pub" | wl-copy
-        cat "$HOME/.ssh/id_rsa.pub"
-    else
-        log_warn "SSH 密钥已存在，跳过生成。"
-    fi
-}
-
 
 # ------------------------------------------------------------------------------
 # 主执行流程
@@ -1782,47 +2420,40 @@ main() {
     echo -e "${BLUE}  Fedora 初始化配置脚本 v2.0${NC}"
     echo -e "${BLUE}  作者：龙茶清欢 (优化版)${NC}"
     echo -e "${BLUE}========================================${NC}"
-    
-    wait_for_network
 
     if ! confirm_action "即将开始系统配置，过程中可能需要输入 sudo 密码。是否继续？"; then
         exit 0
     fi
-
+    
     # 1. 基础 GNOME 设置
     configure_basics_gsettings
-
     # 2. 软件源与 DNF
     configure_repos_and_dnf
-
+    check_repo
     # 3. 系统更新
-    system_update_and_cleanup
-
+    # system_update_and_cleanup
     # 4. 开发工具
     install_dev_tools
     configure_languages
     configure_git
-
     # 5. Flatpak 应用
-    configure_flatpak
-
-    # 6. 主题美化 (可选)
-    if confirm_action "是否安装 WhiteSur 主题并进行美化？"; then
-        install_theme_whitesur
-        apply_theme_settings
-    else
-        log_warn "跳过主题安装。"
-    fi
-
+    configure_flatpak_and_install_app
     # 7. JetBrains Toolbox
     if confirm_action "是否安装 JetBrains Toolbox？"; then
         install_jetbrains_toolbox
     else
-        log_warn "跳过 JetBrains Toolbox 安装。"
+        echo "跳过 JetBrains Toolbox 安装。"
     fi
-
+    # 6. 安装 Gnome Shell 扩展
+    install_gnome_extensions
+    # 7. 主题美化 (可选)
+    if confirm_action "是否安装 WhiteSur 主题并进行美化？"; then
+        install_theme_whitesur
+    else
+        echo "跳过主题安装。"
+    fi
     # 8. 最终清理
-    log_info "执行最终清理..."
+    echo "执行最终清理..."
     sudo dnf autoremove -y
     sudo dnf clean all
 
@@ -1831,10 +2462,14 @@ main() {
     echo -e "${GREEN}  建议重启系统以应用所有更改。${NC}"
     echo -e "${GREEN}========================================${NC}"
     
-    read -p "是否立即重启？(y/n): " -n 1 -r
+    read -p "是否立即退出当前用户登录？(y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        systemctl reboot
+        # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
+        # 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
+        # gnome-session-quit --logout --no-prompt
+        # 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
+        gnome-session-quit --logout
     fi
 }
 
