@@ -480,7 +480,7 @@ sudo dnf swap -y --allowerasing ffmpeg-free ffmpeg
 sudo dnf swap -y --allowerasing mesa-va-drivers mesa-va-drivers-freeworld
 sudo dnf swap -y --allowerasing mesa-vulkan-drivers mesa-vulkan-drivers-freeworld
 # sudo dnf swap -y --allowerasing mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
-sudo dnf install -y mesa-vdpau-drivers-freeworld.x86_64
+sudo dnf install -y mesa-vdpau-drivers-freeworld
 # 安装 VA-API 和 VDPAU 驱动，一般默认已安装
 # 查看 Mesa 驱动程序 freeworld 和原始驱动程序
 # dnf list mesa*
@@ -827,12 +827,53 @@ echo "🐍 你安装的 kubernetes-kubeadm 版本号为：$(kubeadm version)"
 echo "🐍 你安装的 k8s 命令行工具 kubectl 版本号为：$(kubectl version --client)"
 echo "🐍 你安装的 cri-o 版本号为：$(crio --version)"
 echo "🐍 你安装的 cri-tools 版本号为：$(crictl --version)"
-
+# Kubelet 配置
+# kubelet 是运行在 Kubernetes 集群每个节点上的核心代理程序，负责维护 Pod 的生命周期
 # 配置 kubelet  https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-kubelet/
 sudo cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 # 创建以下目录，用于用户管理的系统级 systemd kubelet 默认配置的覆盖
-sudo mkdir -p /etc/systemd/system/kubelet.service.d/
-sudo cat /var/lib/kubelet/config.yaml
+sudo mkdir -vp /etc/systemd/system/kubelet.service.d/
+cat << EOF | sudo tee /etc/systemd/system/kubelet.service.d/override.conf
+# 参考示例：sudo cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+[Service]
+# 补充环境变量（修复你日志中的警告）
+Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
+Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
+EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+EnvironmentFile=-/etc/sysconfig/kubelet
+
+# 如需覆盖 ExecStart，必须先清空原命令（谨慎使用！）
+ExecStart=
+ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
+EOF
+
+cat << EOF | sudo tee /var/lib/kubelet/config.yaml
+# /var/lib/kubelet/config.yaml
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+# 【Fedora 43 必填】cgroups v2 必须使用 systemd 驱动
+cgroupDriver: systemd
+# 【容器运行时】根据实际选择：
+containerRuntimeEndpoint: unix:///var/run/crio/crio.sock
+# containerRuntimeEndpoint: unix:///run/podman/podman.sock  # 需 podman 4.9+ 启用 CRI 支持
+# 【网络】
+clusterDNS:
+  - 10.96.0.10
+clusterDomain: cluster.local
+# 【安全】
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+authorization:
+  mode: Webhook
+# 【日志】
+v: 2  # 日志级别，调试时可设为 4-5
+EOF
+
+
+sudo ls /var/lib/kubelet
 
 sudo systemctl enable --now kubelet
 # sudo systemctl stop  kubelet
