@@ -827,6 +827,8 @@ echo "🐍 你安装的 kubernetes-kubeadm 版本号为：$(kubeadm version)"
 echo "🐍 你安装的 k8s 命令行工具 kubectl 版本号为：$(kubectl version --client)"
 echo "🐍 你安装的 cri-o 版本号为：$(crio --version)"
 echo "🐍 你安装的 cri-tools 版本号为：$(crictl --version)"
+
+
 # Kubelet 配置
 # kubelet 是运行在 Kubernetes 集群每个节点上的核心代理程序，负责维护 Pod 的生命周期
 # 配置 kubelet  https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-kubelet/
@@ -854,16 +856,8 @@ EOF
 sudo mkdir -vp /etc/systemd/system/kubelet.service.d/
 sudo tee /etc/systemd/system/kubelet.service.d/override.conf > /dev/null << 'EOF'
 # 参考示例：sudo cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
-[Service]
-# 补充环境变量（修复你日志中的警告）
-Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
-Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml --config-dir=/etc/kubernetes/kubelet.conf.d"
-EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
-EnvironmentFile=-/etc/sysconfig/kubelet
-
-# 如需覆盖 ExecStart，必须先清空原命令（谨慎使用！）
-ExecStart=
-ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
+Environment="KUBELET_KUBEADM_ARGS="
+Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
 EOF
 
 # 4. 重载并启动
@@ -875,6 +869,55 @@ sudo systemctl enable --now kubelet
 # 5. 验证
 systemctl status kubelet --no-pager
 journalctl -u kubelet -n 20 --no-pager
+
+
+# ========== 阶段 1：系统预准备 ==========
+# 1. 更新系统（可选但推荐）
+sudo dnf update -y
+# 💡 如有内核更新，建议重启：sudo reboot now
+
+# 2. 禁用 swap（kubeadm 强制要求，Fedora 默认使用 zram）
+sudo systemctl stop swap-create@zram0
+sudo dnf remove -y zram-generator-defaults
+# ⚠️ 必须重启使 swap 完全失效
+sudo reboot now
+
+# 3. 【可选】SELinux 处理（生产建议启用，学习可临时关闭）
+# 临时关闭（重启失效）：
+sudo setenforce 0
+# 永久关闭（不推荐）：编辑 /etc/selinux/config 设 SELINUX=permissive
+
+# 4. 禁用防火墙（学习简化，生产需配置规则）
+sudo systemctl disable --now firewalld
+
+# 5. 安装网络基础包
+sudo dnf install -y iptables iproute-tc
+
+# 6. 配置内核模块（桥接过滤 + overlay）
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
+
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+# 7. 配置 sysctl 网络参数（持久化）
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
+
+sudo sysctl --system  # 立即生效
+
+# 8. 验证配置
+lsmod | grep -E 'br_netfilter|overlay'
+sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
+# ✅ 预期输出：三项均为 1
+
+
+
 
 # IDEA 添加 Kubernetes 集群，参考 jetbrains 官方文档 https://www.jetbrains.com/zh-cn/help/idea/kubernetes.html
 # 在 设置 对话框（Ctrl + Alt + S ）中，选择 构建、执行、部署 | Kubernetes。测试好 kubectl（K8s 的命令行工具 CLI） 和 Helm（K8s 的“包管理器”） 
