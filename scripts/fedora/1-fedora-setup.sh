@@ -830,15 +830,34 @@ echo "🐍 你安装的 cri-tools 版本号为：$(crictl --version)"
 # Kubelet 配置
 # kubelet 是运行在 Kubernetes 集群每个节点上的核心代理程序，负责维护 Pod 的生命周期
 # 配置 kubelet  https://docs.fedoraproject.org/zh_Hans/quick-docs/using-kubernetes-kubelet/
-sudo cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
-# 创建以下目录，用于用户管理的系统级 systemd kubelet 默认配置的覆盖
+# sudo cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+# 1. 创建配置目录
+sudo mkdir -vp /var/lib/kubelet
+
+# 2. 生成最小化 config.yaml（适配 Fedora 43 + CRI-O）
+sudo tee /var/lib/kubelet/config.yaml > /dev/null << 'EOF'
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+cgroupDriver: systemd
+containerRuntimeEndpoint: unix:///var/run/crio/crio.sock
+clusterDNS:
+  - 10.96.0.10
+clusterDomain: cluster.local
+authentication:
+  anonymous: { enabled: false }
+  webhook: { enabled: true }
+authorization: { mode: Webhook }
+v: 2
+EOF
+
+# 3. 修复 systemd 环境变量警告
 sudo mkdir -vp /etc/systemd/system/kubelet.service.d/
-cat << EOF | sudo tee /etc/systemd/system/kubelet.service.d/override.conf
+sudo tee /etc/systemd/system/kubelet.service.d/override.conf > /dev/null << 'EOF'
 # 参考示例：sudo cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 [Service]
 # 补充环境变量（修复你日志中的警告）
 Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
-Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
+Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml --config-dir=/etc/kubernetes/kubelet.conf.d"
 EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
 EnvironmentFile=-/etc/sysconfig/kubelet
 
@@ -847,38 +866,15 @@ ExecStart=
 ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
 EOF
 
-cat << EOF | sudo tee /var/lib/kubelet/config.yaml
-# /var/lib/kubelet/config.yaml
-apiVersion: kubelet.config.k8s.io/v1beta1
-kind: KubeletConfiguration
-# 【Fedora 43 必填】cgroups v2 必须使用 systemd 驱动
-cgroupDriver: systemd
-# 【容器运行时】根据实际选择：
-containerRuntimeEndpoint: unix:///var/run/crio/crio.sock
-# containerRuntimeEndpoint: unix:///run/podman/podman.sock  # 需 podman 4.9+ 启用 CRI 支持
-# 【网络】
-clusterDNS:
-  - 10.96.0.10
-clusterDomain: cluster.local
-# 【安全】
-authentication:
-  anonymous:
-    enabled: false
-  webhook:
-    enabled: true
-authorization:
-  mode: Webhook
-# 【日志】
-v: 2  # 日志级别，调试时可设为 4-5
-EOF
-
-
-sudo ls /var/lib/kubelet
-
+# 4. 重载并启动
+sudo systemctl daemon-reload
+# 清除 572 次失败计数
+sudo systemctl reset-failed kubelet
 sudo systemctl enable --now kubelet
-# sudo systemctl stop  kubelet
-# 查看 kubelet 服务状态
+
+# 5. 验证
 systemctl status kubelet --no-pager
+journalctl -u kubelet -n 20 --no-pager
 
 # IDEA 添加 Kubernetes 集群，参考 jetbrains 官方文档 https://www.jetbrains.com/zh-cn/help/idea/kubernetes.html
 # 在 设置 对话框（Ctrl + Alt + S ）中，选择 构建、执行、部署 | Kubernetes。测试好 kubectl（K8s 的命令行工具 CLI） 和 Helm（K8s 的“包管理器”） 
