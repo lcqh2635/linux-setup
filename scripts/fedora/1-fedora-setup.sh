@@ -209,6 +209,12 @@ sudo dnf config-manager setopt max_parallel_downloads=10
 # 现在验证当前运行时的值，而不仅仅是检查文件内容：
 dnf --dump-main-config | grep -E '^(fastestmirror|max_parallel_downloads) = '
 
+# 由于这个仓库默认使用 https://mirrors.fedoraproject.org 导致经常等新超时，先禁用该仓库
+# ls /etc/yum.repos.d && cat /etc/yum.repos.d/fedora-cisco-openh264.repo
+sudo dnf config-manager setopt fedora-cisco-openh264.enabled=0 2>/dev/null
+# 禁用 Google Chrome 仓库，由于从该仓库中安装的 Google Chrome 只有一个暗色主题，无法根据系统切换主题，所以禁用
+sudo dnf config-manager setopt google-chrome.enabled=0 2>/dev/null
+
 # https://docs.fedoraproject.org/zh_Hans/quick-docs/adding-or-removing-software-repositories-in-fedora/
 REPO_ID="copr:copr.fedorainfracloud.org:phracek:PyCharm"
 REPO_FILE="/etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo"
