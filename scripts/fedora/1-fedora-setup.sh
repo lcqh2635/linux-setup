@@ -341,6 +341,7 @@ flatpak install -y flathub io.github.realmazharhussain.GdmSettings
 flatpak install -y flathub com.microsoft.Edge
 # Google Chrome 是一款结合极简设计与先进技术的浏览器，旨在让网页更快、更安全、更便捷
 flatpak install -y flathub com.google.Chrome
+flatpak install -y flathub org.localsend.localsend_app
 }
 
 

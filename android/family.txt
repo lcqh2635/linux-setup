@@ -1,0 +1,27 @@
+安卓手机原生刷 PostmarketOS Linux 系统，这会清除 Android 系统
+https://postmarketos.org/
+
+
+以下的方式，通过容器的方式安装 Linux 系统，包括 chroot 和 proot 两种容器方式
+https://www.bilibili.com/video/BV1jCM1zFEqL/?vd_source=75333bb53891f589527eedfb7b2d5911
+
+https://magiskcn.com/
+https://magiskcn.com/mi-boot.html
+https://github.com/topjohnwu/Magisk
+
+
+https://magiskcn.com/lsposed-install.html
+https://github.com/Dr-TSNG/ZygiskNext
+
+
+https://magiskcn.com/8d73ae28.html
+
+
+
+https://github.com/meefik/linuxdeploy
+https://github.com/meefik/busybox
+
+https://zerotermux.dev/
+https://github.com/hanxinhao000/ZeroTermux
+https://github.com/termux/termux-x11
+
