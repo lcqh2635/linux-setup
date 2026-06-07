@@ -219,6 +219,14 @@ sudo reboot
 su
 if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_panel.sh;else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh;fi;bash install_panel.sh ed8484bec
 # 宝塔面板破解
+========================面板账户登录信息==========================
+ 【云服务器】请在安全组放行 37400 端口
+ 外网ipv4面板地址: https://27.44.140.159:37400/79e11daa
+ 内网面板地址:     https://172.16.42.1:37400/79e11daa
+ username: kggbnkmg
+ password: f4530bad
+ 浏览器访问以下链接，添加宝塔客服
+ https://www.bt.cn/new/wechat_customer
 
 
 
@@ -229,3 +237,5 @@ https://www.cloudflare-cn.com/personal/
 https://zhuanlan.zhihu.com/p/638004070
 https://test-ipv6.com/
 https://ipv6.ddnspod.com/
+
+# 连接蓝牙键盘，按住 FN + 1 3至4秒进入配对模式
