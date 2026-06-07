@@ -218,7 +218,6 @@ sudo reboot
 # 安装宝塔面板
 su
 if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_panel.sh;else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh;fi;bash install_panel.sh ed8484bec
-# 宝塔面板破解
 ========================面板账户登录信息==========================
  【云服务器】请在安全组放行 37400 端口
  外网ipv4面板地址: https://27.44.140.159:37400/79e11daa
@@ -227,7 +226,8 @@ if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_pa
  password: f4530bad
  浏览器访问以下链接，添加宝塔客服
  https://www.bt.cn/new/wechat_customer
-
+# 宝塔面板破解
+https://docs.btkaixin.com/
 
 
 # 内网穿透
