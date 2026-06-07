@@ -7,11 +7,10 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45bff0d3-11c2-4e5e-9cc6-0ab6bd07ee41" name="更改" comment="backup">
-      <change afterPath="$PROJECT_DIR$/android/Root 安卓手机安装 Linux 系统作为办公电脑完整指南.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/android/family.txt" afterDir="false" />
+    <list default="true" id="45bff0d3-11c2-4e5e-9cc6-0ab6bd07ee41" name="更改" comment="安卓手机安装 Linux 系统">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/fedora/1-fedora-setup.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/fedora/1-fedora-setup.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/family.txt" beforeDir="false" afterPath="$PROJECT_DIR$/android/family.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/Cargo-demo.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +42,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;SHELLCHECK.PATH&quot;: &quot;/home/lcqh/.local/share/JetBrains/IntelliJIdea2025.3/Shell Script/shellcheck&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/lcqh/文档/linux-setup&quot;,
@@ -92,7 +92,9 @@
       <workItem from="1779420682979" duration="4648000" />
       <workItem from="1779521598445" duration="7307000" />
       <workItem from="1779594189393" duration="206000" />
-      <workItem from="1780066983291" duration="5448000" />
+      <workItem from="1780066983291" duration="12316000" />
+      <workItem from="1780822789233" duration="1217000" />
+      <workItem from="1780830725444" duration="5938000" />
     </task>
     <task id="LOCAL-00001" summary="backup">
       <option name="closed" value="true" />
@@ -174,7 +176,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779522761391</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="安卓手机安装 Linux 系统">
+      <option name="closed" value="true" />
+      <created>1780108060269</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1780108060269</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -182,6 +192,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="backup" />
-    <option name="LAST_COMMIT_MESSAGE" value="backup" />
+    <MESSAGE value="安卓手机安装 Linux 系统" />
+    <option name="LAST_COMMIT_MESSAGE" value="安卓手机安装 Linux 系统" />
   </component>
 </project>
