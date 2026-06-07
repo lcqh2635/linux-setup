@@ -65,6 +65,45 @@ ssh user@172.16.42.1
 # sudo passwd root
 
 
+gsettings set org.gnome.shell always-show-log-out true
+gsettings set org.gnome.desktop.interface accent-color 'blue'
+gsettings set org.gnome.mutter center-new-windows true
+gsettings set org.gnome.desktop.interface clock-show-weekday true
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
+gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
+gsettings set org.gnome.system.location enabled false
+gsettings set org.gnome.desktop.privacy disable-camera true
+gsettings set org.gnome.desktop.privacy disable-microphone true
+# gsettings list-recursively org.gnome.nautilus.preferences
+gsettings set org.gnome.nautilus.preferences date-time-format 'detailed'
+gsettings set org.gnome.nautilus.preferences default-sort-order 'type'
+gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
+gsettings set org.gnome.nautilus.preferences show-delete-permanently true
+# Ptyxis 终端
+gsettings set org.gnome.Ptyxis interface-style 'system'
+gsettings set org.gnome.shell.weather automatic-location true
+# 快捷键优化
+# gsettings list-recursively org.gnome.desktop.wm.keybindings
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
+# 切换当前工作区所有的窗口的显示与隐藏，可以替代 Show Desktop Button 扩展插件的功能
+gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
+gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
+gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
+# gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
+# Alt + Super 移动当前工作取得窗口到左右其他工作区
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
+
+
 # 查看默认的软件源配置
 cat /etc/apt/sources.list
 cat /etc/apt/sources.list.d/debian.sources
@@ -106,13 +145,11 @@ gnome-shell-extension-manager \
 gnome-shell-extension-user-theme \
 gnome-shell-extension-dashtodock \
 gnome-shell-extension-appindicator \
-gnome-shell-extension-auto-move-windows \
 gnome-shell-extension-autohidetopbar \
 gnome-shell-extension-blur-my-shell \
 gnome-shell-extension-appindicator \
 gnome-shell-extension-caffeine \
-gnome-shell-extension-desktop-icons-ng \
-gnome-shell-extension-drive-menu
+gnome-shell-extension-desktop-icons-ng
 
 
     # gsettings list-schemas | grep 'org.gnome.shell.extensions'
@@ -127,6 +164,8 @@ gnome-shell-extension-drive-menu
     gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
     gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
+    gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
+    gsettings set org.gnome.shell.extensions.dash-to-dock show-trash false
 
 
 # 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
@@ -139,13 +178,10 @@ gnome-shell-extension-drive-menu
 gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
 gnome-extensions enable dash-to-dock@micxgx.gmail.com
 gnome-extensions enable ubuntu-appindicators@ubuntu.com
-gnome-extensions enable auto-move-windows@gnome-shell-extensions.gcampax.github.com
 gnome-extensions enable blur-my-shell@aunetx
 gnome-extensions enable caffeine@patapon.info
-gnome-extensions enable ding@rastersoft.com
+gnome-extensions disable ding@rastersoft.com
 gnome-extensions enable hidetopbar@mathieu.bidon.ca
-gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
-
 
 
 # gsettings list-recursively org.gnome.desktop.interface
@@ -153,43 +189,8 @@ gnome-extensions enable drive-menu@gnome-shell-extensions.gcampax.github.com
 # gsettings get org.gnome.desktop.interface scaling-factor
 # 设置 200% 缩放（2倍，默认为 250%）
 gsettings set org.gnome.desktop.interface scaling-factor 2
-gsettings set org.gnome.shell always-show-log-out true
-gsettings set org.gnome.desktop.interface accent-color 'blue'
-gsettings set org.gnome.mutter center-new-windows true
-gsettings set org.gnome.desktop.interface clock-show-weekday true
-gsettings set org.gnome.desktop.interface show-battery-percentage true
-gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
-gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
-gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
-gsettings set org.gnome.system.location enabled false
-gsettings set org.gnome.desktop.privacy disable-camera true
-gsettings set org.gnome.desktop.privacy disable-microphone true
-# gsettings list-recursively org.gnome.nautilus.preferences
-gsettings set org.gnome.nautilus.preferences date-time-format 'detailed'
-gsettings set org.gnome.nautilus.preferences default-sort-order 'type'
-gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
-gsettings set org.gnome.nautilus.preferences show-delete-permanently true
-# Ptyxis 终端
-gsettings set org.gnome.Ptyxis interface-style 'system'
-gsettings set org.gnome.shell.weather automatic-location true
-# 快捷键优化
-# gsettings list-recursively org.gnome.desktop.wm.keybindings
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
-# 切换当前工作区所有的窗口的显示与隐藏，可以替代 Show Desktop Button 扩展插件的功能
-gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
-gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
-gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
-# gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
-gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
-# Alt + Super 移动当前工作取得窗口到左右其他工作区
-gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
-gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
+
+
 
 sudo apt install -y flatpak
 sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -208,13 +209,16 @@ sudo flatpak install -y flathub com.microsoft.Edge
 sudo flatpak install -y flathub com.google.Chrome
 
 # 安装 RustDesk 和 虚拟显示器所需的核心包
-cd ~/下载
-sudo apt update
-sudo apt install wget
-wget "https://gh-proxy.org/https://github.com/rustdesk/rustdesk/releases/download/1.4.7/rustdesk-1.4.7-aarch64.deb"
-sudo dpkg -i rustdesk-1.4.7-aarch64.deb
+sudo flatpak install -y flathub com.rustdesk.RustDesk
+
 
 sudo reboot
+
+
+# 安装宝塔面板
+if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_panel.sh;else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh;fi;bash install_panel.sh ed8484bec
+# 宝塔面板破解
+
 
 
 # 内网穿透

@@ -8,9 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45bff0d3-11c2-4e5e-9cc6-0ab6bd07ee41" name="更改" comment="安卓手机安装 Linux 系统">
-      <change afterPath="$PROJECT_DIR$/android/Android 手机刷原生 Linux 系统操作记录.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/fedora/setup.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/fedora/setup.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/Android 手机刷原生 Linux 系统操作记录.sh" beforeDir="false" afterPath="$PROJECT_DIR$/android/Android 手机刷原生 Linux 系统操作记录.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +94,7 @@
       <workItem from="1780066983291" duration="12316000" />
       <workItem from="1780822789233" duration="1217000" />
       <workItem from="1780830725444" duration="6391000" />
-      <workItem from="1780843477000" duration="104000" />
+      <workItem from="1780843477000" duration="2086000" />
     </task>
     <task id="LOCAL-00001" summary="backup">
       <option name="closed" value="true" />
@@ -193,7 +192,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780842595737</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="安卓手机安装 Linux 系统">
+      <option name="closed" value="true" />
+      <created>1780843598078</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1780843598078</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
