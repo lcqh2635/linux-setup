@@ -11,7 +11,7 @@
 # 	cd ~/文档 && git clone --depth=1 git@gitee.com:lcqh2635/linux-setup.git
 # 仓库提交：cd ~/文档/linux-setup && git add . && git commit -m 'backup' && git push
 # ==============================================================================
-666
+
 # ------------------------------------------------------------------------------
 # Fedora 操作系统 ISO 下载网址：
 # https://fedoraproject.org/zh-Hans/
