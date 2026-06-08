@@ -251,6 +251,19 @@ if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_pa
 #==================================================================
 
 
+# 1. 查看防火墙状态和规则
+sudo ufw status
+# 2. 如果状态是 active，确保 22 端口（或你自定义的 SSH 端口）是 ALLOW
+# 如果没有，手动放行 22 端口：
+sudo ufw allow 22/tcp
+sudo ufw allow 8888/tcp
+sudo ufw allow 888/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 8080/tcp
+sudo ufw allow 443/tcp
+# 3. 重新加载防火墙
+sudo ufw reload
+
 # 宝塔面板破解
 # https://docs.btkaixin.com/
 # https://bt11.bthappy.com/
@@ -261,6 +274,7 @@ sudo bt
 
 hostname -I
 # 使用上面的本机 IP 地址进行远程 SSH 连接
+ssh user@172.16.42.1
 ssh user@192.168.1.2
 
 
