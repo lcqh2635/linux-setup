@@ -206,30 +206,27 @@ go env -w GOPATH=$HOME/.go
 # go env GOPATH
 
 
-# 安装 docker 容器  https://docs.docker.com/engine/install/ubuntu/
-sudo apt remove -y $(dpkg --get-selections docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc | cut -f1)
-# Add Docker's official GPG key:
-sudo apt update
-sudo apt install -y ca-certificates curl
+# 1. 更新apt包索引并安装依赖，以允许apt通过HTTPS使用仓库
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+# 2. 添加Docker的官方GPG密钥（使用阿里云镜像加速）
 sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-# Add the repository to Apt sources:
-sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
-Types: deb
-URIs: https://download.docker.com/linux/ubuntu
-Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
-Components: stable
-Architectures: $(dpkg --print-architecture)
-Signed-By: /etc/apt/keyrings/docker.asc
-EOF
+# 3. 设置Docker的APT软件源（同样使用阿里云镜像）
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://mirrors.aliyun.com/docker-ce/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# 4. 更新apt包索引，建立缓存
+sudo apt-get update
+# 执行命令，安装Docker CE（社区版）相关组件
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 # 启用用户级 socket
-sudo systemctl  enable --now docker.socket
-sudo systemctl  status docker.socket --no-pager
+sudo systemctl enable --now docker
+sudo systemctl status docker --no-pager
 
 
 # 重启系统
