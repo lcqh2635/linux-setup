@@ -114,7 +114,7 @@ sudo apt install -y build-essential curl wget git unzip
 sudo apt install -y default-jdk
 java -version
 # 管理多个 Java 版本
-sudo update-alternatives --config java
+sudo update-alternatives --auto java
 # 安装 Maven
 sudo apt install -y maven gradle
 mvn -v
