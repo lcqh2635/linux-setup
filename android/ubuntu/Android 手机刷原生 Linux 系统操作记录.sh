@@ -239,14 +239,17 @@ hostname -I
 su
 if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_panel.sh;else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh;fi;bash install_panel.sh ed8484bec
 #========================面板账户登录信息==========================
-# 【云服务器】请在安全组放行 13253 端口
-# 外网ipv4面板地址: https://27.44.140.159:13253/b389246a
-# 内网面板地址:     https://172.16.42.1:13253/b389246a
-# username: jsiwyg8k
-# password: 331ac94a
+#
+# 【云服务器】请在安全组放行 16262 端口
+# 外网ipv4面板地址: https://27.44.140.143:16262/b6878eb2
+# 内网面板地址:     https://172.16.42.1:16262/b6878eb2
+# username: 2knolzcf
+# password: c9568a3b
+#
 # 浏览器访问以下链接，添加宝塔客服
 # https://www.bt.cn/new/wechat_customer
 #==================================================================
+
 
 # 宝塔面板破解
 # https://docs.btkaixin.com/
