@@ -55,6 +55,9 @@ ssh user@172.16.42.1
 # 更改超级管理员 root 的密码
 # sudo passwd root
 
+# 提前记住本机的 IP 地址
+hostname -I
+
 
 # 如果你刷入的是完整的 Linux 系统（如 Ubuntu Touch、PostmarketOS），系统通常会使用 NetworkManager 来管理网络，而不是 netplan。
 # 你可以尝试在 SSH 终端中使用 nmcli 命令来连接 Wi-Fi：
@@ -72,8 +75,8 @@ ip a show wld0
 
 
 # 查看默认的软件源配置
-cat /etc/apt/sources.list
-cat /etc/apt/sources.list.d/ubuntu.sources
+# cat /etc/apt/sources.list
+# cat /etc/apt/sources.list.d/ubuntu.sources
 # 备份原有配置并将其置空，改用下面的 DEB822 格式配置
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
 sudo tee /etc/apt/sources.list < /dev/null
@@ -214,7 +217,7 @@ sudo systemctl  status docker.socket --no-pager
 sudo reboot
 
 # 在安装 bt 宝塔面板之前，及的提前记录好系统的本地 IP 地质
-ip addr
+hostname -I
 
 # 安装宝塔面板
 su
