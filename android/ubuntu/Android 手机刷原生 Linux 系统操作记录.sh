@@ -248,7 +248,12 @@ if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_pa
 # https://www.bt.cn/new/wechat_customer
 #==================================================================
 
-# 宝塔面板破解  https://docs.btkaixin.com/
+# 宝塔面板破解
+# https://docs.btkaixin.com/
+# https://bt11.bthappy.com/
+su
+if [ -f /usr/bin/curl ];then curl -sSO https://bt11.bthappy.com/install/install_panel.sh;else wget -O install_panel.sh https://bt11.bthappy.com/install/install_panel.sh;fi;bash install_panel.sh bt11.bthappy.com
+
 sudo bt
 
 hostname -I
