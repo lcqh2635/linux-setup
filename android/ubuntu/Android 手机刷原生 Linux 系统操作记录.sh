@@ -204,7 +204,7 @@ go env -w GOPATH=$HOME/.go
 
 
 # 安装 Podman
-sudo apt install podman podman-compose
+sudo apt install -y podman podman-compose
 # 启用用户级 socket
 systemctl --user enable --now podman.socket
 systemctl --user status podman.socket --no-pager

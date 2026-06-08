@@ -1,0 +1,267 @@
+sudo dnf install -y unzip p7zip p7zip-plugins
+# scrcpy 是一款完全免费、开源的安卓设备投屏和控制工具
+# sudo dnf copr enable -y zeno/scrcpy && sudo dnf install -y scrcpy
+# scrcpy 的工作依赖于安卓系统内置的 ADB (Android Debug Bridge) 调试服务。你的 K20 Pro 现在运行的是完整的 Debian 系统，
+# 这个环境里没有 ADB 服务，所以之前的那些方法自然就不管用了
+
+# 这是目前最通用的方法。思路是在手机上运行一个 VNC 服务器，然后在电脑上用客户端连接并查看。
+sudo apt update && sudo apt install tightvncserver
+# 安装完成后，运行 vncserver 命令来初始化并设置一个密码。
+记下终端输出的信息，比如 New 'X' desktop is your-hostname:1，这里的 :1 就是显示编号，对应的端口是 5901 (默认端口5900 + 显示编号)。
+
+
+
+# https://github.com/GengWei1997/linux-xiaomi-raphael-uboot
+
+1、设备已完成 Bootloader 解锁
+# 2、打开 USB 调试功能：在手机的 “开发者选项” 中，打开 “USB 调试” 功能
+# 路径：设置 → 关于手机 → 连续点击 “版本号” 直到提示 “开发者选项已启用” → 返回上级菜单进入 “开发者选项” → 打开 “USB调试”
+3、在电脑上安装 adb、fastboot 刷机工具，在终端执行如下 dnf 安装命令
+sudo dnf install -y android-tools
+# 2、验证：检查 adb 和 fastboot 是否安装成功，并能正确响应
+adb --version
+fastboot --version
+# 4、连接测试：用USB数据线连接手机和电脑，并在终端输入命令确认
+adb devices
+
+
+在电脑上下载并解压 rootfs-ubuntu-gnome-7.0-resolute.zip，解压获取 rootfs.img 和 xiaomi-k20pro-boot.img 内核驱动镜像。
+mkdir -vp ~/下载/刷机 && cd ~/下载/刷机
+wget "https://gh-proxy.org/https://github.com/GengWei1997/linux-xiaomi-raphael-uboot/releases/download/v1.0.0/u-boot-sm8150-xiaomi-raphael.img.zip"
+wget "https://gh-proxy.org/https://github.com/GengWei1997/linux-xiaomi-raphael-uboot/releases/download/latest/rootfs-ubuntu-server-7.0-resolute.7z"
+# wget "https://gh-proxy.org/https://github.com/GengWei1997/linux-xiaomi-raphael-uboot/releases/download/latest/rootfs-debian-gnome-7.0-trixie.7z"
+
+
+
+
+# 1. 解压（会保留原目录结构）
+7z x rootfs-debian-gnome-7.0-trixie.7z
+unzip u-boot-sm8150-xiaomi-raphael.img.zip
+
+
+# 1. 进入 Fastboot 模式
+adb reboot bootloader
+# 2. 擦除分区
+fastboot erase dtbo
+fastboot erase boot
+fastboot erase cache
+fastboot erase userdata
+# 3. 刷入 boot 镜像
+fastboot flash cache xiaomi-k20pro-boot.img
+fastboot flash boot u-boot.img
+# 4. 刷入系统镜像（需要先解压 rootfs.7z）
+fastboot flash userdata rootfs.img
+# 5. 重启设备
+fastboot reboot
+
+
+# 执行完以上命令后，系统将安装成功，使用默认的如下账号登录：
+普通用户：user / 1234
+超级用户：root / 1234
+# 设备默认 IP：172.16.42.1，SSH 连接命令：
+ssh user@172.16.42.1
+# 更改指定用户（比如用户名为 "user"）的密码
+# sudo passwd user
+# 更改超级管理员 root 的密码
+# sudo passwd root
+
+
+gsettings set org.gnome.shell always-show-log-out true
+gsettings set org.gnome.desktop.interface accent-color 'blue'
+gsettings set org.gnome.mutter center-new-windows true
+gsettings set org.gnome.desktop.interface clock-show-weekday true
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 4000
+gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+gsettings set org.gnome.desktop.wm.preferences workspace-names "['工作/代码', '浏览/文档', '娱乐/交流']"
+gsettings set org.gnome.system.location enabled false
+gsettings set org.gnome.desktop.privacy disable-camera true
+gsettings set org.gnome.desktop.privacy disable-microphone true
+# gsettings list-recursively org.gnome.nautilus.preferences
+gsettings set org.gnome.nautilus.preferences date-time-format 'detailed'
+gsettings set org.gnome.nautilus.preferences default-sort-order 'type'
+gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
+gsettings set org.gnome.nautilus.preferences show-delete-permanently true
+# Ptyxis 终端
+gsettings set org.gnome.Ptyxis interface-style 'system'
+gsettings set org.gnome.shell.weather automatic-location true
+# 快捷键优化
+# gsettings list-recursively org.gnome.desktop.wm.keybindings
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Alt>Left']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Alt>Right']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-last "['<Alt>End']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Alt>1']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "['<Alt>2']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "['<Alt>3']"
+# 切换当前工作区所有的窗口的显示与隐藏，可以替代 Show Desktop Button 扩展插件的功能
+gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>Home']"
+gsettings set org.gnome.desktop.wm.keybindings maximize "['<Super>Up']"
+gsettings set org.gnome.desktop.wm.keybindings unmaximize "['<Super>Down']"
+# gsettings set org.gnome.desktop.wm.keybindings close "['<Super>c']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
+# Alt + Super 移动当前工作取得窗口到左右其他工作区
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
+
+
+# 查看默认的软件源配置
+cat /etc/apt/sources.list
+cat /etc/apt/sources.list.d/debian.sources
+# 备份原有配置并将其置空，改用下面的 DEB822 格式配置
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+sudo tee /etc/apt/sources.list < /dev/null
+# 配置 USTC 中科大加速镜像源
+# https://mirrors.ustc.edu.cn/help/debian.html
+# https://mirrors.tuna.tsinghua.edu.cn/help/debian/
+
+cat << EOF | sudo tee /etc/apt/sources.list.d/debian.sources
+Types: deb
+URIs: http://mirrors.ustc.edu.cn/debian
+Suites: trixie trixie-updates trixie-backports
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+# 以下安全更新软件源为镜像站配置
+Types: deb
+URIs: http://mirrors.ustc.edu.cn/debian-security
+Suites: trixie-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+EOF
+
+# 更新系统
+sudo apt update -y && sudo apt upgrade -y
+# 2. 尝试自动修复所有损坏的依赖关系
+sudo apt --fix-broken install
+# 3. 清理不再需要的软件包和过时的缓存libreoffice
+sudo apt autoremove
+sudo apt autoclean
+sudo apt install -y apt-transport-https ca-certificates
+sudo apt install -y fastfetch gnome-software gnome-software-plugin-flatpak
+sudo apt remove -y libreoffice*
+
+sudo apt install -y \
+gnome-shell-extension-manager \
+gnome-shell-extension-user-theme \
+gnome-shell-extension-dashtodock \
+gnome-shell-extension-appindicator \
+gnome-shell-extension-autohidetopbar \
+gnome-shell-extension-blur-my-shell \
+gnome-shell-extension-appindicator \
+gnome-shell-extension-caffeine \
+gnome-shell-extension-desktop-icons-ng
+
+
+    # gsettings list-schemas | grep 'org.gnome.shell.extensions'
+
+    # Dash To Dock
+    # gsettings list-recursively org.gnome.shell.extensions.dash-to-dock
+    # gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
+    gsettings set org.gnome.shell.extensions.dash-to-dock animation-time 0.5
+    gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+    gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+    gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+    gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-style 'DASHES'
+    gsettings set org.gnome.shell.extensions.dash-to-dock running-indicator-dominant-color true
+    gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
+    gsettings set org.gnome.shell.extensions.dash-to-dock show-trash false
+
+    
+# 想要彻底退出当前用户的所有程序并返回到登录屏幕（GDM）
+# 立即登出（不确认）：这会关闭所有打开的应用程序并返回到登录界面
+# gnome-session-quit --logout --no-prompt
+# 弹出确认对话框：会弹出一个图形化的确认框，询问你是否真的要登出。
+# gnome-session-quit --logout
+
+# gnome-extensions list --system
+gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable dash-to-dock@micxgx.gmail.com
+gnome-extensions enable ubuntu-appindicators@ubuntu.com
+gnome-extensions enable blur-my-shell@aunetx
+gnome-extensions enable caffeine@patapon.info
+gnome-extensions disable ding@rastersoft.com
+gnome-extensions enable hidetopbar@mathieu.bidon.ca
+
+
+# gsettings list-recursively org.gnome.desktop.interface
+# gsettings reset org.gnome.desktop.interface scaling-factor
+# gsettings get org.gnome.desktop.interface scaling-factor
+# 设置 200% 缩放（2倍，默认为 250%）
+gsettings set org.gnome.desktop.interface scaling-factor 2
+
+
+
+sudo apt install -y flatpak
+sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+sudo flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
+sudo flatpak override --filesystem=xdg-config/gtk-3.0:ro
+sudo flatpak override --filesystem=xdg-config/gtk-4.0:ro
+sudo flatpak override --filesystem=xdg-data/themes:ro
+sudo flatpak override --filesystem=xdg-data/icons:ro
+sudo flatpak override --filesystem=$HOME/.themes:ro
+sudo flatpak override --filesystem=$HOME/.icons:ro
+sudo flatpak install -y flathub io.github.kolunmi.Bazaar
+sudo flatpak install -y flathub com.github.tchx84.Flatseal
+sudo flatpak install -y flathub io.github.flattool.Warehouse
+sudo flatpak install -y flathub io.github.realmazharhussain.GdmSettings
+sudo flatpak install -y flathub com.microsoft.Edge
+sudo flatpak install -y flathub com.google.Chrome
+
+# 安装 RustDesk 和 虚拟显示器所需的核心包
+sudo flatpak install -y flathub com.rustdesk.RustDesk
+
+
+sudo reboot
+
+# https://www.debian.club/applications/development
+# 更新软件包列表并升级已安装的包
+sudo apt update && sudo apt upgrade -y
+# 安装基础工具
+sudo apt install -y curl wget git unzip
+# 安装 OpenJDK 21 (包含 JDK 和 JRE)
+sudo apt install -y default-jdk
+java -version
+# 管理多个 Java 版本
+sudo update-alternatives --config java
+# 安装 Maven
+sudo apt install -y maven
+mvn -v
+# 查看可用的 LTS (长期支持) 版本
+sudo apt install -y nodejs
+node -v
+npm -v
+# 安装 Bun
+npm install -g bun
+
+
+# 安装宝塔面板
+su
+if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_panel.sh;else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh;fi;bash install_panel.sh ed8484bec
+# 宝塔面板破解
+========================面板账户登录信息==========================
+ 【云服务器】请在安全组放行 37400 端口
+ 外网ipv4面板地址: https://27.44.140.159:37400/79e11daa
+ 内网面板地址:     https://172.16.42.1:37400/79e11daa
+ username: kggbnkmg
+ password: f4530bad
+ 浏览器访问以下链接，添加宝塔客服
+ https://www.bt.cn/new/wechat_customer
+https://192.168.1.5:37400/79e11daa
+# 执行节点修复命令：
+curl https://download.bt.cn/tools/auto_node.sh | bash
+
+
+
+
+# 内网穿透
+https://www.bilibili.com/video/BV1H4421X7Wg?spm_id_from=333.788.player.player_end_recommend_autoplay&vd_source=75333bb53891f589527eedfb7b2d5911&trackid=web_related_0.router-related-2589621-dpmnd.1780842559398.275
+
+https://www.cloudflare-cn.com/personal/
+https://zhuanlan.zhihu.com/p/638004070
+https://test-ipv6.com/
+https://ipv6.ddnspod.com/
+
+# 连接蓝牙键盘，按住 FN + 1 3至4秒进入配对模式
+
