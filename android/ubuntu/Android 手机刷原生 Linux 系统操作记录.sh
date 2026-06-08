@@ -229,20 +229,22 @@ sudo systemctl enable --now docker
 sudo systemctl status docker --no-pager
 
 
+# 1. 更新软件源并安装 ufw
+sudo apt update
+sudo apt install -y ufw
+
+# 2. 依次添加必须的放行规则 (在启用防火墙前添加，最安全)
+sudo ufw allow 22/tcp    # SSH 端口 (保命端口)
+sudo ufw allow 8888/tcp  # 宝塔面板端口
+sudo ufw allow 88/tcp    # 宝塔 phpMyAdmin 端口
+sudo ufw allow 80/tcp    # HTTP 网站端口
+sudo ufw allow 443/tcp   # HTTPS 网站端口
+
+# 3. 启用防火墙 (系统会提示可能中断 SSH，输入 y 并回车确认)
+sudo ufw enable
+
 # 1. 查看防火墙状态和规则
 sudo ufw status
-# 2. 如果状态是 active，确保 22 端口（或你自定义的 SSH 端口）是 ALLOW
-# 如果没有，手动放行 22 端口：
-# 1. SSH 端口 (默认 22，如果你改过，请替换为实际端口，如 2222)
-sudo ufw allow 22/tcp
-# 2. 宝塔面板默认端口 (如果你安装时修改过，请替换为实际端口)
-sudo ufw allow 8888/tcp
-# 3. 宝塔 phpMyAdmin 默认端口 (如果你需要用网页管理数据库，建议放行)
-sudo ufw allow 888/tcp
-# HTTP 默认端口
-sudo ufw allow 80/tcp
-# HTTPS 默认端口 (配置 SSL 证书后必须)
-sudo ufw allow 443/tcp
 # 3. 重新加载防火墙
 sudo ufw reload
 # 看所有已放行的端口
