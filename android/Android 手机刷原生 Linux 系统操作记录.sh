@@ -92,11 +92,12 @@ sudo apt install -y apt-transport-https ca-certificates
 sudo apt install -y fastfetch
 sudo apt remove -y libreoffice*
 
+
 # https://www.debian.club/applications/development
 # 更新软件包列表并升级已安装的包
 sudo apt update && sudo apt upgrade -y
 # 安装基础工具
-sudo apt install -y curl wget git unzip
+sudo apt install -y build-essential curl wget git unzip
 # 安装 OpenJDK 21 (包含 JDK 和 JRE)
 sudo apt install -y default-jdk
 java -version
@@ -106,11 +107,58 @@ sudo update-alternatives --config java
 sudo apt install -y maven
 mvn -v
 # 查看可用的 LTS (长期支持) 版本
-sudo apt install -y nodejs
+sudo apt install -y nodejs npm
 node -v
 npm -v
+npm config set registry https://registry.npmmirror.com/
 # 安装 Bun
 npm install -g bun
+cat << EOF | tee $HOME/.bunfig.toml
+# Bun 加速仓库配置参考官网 https://bun.zhcndoc.com/runtime/bunfig#install-registry
+[install]
+# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为 https://developer.aliyun.com/mirror/
+registry = "https://registry.npmmirror.com/"
+
+# 在 Bun 中使用 TypeScript。https://bun.zhcndoc.com/typescript
+EOF
+
+
+echo '
+# 设置 Rustup 镜像，参考：https://developer.aliyun.com/mirror/rustup
+export RUSTUP_DIST_SERVER=https://mirrors.aliyun.com/rustup
+export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup
+' >> ~/.bash_profile
+source ~/.bash_profile
+# 使用阿里云安装脚本
+curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
+. "$HOME/.cargo/env"
+rustup update
+rustup toolchain install stable
+# 配置 Cargo 镜像
+# 如果正在使用 cargo 1.68 及以上版本，在 $HOME/.cargo/config.toml 中添加如下内容即可：
+mkdir -vp "$HOME/.cargo"
+# cat $HOME/.cargo/config.toml
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
+cat << EOF | tee $HOME/.cargo/config.toml
+# 配置 Cargo 国内加速镜像源，可选：aliyun、ustc、tuna 此处默认选择 aliyun
+# 使用稀疏协议（sparse）减少元数据下载量，大幅加速
+[source.crates-io]
+replace-with = 'aliyun'
+
+# aliyun 阿里云 crates.io 镜像 https://developer.aliyun.com/mirror/rustup
+[source.aliyun]
+registry = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+[registries.aliyun]
+index = "sparse+https://mirrors.aliyun.com/crates.io-index/"
+
+# ustc 中科大 crates.io 镜像 https://mirrors.ustc.edu.cn/help/crates.io-index.html
+[source.ustc]
+registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+[registries.ustc]
+index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
+EOF
+
+
 
 
 sudo reboot
