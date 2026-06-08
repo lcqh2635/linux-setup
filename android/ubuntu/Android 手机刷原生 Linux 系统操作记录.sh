@@ -232,17 +232,14 @@ sudo systemctl status docker --no-pager
 # 1. 更新软件源并安装 ufw
 sudo apt update
 sudo apt install -y ufw
-
 # 2. 依次添加必须的放行规则 (在启用防火墙前添加，最安全)
 sudo ufw allow 22/tcp    # SSH 端口 (保命端口)
 sudo ufw allow 8888/tcp  # 宝塔面板端口
 sudo ufw allow 88/tcp    # 宝塔 phpMyAdmin 端口
 sudo ufw allow 80/tcp    # HTTP 网站端口
 sudo ufw allow 443/tcp   # HTTPS 网站端口
-
 # 3. 启用防火墙 (系统会提示可能中断 SSH，输入 y 并回车确认)
 sudo ufw enable
-
 # 1. 查看防火墙状态和规则
 sudo ufw status
 # 3. 重新加载防火墙
@@ -260,23 +257,21 @@ hostname -I
 # 安装宝塔面板
 su
 if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_panel.sh;else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh;fi;bash install_panel.sh ed8484bec
-#========================面板账户登录信息==========================
-#
-# 【云服务器】请在安全组放行 16262 端口
-# 外网ipv4面板地址: https://27.44.140.143:16262/b6878eb2
-# 内网面板地址:     https://172.16.42.1:16262/b6878eb2
-# username: 2knolzcf
-# password: c9568a3b
-#
-# 浏览器访问以下链接，添加宝塔客服
-# https://www.bt.cn/new/wechat_customer
-#==================================================================
 
 # 宝塔面板破解
 # https://docs.btkaixin.com/
 # https://bt11.bthappy.com/
 su
 if [ -f /usr/bin/curl ];then curl -sSO https://bt11.bthappy.com/install/install_panel.sh;else wget -O install_panel.sh https://bt11.bthappy.com/install/install_panel.sh;fi;bash install_panel.sh bt11.bthappy.com
+#========================面板账户登录信息==========================
+#
+# 【云服务器】请在安全组放行 14129 端口
+# 外网ipv4面板地址: http://27.44.140.143:14129/43a9dd77
+# 内网面板地址:     http://172.16.42.1:14129/43a9dd77
+# username: kv0rw22f
+# password: ec0a7a79
+#
+#==================================================================
 
 sudo bt
 
