@@ -265,7 +265,7 @@ if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_pa
 # 浏览器访问以下链接，添加宝塔客服
 # https://www.bt.cn/new/wechat_customer
 # 宝塔面板破解  https://docs.btkaixin.com/
-
+sudo bt
 
 # 内网穿透
 # https://www.bilibili.com/video/BV1H4421X7Wg?spm_id_from=333.788.player.player_end_recommend_autoplay&vd_source=75333bb53891f589527eedfb7b2d5911&trackid=web_related_0.router-related-2589621-dpmnd.1780842559398.275
