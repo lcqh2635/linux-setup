@@ -175,8 +175,81 @@ index = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 EOF
 
 
+# Go 国内加速镜像	https://learnku.com/go/wikis/38122
+# golang 中文学习文档	https://golang.halfiisland.com/
+# golang 官方网站	https://golang.google.cn/
+# golang 公共软件包仓库	https://pkg.go.dev/
+sudo apt install -y golang-go
+echo "你刚安装的 golang 版本号为：$(go version)"
+# Go 1.13+：默认启用，无需额外配置。但使用  go env GO111MODULE 显示为空
+# 并不代表 Go Modules 未开启，而是表示你没有显式配置该变量，Go 将使用内部默认值
+# 设置为 auto（推荐，Go 1.13+ 默认逻辑）
+# go env -w GO111MODULE=auto
+# 或者强制开启 Go Modules 功能
+go env -w GO111MODULE=on
+# 1. 设置模块代理（加速下载）
+# 阿里云Go Module代理仓库服务	https://developer.aliyun.com/mirror/goproxy
+go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
+# 2. 设置校验和数据库（避免超时）
+go env -w GOSUMDB=sum.golang.google.cn
+# 查看配置是否成功
+# go env GO111MODULE
+# go env GOPROXY
+# go env GOSUMDB
+# 设置 GOPATH 为 ~/go
+mkdir -vp $HOME/.go
+go env -w GOPATH=$HOME/.go
+# 查看当前环境
+# go env GOPATH
 
 
+# 安装 Podman
+sudo apt install podman podman-compose
+# 启用用户级 socket
+systemctl --user enable --now podman.socket
+systemctl --user status podman.socket --no-pager
+if [ -f "/etc/containers/registries.conf.bak" ]; then
+    echo "registries.conf.bak 备份文件存在，不再重复备份"
+else
+echo "registries.conf.bak 备份文件不存在，开始备份"
+sudo cp /etc/containers/registries.conf{,.bak}
+# 检查 .bak 文件是否存在
+# ls -l /etc/containers
+# 从同目录 .bak 文件恢复
+# nautilus admin:/etc/containers
+# sudo cp /etc/containers/registries.conf{.bak,}
+# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
+cat << EOF | sudo tee -a /etc/containers/registries.conf
+# 定义未指定镜像仓库前缀时，默认搜索的镜像仓库列表
+# 例如执行 "podman pull nginx" 会自动从 "docker.io" 查找 "library/nginx"
+unqualified-search-registries = ["docker.io"]
+
+# Podman 优先尝试从 registry.mirror 拉取镜像，如果加速器不可用/镜像不存在，则自动回退到 location 指定的官方地址
+# 官方仓库地址（最终回退地址）
+[[registry]]
+# 匹配的镜像仓库前缀（支持通配符 *）
+# 例如 "docker.io" 会匹配所有 "docker.io/xxx" 的镜像
+prefix = "docker.io"
+# 实际访问的仓库服务器地址
+# Docker Hub 的官方注册表地址
+location = "registry-1.docker.io"
+
+# 镜像加速器地址（优先使用的镜像源）
+# 添加该仓库的镜像加速器（Mirror）以阿里云镜像加速为示例
+[[registry.mirror]]
+# 镜像加速器地址（替换为你的阿里云镜像加速URL）
+location = "docker.1ms.run"
+# 是否允许不安全的 HTTP 连接（生产环境建议 false）
+insecure = false
+EOF
+fi
+# 基本使用
+podman run hello-world
+podman pull nginx
+podman run -d -p 8080:80 nginx
+
+
+# 重启系统
 sudo reboot
 
 
@@ -203,3 +276,22 @@ if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_pa
 # https://ipv6.ddnspod.com/
 
 # 连接蓝牙键盘，按住 FN + 1 3至4秒进入配对模式
+
+
+mkdir -vp ~/Projects/{Java,Rust,Cpp,Python,TypeScript,Database,Gnome,AndroidStudio}
+mkdir -vp ~/Projects/Database/{SQLite,MySQL,MariaDB,Postgres,Distributed,Redis}
+
+bun create tauri-app --help
+bun create tauri-app tauri-app \
+--template vue-ts \
+--manager bun \
+--yes
+
+1、模板已创建！要开始，请运行：
+cd tauri-app
+bun install
+bun run tauri android init
+2、对于桌面开发，运行：
+bun run tauri dev
+3、对于 Android 开发，运行：
+bun run tauri android dev
