@@ -116,15 +116,19 @@ java -version
 # 管理多个 Java 版本
 sudo update-alternatives --config java
 # 安装 Maven
-sudo apt install -y maven
+sudo apt install -y maven gradle
 mvn -v
 # 查看可用的 LTS (长期支持) 版本
 sudo apt install -y nodejs npm
 node -v
 npm -v
 npm config set registry https://registry.npmmirror.com/
+if [ -d "/usr/local" ]; then
+    sudo chown -R $(whoami):$(whoami) /usr/local
+fi
 # 安装 Bun
 npm install -g bun
+bun --version
 cat << EOF | tee $HOME/.bunfig.toml
 # Bun 加速仓库配置参考官网 https://bun.zhcndoc.com/runtime/bunfig#install-registry
 [install]
