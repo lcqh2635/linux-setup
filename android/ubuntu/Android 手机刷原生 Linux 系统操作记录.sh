@@ -204,54 +204,17 @@ go env -w GOPATH=$HOME/.go
 
 
 # 安装 Podman
-sudo apt remove -y podman podman-compose
+sudo apt remove -y docker docker-compose
 # 启用用户级 socket
-systemctl --user enable --now podman.socket
-systemctl --user status podman.socket --no-pager
-if [ -f "/etc/containers/registries.conf.bak" ]; then
-    echo "registries.conf.bak 备份文件存在，不再重复备份"
-else
-echo "registries.conf.bak 备份文件不存在，开始备份"
-sudo cp /etc/containers/registries.conf{,.bak}
-# 检查 .bak 文件是否存在
-# ls -l /etc/containers
-# 从同目录 .bak 文件恢复
-# nautilus admin:/etc/containers
-# sudo cp /etc/containers/registries.conf{.bak,}
-# tee -a 中的 -a 参数的作用是 追加（append）内容到文件末尾，而不是覆盖文件原有内容
-cat << EOF | sudo tee -a /etc/containers/registries.conf
-# 定义未指定镜像仓库前缀时，默认搜索的镜像仓库列表
-# 例如执行 "podman pull nginx" 会自动从 "docker.io" 查找 "library/nginx"
-unqualified-search-registries = ["docker.io"]
-
-# Podman 优先尝试从 registry.mirror 拉取镜像，如果加速器不可用/镜像不存在，则自动回退到 location 指定的官方地址
-# 官方仓库地址（最终回退地址）
-[[registry]]
-# 匹配的镜像仓库前缀（支持通配符 *）
-# 例如 "docker.io" 会匹配所有 "docker.io/xxx" 的镜像
-prefix = "docker.io"
-# 实际访问的仓库服务器地址
-# Docker Hub 的官方注册表地址
-location = "registry-1.docker.io"
-
-# 镜像加速器地址（优先使用的镜像源）
-# 添加该仓库的镜像加速器（Mirror）以阿里云镜像加速为示例
-[[registry.mirror]]
-# 镜像加速器地址（替换为你的阿里云镜像加速URL）
-location = "docker.1ms.run"
-# 是否允许不安全的 HTTP 连接（生产环境建议 false）
-insecure = false
-EOF
-fi
-# 基本使用
-podman run hello-world
-podman pull nginx
-podman run -d -p 8080:80 nginx
+sudo systemctl  enable --now docker.socket
+sudo systemctl  status docker.socket --no-pager
 
 
 # 重启系统
 sudo reboot
 
+# 在安装 bt 宝塔面板之前，及的提前记录好系统的本地 IP 地质
+ip addr
 
 # 安装宝塔面板
 su
@@ -268,6 +231,10 @@ if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_pa
 
 # 宝塔面板破解  https://docs.btkaixin.com/
 sudo bt
+
+ssh user@172.16.42.1
+ssh user@27.44.140.159
+
 
 # 内网穿透
 # https://www.bilibili.com/video/BV1H4421X7Wg?spm_id_from=333.788.player.player_end_recommend_autoplay&vd_source=75333bb53891f589527eedfb7b2d5911&trackid=web_related_0.router-related-2589621-dpmnd.1780842559398.275
