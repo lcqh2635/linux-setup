@@ -204,7 +204,7 @@ go env -w GOPATH=$HOME/.go
 
 
 # 安装 Podman
-sudo apt install -y podman podman-compose
+sudo apt remove -y podman podman-compose
 # 启用用户级 socket
 systemctl --user enable --now podman.socket
 systemctl --user status podman.socket --no-pager
@@ -256,14 +256,16 @@ sudo reboot
 # 安装宝塔面板
 su
 if [ -f /usr/bin/curl ];then curl -sSO https://download.bt.cn/install/install_panel.sh;else wget -O install_panel.sh https://download.bt.cn/install/install_panel.sh;fi;bash install_panel.sh ed8484bec
-# ========================面板账户登录信息==========================
-# 【云服务器】请在安全组放行 37400 端口
-# 外网ipv4面板地址: https://27.44.140.159:37400/79e11daa
-# 内网面板地址:     https://172.16.42.1:37400/79e11daa
-# username: kggbnkmg
-# password: f4530bad
+#========================面板账户登录信息==========================
+# 【云服务器】请在安全组放行 13253 端口
+# 外网ipv4面板地址: https://27.44.140.159:13253/b389246a
+# 内网面板地址:     https://172.16.42.1:13253/b389246a
+# username: jsiwyg8k
+# password: 331ac94a
 # 浏览器访问以下链接，添加宝塔客服
 # https://www.bt.cn/new/wechat_customer
+#==================================================================
+
 # 宝塔面板破解  https://docs.btkaixin.com/
 sudo bt
 
