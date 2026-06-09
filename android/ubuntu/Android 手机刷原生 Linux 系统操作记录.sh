@@ -68,8 +68,9 @@ nmcli device wifi list
 # 3. 连接 Wi-Fi：
 # 将下面的 你的WiFi名称 和 你的WiFi密码 替换为实际内容（如果名称或密码包含空格或特殊字符，请保留双引号）：
 nmcli device wifi connect "你的WiFi名称" password "你的WiFi密码"
-sudo nmcli device wifi connect "A3-6-707-5G" password "VT4009030242"
 sudo nmcli device wifi connect "A3-6-707" password "VT4009030242"
+# 确保 WiFi 重启后自动连接
+sudo nmcli connection modify "A3-6-707" connection.autoconnect yes
 # 执行连接命令后，系统通常会提示 Device 'wld0' successfully activated with...。为了确保万无一失，请依次运行以下两条命令进行验证：
 ip a show wld0
 
@@ -98,6 +99,22 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF
 
 
+cat << EOF | sudo tee /etc/apt/sources.list.d/debian.sources
+Types: deb
+URIs: https://mirrors.tuna.tsinghua.edu.cn/ubuntu
+Suites: resolute resolute-updates resolute-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+# 以下安全更新软件源为镜像站配置
+Types: deb
+URIs: https://mirrors.tuna.tsinghua.edu.cn/ubuntu
+Suites: resolute-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF
+
+
 # https://www.debian.club/applications/development
 # 更新软件包列表并升级已安装的包
 sudo apt update && sudo apt upgrade -y
@@ -109,6 +126,11 @@ sudo apt autoclean
 sudo apt install -y apt-transport-https ca-certificates
 sudo apt install -y fastfetch
 fastfetch
+
+
+# 查看网络接口状态
+ip addr show
+ip link show
 
 
 # 检查SSH是否已安装
@@ -125,6 +147,19 @@ sudo systemctl enable --now ssh
 # 重启服务（修改配置后常用）
 sudo systemctl restart ssh
 # cat /etc/ssh/sshd_config
+
+# 1. 查看网络接口和 IP 地址
+ip addr show
+# 2. 确认 SSH 服务状态
+sudo systemctl status ssh
+# 3. 查看 ufw 实际运行状态和规则
+sudo ufw status verbose
+sudo iptables -L -n -v | grep 22    # 查看底层 iptables 是否真有 22 放行规则
+# 4. 如果确认是 ufw 导致，先临时禁用
+sudo ufw disable
+# 5. 测试笔记本能否连上
+
+
 
 
 # 1. 更新软件源并安装 ufw
@@ -145,6 +180,29 @@ sudo ufw allow 443/tcp   # HTTPS 网站端口
 sudo ufw reload
 # 看所有已放行的端口
 sudo ufw status numbered
+
+cat << EOF | sudo tee /etc/netplan/00-installer-config.yaml
+# Bun 加速仓库配置参考官网 https://bun.zhcndoc.com/runtime/bunfig#install-registry
+[install]
+# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为 https://developer.aliyun.com/mirror/
+registry = "https://registry.npmmirror.com/"
+
+# 在 Bun 中使用 TypeScript。https://bun.zhcndoc.com/typescript
+EOF
+
+
+# 先确保规则正确
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 22/tcp comment 'SSH'
+sudo ufw allow 80/tcp comment 'HTTP'
+sudo ufw allow 443/tcp comment 'HTTPS'
+sudo ufw allow 8888/tcp comment 'BT Panel'
+sudo ufw allow 88/tcp comment 'phpMyAdmin'
+
+# 再启用
+sudo ufw enable
+
 
 
 # 安装基础工具
