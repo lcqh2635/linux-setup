@@ -111,6 +111,42 @@ sudo apt install -y fastfetch
 fastfetch
 
 
+# 检查SSH是否已安装
+# 登陆服务器终端，使用下面的命令检查openssh-server是否安装
+# 如果已安装：输出会包含 ii 标识，此时可以直接进入第二步，查看服务运行状态。
+dpkg -l | grep openssh-server
+# 安装OpenSSH Server
+sudo apt update
+sudo apt install -y openssh-server
+# 查看服务状态
+sudo systemctl status ssh
+# 设置服务开机自启
+sudo systemctl enable --now ssh
+# 重启服务（修改配置后常用）
+sudo systemctl restart ssh
+# cat /etc/ssh/sshd_config
+
+
+# 1. 更新软件源并安装 ufw
+sudo apt update
+sudo apt install -y ufw
+# 3. 启用防火墙 (系统会提示可能中断 SSH，输入 y 并回车确认)
+sudo ufw enable
+# 1. 查看防火墙状态和规则
+sudo ufw status
+sudo ufw allow ssh
+# 2. 依次添加必须的放行规则 (在启用防火墙前添加，最安全)
+sudo ufw allow 22/tcp    # SSH 端口 (保命端口)
+sudo ufw allow 8888/tcp  # 宝塔面板端口
+sudo ufw allow 88/tcp    # 宝塔 phpMyAdmin 端口
+sudo ufw allow 80/tcp    # HTTP 网站端口
+sudo ufw allow 443/tcp   # HTTPS 网站端口
+# 3. 重新加载防火墙
+sudo ufw reload
+# 看所有已放行的端口
+sudo ufw status numbered
+
+
 # 安装基础工具
 sudo apt install -y build-essential curl wget git unzip
 # 安装 OpenJDK 21 (包含 JDK 和 JRE)
@@ -229,30 +265,17 @@ sudo systemctl enable --now docker
 sudo systemctl status docker --no-pager
 
 
-# 1. 更新软件源并安装 ufw
-sudo apt update
-sudo apt install -y ufw
-# 2. 依次添加必须的放行规则 (在启用防火墙前添加，最安全)
-sudo ufw allow 22/tcp    # SSH 端口 (保命端口)
-sudo ufw allow 8888/tcp  # 宝塔面板端口
-sudo ufw allow 88/tcp    # 宝塔 phpMyAdmin 端口
-sudo ufw allow 80/tcp    # HTTP 网站端口
-sudo ufw allow 443/tcp   # HTTPS 网站端口
-# 3. 启用防火墙 (系统会提示可能中断 SSH，输入 y 并回车确认)
-sudo ufw enable
-# 1. 查看防火墙状态和规则
-sudo ufw status
-# 3. 重新加载防火墙
-sudo ufw reload
-# 看所有已放行的端口
-sudo ufw status numbered
+# 在安装 bt 宝塔面板之前，及的提前记录好系统的本地 IP 地质
+hostname -I
+# 172.16.42.1 192.168.1.11 172.17.0.1
+ssh user@172.16.42.1
+ssh user@192.168.1.11
+ssh user@172.17.0.1
 
 
 # 重启系统
 sudo reboot
 
-# 在安装 bt 宝塔面板之前，及的提前记录好系统的本地 IP 地质
-hostname -I
 
 # 安装宝塔面板
 su
