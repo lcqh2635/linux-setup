@@ -105,7 +105,7 @@
       <workItem from="1780830725444" duration="6391000" />
       <workItem from="1780843477000" duration="4071000" />
       <workItem from="1780921545069" duration="29704000" />
-      <workItem from="1781098913798" duration="3123000" />
+      <workItem from="1781098913798" duration="3199000" />
     </task>
     <task id="LOCAL-00001" summary="backup">
       <option name="closed" value="true" />
@@ -427,7 +427,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781099815982</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="安卓手机安装 Linux 系统">
+      <option name="closed" value="true" />
+      <created>1781102090524</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1781102090524</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

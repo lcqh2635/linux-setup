@@ -131,6 +131,7 @@ sudo systemctl status ssh --no-pager
 # 查看网络接口状态
 ip addr show
 ip addr show usb0
+ssh user@172.16.42.1
 ip addr show wld0
 ssh user@192.168.1.6
 
