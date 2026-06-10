@@ -67,17 +67,25 @@ nmcli general status
 nmcli device wifi list
 # 3. 连接 Wi-Fi：
 # 将下面的 你的WiFi名称 和 你的WiFi密码 替换为实际内容（如果名称或密码包含空格或特殊字符，请保留双引号）：
-nmcli device wifi connect "你的WiFi名称" password "你的WiFi密码"
-sudo nmcli device wifi connect "A3-6-707-5G" password "VT4009030242"
 sudo nmcli device wifi connect "A3-6-706" password "VT4009030242"
-# 确保 WiFi 重启后自动连接
-sudo nmcli connection modify "A3-6-707-5G" connection.autoconnect yes
-# 执行连接命令后，系统通常会提示 Device 'wld0' successfully activated with...。为了确保万无一失，请依次运行以下两条命令进行验证：
-ip a show wld0
+# 1. 查看 NM 管理的连接名称（通常是你的 Wi-Fi 名字或类似 'Wired connection 1'）
+sudo nmcli connection show
+# 2. 假设你的 Wi-Fi 名字叫 "MyHomeWiFi"，将其设置为自动连接
+sudo nmcli connection modify "A3-6-706" connection.autoconnect yes
+# 查看 NetworkManager 中特定 Wi-Fi 连接的自动连接设置是否成功，你可以使用以下命令来验证：
+sudo nmcli -f connection.autoconnect connection show "A3-6-706"
+# 3. 如果你想确认当前 Wi-Fi 接口状态
+# 你应该能看到 wld0 连接到了某个 Wi-Fi
+sudo nmcli device status
 
-
-ping -c 3 baidu.com
-
+# 测试 wifi 网络连接
+ping -c 5 baidu.com
+# 查看网络接口状态
+ip addr show
+ip addr show usb0
+ssh user@172.16.42.1
+ip addr show wld0
+ssh user@192.168.1.10
 
 # 查看默认的软件源配置
 # cat /etc/apt/sources.list
@@ -119,28 +127,33 @@ fastfetch
 # 安装OpenSSH Server
 sudo apt update
 sudo apt install -y openssh-server
-# 设置服务开机自启
-sudo systemctl enable --now ssh
-# cat /etc/ssh/sshd_config
-# 重启服务（修改配置后常用）
-sudo systemctl restart ssh
+sudo systemctl enable ssh
+sudo systemctl start ssh  # 立即启动，以防当前没运行
+# 验证是否已启用
+sudo systemctl is-enabled ssh  # 应该输出 "enabled"
 # 查看服务状态
 sudo systemctl status ssh --no-pager
 
+# 路由器
+http://192.168.1.1
+user
+G2K9K24~
 
-# 查看网络接口状态
-ip addr show
-ip addr show usb0
-ssh user@172.16.42.1
-ip addr show wld0
-ssh user@192.168.1.6
+
+sudo apt update
+sudo apt install -y avahi-daemon
+sudo systemctl enable --now avahi-daemon
+# 输入 hostname 命令，查看主机名，假设输出是 xiaomi-raphael
+ssh user@xiaomi-raphael.local
+
 
 # 1. 安装 UFW（如果还没安装）
 sudo apt update && sudo apt install ufw -y
 # 2. 拒绝所有默认的传入连接（安全基线）
-sudo ufw default deny incoming
+sudo ufw default allow incoming
 # 3. 允许所有默认的传出连接（确保手机能正常上网）
 sudo ufw default allow outgoing
+sudo ufw default allow routed
 # 4. 【最关键的一步】放行 SSH 连接！
 # 为了安全，建议针对你使用的网卡接口进行精确放行：
 # 放行通过 USB 网卡的 SSH 访问
@@ -149,6 +162,8 @@ sudo ufw allow in on usb0 to any port 22 proto tcp
 sudo ufw allow in on wld0 to any port 22 proto tcp
 #（如果你懒得区分网卡，也可以直接用下面这条命令代替上面两条，但安全性稍低）
 sudo ufw allow ssh
+# sudo ufw delete allow ssh
+# 或者 sudo ufw delete allow 22/tcp
 # 2. 依次添加必须的放行规则 (在启用防火墙前添加，最安全)
 sudo ufw allow 22/tcp comment 'SSH 端口'
 sudo ufw allow 80/tcp comment 'HTTP 网站端口'
