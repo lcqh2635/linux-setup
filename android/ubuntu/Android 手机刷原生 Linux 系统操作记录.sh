@@ -76,6 +76,9 @@ sudo nmcli connection modify "A3-6-707-5G" connection.autoconnect yes
 ip a show wld0
 
 
+ping -c 3 baidu.com
+
+
 # 查看默认的软件源配置
 # cat /etc/apt/sources.list
 # cat /etc/apt/sources.list.d/ubuntu.sources
@@ -113,81 +116,50 @@ sudo apt install -y fastfetch
 fastfetch
 
 
-# 查看网络接口状态
-ip addr show
-ip link show
-
-
-# 检查SSH是否已安装
-# 登陆服务器终端，使用下面的命令检查openssh-server是否安装
-# 如果已安装：输出会包含 ii 标识，此时可以直接进入第二步，查看服务运行状态。
-dpkg -l | grep openssh-server
 # 安装OpenSSH Server
 sudo apt update
 sudo apt install -y openssh-server
-# 查看服务状态
-sudo systemctl status ssh  --no-pager
 # 设置服务开机自启
 sudo systemctl enable --now ssh
+# cat /etc/ssh/sshd_config
 # 重启服务（修改配置后常用）
 sudo systemctl restart ssh
-# cat /etc/ssh/sshd_config
+# 查看服务状态
+sudo systemctl status ssh --no-pager
 
-# 1. 查看网络接口和 IP 地址
+
+# 查看网络接口状态
 ip addr show
-# 2. 确认 SSH 服务状态
-sudo systemctl status ssh
-# 3. 查看 ufw 实际运行状态和规则
-sudo ufw status verbose
-sudo iptables -L -n -v | grep 22    # 查看底层 iptables 是否真有 22 放行规则
-# 4. 如果确认是 ufw 导致，先临时禁用
-sudo ufw disable
-# 5. 测试笔记本能否连上
+ip addr show usb0
+ip addr show wld0
+ssh user@192.168.1.6
 
-
-
-
-# 1. 更新软件源并安装 ufw
-sudo apt update
-sudo apt install -y ufw
-# 3. 启用防火墙 (系统会提示可能中断 SSH，输入 y 并回车确认)
-sudo ufw enable
-# 1. 查看防火墙状态和规则
-sudo ufw status
+# 1. 安装 UFW（如果还没安装）
+sudo apt update && sudo apt install ufw -y
+# 2. 拒绝所有默认的传入连接（安全基线）
+sudo ufw default deny incoming
+# 3. 允许所有默认的传出连接（确保手机能正常上网）
+sudo ufw default allow outgoing
+# 4. 【最关键的一步】放行 SSH 连接！
+# 为了安全，建议针对你使用的网卡接口进行精确放行：
+# 放行通过 USB 网卡的 SSH 访问
+sudo ufw allow in on usb0 to any port 22 proto tcp
+# 放行通过 Wi-Fi 网卡的 SSH 访问
+sudo ufw allow in on wld0 to any port 22 proto tcp
+#（如果你懒得区分网卡，也可以直接用下面这条命令代替上面两条，但安全性稍低）
 sudo ufw allow ssh
 # 2. 依次添加必须的放行规则 (在启用防火墙前添加，最安全)
-sudo ufw allow 22/tcp    # SSH 端口 (保命端口)
+sudo ufw allow 22/tcp comment 'SSH 端口'
+sudo ufw allow 80/tcp comment 'HTTP 网站端口'
+sudo ufw allow 443/tcp comment 'HTTPS 网站端口'
 sudo ufw allow 8888/tcp  # 宝塔面板端口
 sudo ufw allow 88/tcp    # 宝塔 phpMyAdmin 端口
-sudo ufw allow 80/tcp    # HTTP 网站端口
-sudo ufw allow 443/tcp   # HTTPS 网站端口
-# 3. 重新加载防火墙
-sudo ufw reload
-# 看所有已放行的端口
-sudo ufw status numbered
-
-cat << EOF | sudo tee /etc/netplan/00-installer-config.yaml
-# Bun 加速仓库配置参考官网 https://bun.zhcndoc.com/runtime/bunfig#install-registry
-[install]
-# 使用阿里云加速仓库，仓库地址可从阿里云官方获取，地址为 https://developer.aliyun.com/mirror/
-registry = "https://registry.npmmirror.com/"
-
-# 在 Bun 中使用 TypeScript。https://bun.zhcndoc.com/typescript
-EOF
-
-
-# 先确保规则正确
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow 22/tcp comment 'SSH'
-sudo ufw allow 80/tcp comment 'HTTP'
-sudo ufw allow 443/tcp comment 'HTTPS'
-sudo ufw allow 8888/tcp comment 'BT Panel'
-sudo ufw allow 88/tcp comment 'phpMyAdmin'
-
-# 再启用
+# 6. 检查一下刚才配置的规则是否正确（未启用前查看）
+sudo ufw show added
+# 7. 确认规则无误后，现在才安全地启动 UFW！
 sudo ufw enable
-
+# 8. 查看防火墙最终运行状态和生效的规则
+sudo ufw status verbose
 
 
 # 安装基础工具
