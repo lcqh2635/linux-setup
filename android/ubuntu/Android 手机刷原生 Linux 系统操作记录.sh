@@ -68,9 +68,10 @@ nmcli device wifi list
 # 3. 连接 Wi-Fi：
 # 将下面的 你的WiFi名称 和 你的WiFi密码 替换为实际内容（如果名称或密码包含空格或特殊字符，请保留双引号）：
 nmcli device wifi connect "你的WiFi名称" password "你的WiFi密码"
-sudo nmcli device wifi connect "A3-6-707" password "VT4009030242"
+sudo nmcli device wifi connect "A3-6-707-5G" password "VT4009030242"
+sudo nmcli device wifi connect "A3-6-706" password "VT4009030242"
 # 确保 WiFi 重启后自动连接
-sudo nmcli connection modify "A3-6-707" connection.autoconnect yes
+sudo nmcli connection modify "A3-6-707-5G" connection.autoconnect yes
 # 执行连接命令后，系统通常会提示 Device 'wld0' successfully activated with...。为了确保万无一失，请依次运行以下两条命令进行验证：
 ip a show wld0
 
@@ -84,7 +85,7 @@ sudo tee /etc/apt/sources.list < /dev/null
 # 配置 USTC 中科大加速镜像源
 # https://mirrors.ustc.edu.cn/help/ubuntu.html
 # https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
-cat << EOF | sudo tee /etc/apt/sources.list.d/debian.sources
+cat << EOF | sudo tee /etc/apt/sources.list.d/ubuntu.sources
 Types: deb
 URIs: https://mirrors.ustc.edu.cn/ubuntu
 Suites: resolute resolute-updates resolute-backports
@@ -93,22 +94,6 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
 Types: deb
 URIs: https://mirrors.ustc.edu.cn/ubuntu
-Suites: resolute-security
-Components: main restricted universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-EOF
-
-
-cat << EOF | sudo tee /etc/apt/sources.list.d/debian.sources
-Types: deb
-URIs: https://mirrors.tuna.tsinghua.edu.cn/ubuntu
-Suites: resolute resolute-updates resolute-backports
-Components: main restricted universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-
-# 以下安全更新软件源为镜像站配置
-Types: deb
-URIs: https://mirrors.tuna.tsinghua.edu.cn/ubuntu
 Suites: resolute-security
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
@@ -141,7 +126,7 @@ dpkg -l | grep openssh-server
 sudo apt update
 sudo apt install -y openssh-server
 # 查看服务状态
-sudo systemctl status ssh
+sudo systemctl status ssh  --no-pager
 # 设置服务开机自启
 sudo systemctl enable --now ssh
 # 重启服务（修改配置后常用）
