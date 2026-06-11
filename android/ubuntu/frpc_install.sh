@@ -5,7 +5,10 @@
 # 适用架构：自动检测 (ARM64 手机 / x86_64)
 # 适用系统：Ubuntu / Debian 系 Linux
 # 脚本功能：下载 frpc -> 写入预设配置 -> 注册系统服务 -> 开机自启
+# sudo nano frpc_install.sh   此时 nano 编辑器打开，长按终端屏幕（或右键鼠标），选择 “Paste”（粘贴）
+# 按 Ctrl + O 保存，按 Enter 确认文件名，按 Ctrl + X 退出
 # chmod +x frpc_install.sh && sudo ./frpc_install.sh
+# echo "" > frpc_install.sh
 # ==============================================================================
 
 # 颜色定义
@@ -73,12 +76,14 @@ fi
 # ==============================================================================
 # 第三步：安装二进制文件
 # ==============================================================================
+sudo chattr -i /usr/local/bin/
+
 info "正在将 frpc 安装到 /usr/local/bin/ ..."
-cp "${EXTRACT_DIR}/frpc" /usr/local/bin/frpc
-chmod +x /usr/local/bin/frpc
+sudo cp "${EXTRACT_DIR}/frpc" /usr/local/bin/frpc
+sudo chmod +x /usr/local/bin/frpc
 
 # 创建配置文件专用目录
-mkdir -p /etc/frp
+sudo mkdir -p /etc/frp
 
 info "frpc 程序安装完成！版本: $(/usr/local/bin/frpc -v)"
 
