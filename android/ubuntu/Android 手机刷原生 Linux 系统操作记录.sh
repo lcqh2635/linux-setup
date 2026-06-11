@@ -87,6 +87,9 @@ ssh user@172.16.42.1
 ip addr show wld0
 ssh user@192.168.1.10
 
+# 在安装 bt 宝塔面板之前，及的提前记录好系统的本地 IP 地质
+hostname -I
+
 # 查看默认的软件源配置
 # cat /etc/apt/sources.list
 # cat /etc/apt/sources.list.d/ubuntu.sources
@@ -296,14 +299,6 @@ sudo systemctl enable --now docker
 sudo systemctl status docker --no-pager
 
 
-# 在安装 bt 宝塔面板之前，及的提前记录好系统的本地 IP 地质
-hostname -I
-# 172.16.42.1 192.168.1.11 172.17.0.1
-ssh user@172.16.42.1
-ssh user@192.168.1.11
-ssh user@172.17.0.1
-
-
 # 重启系统
 sudo reboot
 
@@ -319,13 +314,18 @@ su
 if [ -f /usr/bin/curl ];then curl -sSO https://bt11.bthappy.com/install/install_panel.sh;else wget -O install_panel.sh https://bt11.bthappy.com/install/install_panel.sh;fi;bash install_panel.sh bt11.bthappy.com
 #========================面板账户登录信息==========================
 #
-# 【云服务器】请在安全组放行 14129 端口
-# 外网ipv4面板地址: http://27.44.140.143:14129/43a9dd77
-# 内网面板地址:     http://172.16.42.1:14129/43a9dd77
-# username: kv0rw22f
-# password: ec0a7a79
+# 【云服务器】请在安全组放行 12768 端口
+# 外网ipv4面板地址: http://27.44.140.134:12768/5248b5c2
+# 内网面板地址:     http://172.16.42.1:12768/5248b5c2
+# username: mw7nkxqo
+# password: f9f7292b
 #
 #==================================================================
+
+sudo ufw default allow incoming
+# 3. 允许所有默认的传出连接（确保手机能正常上网）
+sudo ufw default allow outgoing
+sudo ufw default allow routed
 
 sudo bt
 
