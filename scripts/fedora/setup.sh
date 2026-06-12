@@ -2656,7 +2656,14 @@ install_vpn() {
         ./Hiddify-Linux-x64-*.AppImage
         cd ~/下载
     fi
-    
+
+https://github.com/t8y2/dbx/releases/download/v0.5.31/DBX-0.5.31-1.x86_64.rpm
+
+    wget "$(curl -s https://api.github.com/repos/t8y2/dbx/releases/latest | \
+              grep -o 'https://github.com/t8y2/dbx/releases/download/[^"]*x86_64\.rpm' | \
+              head -n 1 | \
+              sed "s|https://github.com|https://gh-proxy.org/https://github.com|")"
+            sudo dnf install -y ./DBX-*.x86_64.rpm
 
 # https://github.com/lassekongo83/adw-gtk3
 # 将 GNOME 最新的默认视觉风格（Libadwaita）移植到旧的 GTK 3 应用程序上
