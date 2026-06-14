@@ -372,8 +372,20 @@ podman info --format json | jq '.registries'
 
 podman pull t8y2/dbx:latest
 podman run -d --name dbx -p 4224:4224 -v dbx-data:/app/data t8y2/dbx:latest
+# http://120.79.1.21:4224
 podman pull qingpan/rnacos:stable-alpine
-podman run -d --name mynacos -p 8848:8848 -p 9848:9848 -p 10848:10848 qingpan/rnacos:stable-alpine
+podman run -d \
+  --name nacos \
+  --restart always \
+  -p 8848:8848 \
+  -p 9848:9848 \
+  -p 10848:10848 \
+  -v rnacos-data:/io:rw \
+  -e RNACOS_INIT_ADMIN_USERNAME=admin \
+  -e RNACOS_INIT_ADMIN_PASSWORD=admin \
+  -e RNACOS_HTTP_PORT=8848 \
+  qingpan/rnacos:stable-alpine
+# http://120.79.1.21:10848/rnacos/      admin/admin
 podman pull postgres:18-alpine redis:8-alpine redis/redis-stack-server:latest
 podman pull nginx:stable-alpine mysql:lts-oracle
 podman pull apache/seata-server:2.7.0.jdk25 apache/rocketmq:5.5.0
