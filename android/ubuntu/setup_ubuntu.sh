@@ -17,7 +17,10 @@
 #  11. 创建常用工作目录
 #
 # 使用方式：
-#   sudo bash setup_ubuntu.sh
+# sudo nano setup_ubuntu.sh   此时 nano 编辑器打开，长按终端屏幕（或右键鼠标），选择 “Paste”（粘贴）
+# 按 Ctrl + O 保存，按 Enter 确认文件名，按 Ctrl + X 退出
+# sudo chmod +x setup_ubuntu.sh && sudo ./setup_ubuntu.sh
+#curl --proto '=https' --tlsv1.2 -sSf https://github.com/lcqh2635/linux-setup/blob/main/android/ubuntu/setup_ubuntu.sh | sh -s -- -y
 # ==============================================================================
 
 # 遇到错误即退出，使用未定义变量即退出，管道命令中任何一个失败即报错
@@ -58,7 +61,7 @@ if command -v nmcli &> /dev/null; then
         # 1. 检查 NetworkManager 是否正在运行：
         nmcli general status
         # 2. 扫描附近的 Wi-Fi 网络：
-        nmcli device wifi list
+        # nmcli device wifi list
         info "正在连接 Wi-Fi: $WIFI_SSID ..."
         # 3. 连接 Wi-Fi：
         # 将下面的 你的WiFi名称 和 你的WiFi密码 替换为实际内容（如果名称或密码包含空格或特殊字符，请保留双引号）：

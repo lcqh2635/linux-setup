@@ -4,8 +4,10 @@
 # 适用架构：自动检测 (ARM64 手机 / x86_64)
 # 适用系统：Ubuntu / Debian 系 Linux
 # 脚本功能：下载 frpc -> 写入预设硬编码配置 -> 注册系统服务 -> 开机自启
-# 使用方法：
-#   chmod +x frpc_install.sh && sudo ./frpc_install.sh
+# 使用方式：
+# sudo nano setup_frpc.sh   此时 nano 编辑器打开，长按终端屏幕（或右键鼠标），选择 “Paste”（粘贴）
+# 按 Ctrl + O 保存，按 Enter 确认文件名，按 Ctrl + X 退出
+# sudo chmod +x ssetup_frpc.sh && sudo ./setup_frpc.sh
 # 卸载方法：
 #   sudo systemctl stop frpc && sudo systemctl disable frpc
 #   sudo rm -f /usr/local/bin/frpc /etc/frp/frpc.toml /etc/systemd/system/frpc.service
