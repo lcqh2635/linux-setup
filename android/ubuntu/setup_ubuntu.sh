@@ -45,8 +45,8 @@ echo "主机名：$(hostname)"
 echo "IP 地址：$(hostname -I | awk '{print $2}')"
 
 # Wi-Fi 配置变量
-WIFI_SSID="A3-6-707"
-WIFI_PASS="VT4009030242" # 建议：不要将真实密码提交到公开仓库
+WIFI_SSID="A3-6-706"
+WIFI_PASS="VT4009030242"
 
 info "配置 Wi-Fi (NetworkManager)..."
 if command -v nmcli &> /dev/null; then
@@ -300,11 +300,9 @@ cargo -V
 info "安装 Golang 与配置代理..."
 # 提示：Ubuntu apt 中的 Go 版本可能较旧，如需最新版请改为手动 wget 下载
 sudo apt install -y golang-go
-
 go env -w GO111MODULE=on
 go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 go env -w GOSUMDB=sum.golang.google.cn
-
 mkdir -vp $HOME/.go
 go env -w GOPATH=$HOME/.go
 
@@ -366,6 +364,12 @@ podman -v
 podman-compose -v
 # 验证配置
 podman info --format json | jq '.registries'
+
+podman pull postgres:18-alpine redis:8-alpine redis/redis-stack-server:latest
+podman pull qingpan/rnacos:stable-alpine apache/seata-server:2.7.0.jdk25 apache/rocketmq:5.5.0
+podman pull nginx:stable-alpine mysql:lts-oracle
+podman pull t8y2/dbx:latest
+podman pull bladex/sentinel-dashboard:latest
 
 
 # ------------------------------------------------------------------------------
