@@ -7,11 +7,12 @@
 # 使用方式：
 # sudo nano setup_frpc.sh   此时 nano 编辑器打开，长按终端屏幕（或右键鼠标），选择 “Paste”（粘贴）
 # 按 Ctrl + O 保存，按 Enter 确认文件名，按 Ctrl + X 退出
-# sudo chmod +x ssetup_frpc.sh && sudo ./setup_frpc.sh
+# sudo chmod +x setup_frpc.sh && sudo ./setup_frpc.sh
 # 卸载方法：
 #   sudo systemctl stop frpc && sudo systemctl disable frpc
 #   sudo rm -f /usr/local/bin/frpc /etc/frp/frpc.toml /etc/systemd/system/frpc.service
 #   sudo systemctl daemon-reload
+#   ssh -p 59297 user@120.79.1.21
 # ==============================================================================
 
 # ======================== 安全选项 ========================

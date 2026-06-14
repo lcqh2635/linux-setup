@@ -274,6 +274,7 @@ if ! grep -q 'RUSTUP_DIST_SERVER' "$BASHRC"; then
     echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.aliyun.com/rustup/rustup' >> "$BASHRC"
     source "$BASHRC"
 fi
+source "$BASHRC"
 # 安装 Rustup
 if ! command -v rustup &> /dev/null; then
     curl --proto '=https' --tlsv1.2 -sSf https://mirrors.aliyun.com/repo/rust/rustup-init.sh | sh -s -- -y
@@ -368,11 +369,11 @@ podman-compose -v
 # 验证配置
 podman info --format json | jq '.registries'
 
-podman pull postgres:18-alpine redis:8-alpine redis/redis-stack-server:latest
-podman pull qingpan/rnacos:stable-alpine apache/seata-server:2.7.0.jdk25 apache/rocketmq:5.5.0
-podman pull nginx:stable-alpine mysql:lts-oracle
-podman pull t8y2/dbx:latest
-podman pull bladex/sentinel-dashboard:latest
+#podman pull postgres:18-alpine redis:8-alpine redis/redis-stack-server:latest
+#podman pull qingpan/rnacos:stable-alpine apache/seata-server:2.7.0.jdk25 apache/rocketmq:5.5.0
+#podman pull nginx:stable-alpine mysql:lts-oracle
+#podman pull t8y2/dbx:latest
+#podman pull bladex/sentinel-dashboard:latest
 
 
 # ------------------------------------------------------------------------------
