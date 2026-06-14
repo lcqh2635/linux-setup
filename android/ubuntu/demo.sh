@@ -19,15 +19,17 @@ info()    { echo -e "${GREEN}[INFO]${NC} $*"; }
 warn()    { echo -e "${YELLOW}[WARN]${NC} $*"; }
 error()   { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
 
-# Wi-Fi 配置变量
-WIFI_SSID="A3-6-707"
-WIFI_PASS="VT4009030242" # 建议：不要将真实密码提交到公开仓库
-
 # ------------------------------------------------------------------------------
 # 1. 基础网络配置
 # ------------------------------------------------------------------------------
 info "输出当前用户和 IP 地址..."
-hostname && hostname -I
+# 输出主机信息
+echo "主机名：$(hostname)"
+echo "IP 地址：$(hostname -I | awk '{print $2}')"
+
+# Wi-Fi 配置变量
+WIFI_SSID="A3-6-707"
+WIFI_PASS="VT4009030242" # 建议：不要将真实密码提交到公开仓库
 
 info "配置 Wi-Fi (NetworkManager)..."
 if command -v nmcli &> /dev/null; then
@@ -116,7 +118,6 @@ sudo apt install -y ufw
 # 安全基线
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-# sudo ufw default allow routed # 除非做路由器，否则不建议开
 
 # 开放端口 (按需开放，数据库端口谨慎开放外网)
 sudo ufw allow 22/tcp comment 'SSH 端口'
@@ -147,11 +148,27 @@ sudo apt install -y build-essential libssl-dev libwebkit2gtk-4.1-dev libxdo-dev 
 # ------------------------------------------------------------------------------
 # 6. 开发环境：Java & Maven
 # ------------------------------------------------------------------------------
-info "安装 OpenJDK 21 与 Maven..."
+info "安装 OpenJDK 与 Maven..."
 sudo apt install -y default-jdk maven gradle
 java -version
 mvn -v
 gradle -v
+# 配置 Maven 阿里云镜像 (Java 后端必备)
+mkdir -p ~/.m2
+cat << 'EOF' > ~/.m2/settings.xml
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <mirrors>
+    <mirror>
+      <id>aliyunmaven</id>
+      <mirrorOf>*</mirrorOf>
+      <name>阿里云公共仓库</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+  </mirrors>
+</settings>
+EOF
+info "Java & Maven (已配置阿里云镜像) 安装完成"
 
 # ------------------------------------------------------------------------------
 # 7. 开发环境：Node.js & Bun
@@ -164,15 +181,8 @@ npm config set registry https://registry.npmmirror.com/
 if [ -d "/usr/local" ]; then
     sudo chown -R $(whoami):$(whoami) /usr/local
 fi
-# 安装 Bun (官方推荐方式，不通过 npm)
-if ! command -v bun &> /dev/null; then
-    curl -fsSL https://bun.sh/install | bash
-    # 加载 Bun 环境
-    export BUN_INSTALL="$HOME/.bun"
-    export PATH="$BUN_INSTALL/bin:$PATH"
-else
-    warn "Bun 已安装，跳过。"
-fi
+npm install -g bun
+info "Node.js & Bun 安装完成"
 # 配置 Bun 镜像 (防重复追加)
 BUNFIG="$HOME/.bunfig.toml"
 if [ ! -f "$BUNFIG" ] || ! grep -q 'registry.npmmirror.com' "$BUNFIG"; then
