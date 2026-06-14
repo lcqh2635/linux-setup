@@ -9,6 +9,14 @@
 # 按 Ctrl + O 保存，按 Enter 确认文件名，按 Ctrl + X 退出
 # chmod +x frpc_install.sh && sudo ./frpc_install.sh
 # echo "" > frpc_install.sh
+
+# 内网穿透
+# https://www.bilibili.com/video/BV1H4421X7Wg?spm_id_from=333.788.player.player_end_recommend_autoplay&vd_source=75333bb53891f589527eedfb7b2d5911&trackid=web_related_0.router-related-2589621-dpmnd.1780842559398.275
+
+# https://www.cloudflare-cn.com/personal/
+# https://zhuanlan.zhihu.com/p/638004070
+# https://test-ipv6.com/
+# https://ipv6.ddnspod.com/
 # ==============================================================================
 
 # 颜色定义
