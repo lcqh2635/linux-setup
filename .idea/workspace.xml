@@ -8,9 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45bff0d3-11c2-4e5e-9cc6-0ab6bd07ee41" name="更改" comment="安卓手机安装 Linux 系统">
-      <change afterPath="$PROJECT_DIR$/android/ubuntu/setup_ubuntu.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/ubuntu/demo.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/ubuntu/frpc_install.sh" beforeDir="false" afterPath="$PROJECT_DIR$/android/ubuntu/frpc_install.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,7 +106,7 @@
       <workItem from="1780843477000" duration="4071000" />
       <workItem from="1780921545069" duration="29704000" />
       <workItem from="1781098913798" duration="22646000" />
-      <workItem from="1781368380403" duration="9753000" />
+      <workItem from="1781368380403" duration="12096000" />
     </task>
     <task id="LOCAL-00001" summary="backup">
       <option name="closed" value="true" />
@@ -477,7 +476,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781281978235</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="安卓手机安装 Linux 系统">
+      <option name="closed" value="true" />
+      <created>1781409315132</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1781409315132</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
