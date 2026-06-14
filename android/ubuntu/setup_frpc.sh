@@ -373,6 +373,7 @@ sudo systemctl enable frpc
 # 6. 启动服务
 info "正在启动 frpc 服务..."
 sudo systemctl start frpc
+sudo systemctl status frpc --no-pager
 # 等待 2 秒让服务完成启动
 sleep 2
 
