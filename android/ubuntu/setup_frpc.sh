@@ -326,15 +326,6 @@ echo "----------------------------------------------------------------"
 
 # ======================== 第六步：配置 Systemd 服务并启动 ========================
 step "6/6 配置 Systemd 开机自启服务..."
-# 按照要求保留 chattr -i 操作，解锁 systemd 相关目录
-warn "正在尝试解除 systemd 目录的 immutable 锁 (如果目录没被锁，此处报错属正常现象，可忽略)..."
-# 1. 解锁 multi-user.target.wants 目录（这是 enable 写入链接的地方）
-sudo chattr -i /etc/systemd/system/multi-user.target.wants/
-# 2. 顺手解锁 frpc.service 文件本身（防止刚才写入时带了锁）
-sudo chattr -i /etc/systemd/system/frpc.service
-# 3. 确认一下解锁状态（应该看不到 i 了）
-sudo lsattr -d /etc/systemd/system/multi-user.target.wants/ || true
-sudo lsattr /etc/systemd/system/frpc.service || true
 # --- 写入 Service 文件 ---
 SERVICE_FILE="/etc/systemd/system/frpc.service"
 info "正在写入服务文件 ${SERVICE_FILE} ..."
@@ -366,6 +357,15 @@ TimeoutStopSec=10
 # 开机自启目标
 WantedBy=multi-user.target
 EOF
+# 按照要求保留 chattr -i 操作，解锁 systemd 相关目录
+warn "正在尝试解除 systemd 目录的 immutable 锁 (如果目录没被锁，此处报错属正常现象，可忽略)..."
+# 1. 解锁 multi-user.target.wants 目录（这是 enable 写入链接的地方）
+sudo chattr -i /etc/systemd/system/multi-user.target.wants/
+# 2. 顺手解锁 frpc.service 文件本身（防止刚才写入时带了锁）
+sudo chattr -i /etc/systemd/system/frpc.service
+# 3. 确认一下解锁状态（应该看不到 i 了）
+sudo lsattr -d /etc/systemd/system/multi-user.target.wants/ || true
+sudo lsattr /etc/systemd/system/frpc.service || true
 # 4. 重新加载 systemd 配置
 sudo systemctl daemon-reload
 # 5. 再次尝试启用开机自启
