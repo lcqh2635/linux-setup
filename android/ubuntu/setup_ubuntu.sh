@@ -369,11 +369,15 @@ podman-compose -v
 # 验证配置
 podman info --format json | jq '.registries'
 
-#podman pull postgres:18-alpine redis:8-alpine redis/redis-stack-server:latest
-#podman pull qingpan/rnacos:stable-alpine apache/seata-server:2.7.0.jdk25 apache/rocketmq:5.5.0
-#podman pull nginx:stable-alpine mysql:lts-oracle
-#podman pull t8y2/dbx:latest
-#podman pull bladex/sentinel-dashboard:latest
+
+podman pull t8y2/dbx:latest
+podman run -d --name dbx -p 4224:4224 -v dbx-data:/app/data t8y2/dbx:latest
+podman pull qingpan/rnacos:stable-alpine
+podman run -d --name mynacos -p 8848:8848 -p 9848:9848 -p 10848:10848 qingpan/rnacos:stable-alpine
+podman pull postgres:18-alpine redis:8-alpine redis/redis-stack-server:latest
+podman pull nginx:stable-alpine mysql:lts-oracle
+podman pull apache/seata-server:2.7.0.jdk25 apache/rocketmq:5.5.0
+podman pull bladex/sentinel-dashboard:latest
 
 
 # ------------------------------------------------------------------------------
