@@ -78,6 +78,12 @@ sudo nmcli -f connection.autoconnect connection show "A3-6-706"
 # 你应该能看到 wld0 连接到了某个 Wi-Fi
 sudo nmcli device status
 
+# 运行 sudo nmcli device wifi rescan 强制重新扫描网络。完成后，再运行 nmcli device wifi list 看看列表
+sudo nmcli device wifi rescan
+nmcli device wifi list
+sudo nmcli device wifi connect "Xiaomi 15 Pro" password "147258369"
+sudo nmcli connection modify "Xiaomi 15 Pro" connection.autoconnect yes
+
 # 测试 wifi 网络连接
 ping -c 5 baidu.com
 # 查看网络接口状态
