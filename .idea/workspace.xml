@@ -8,7 +8,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45bff0d3-11c2-4e5e-9cc6-0ab6bd07ee41" name="更改" comment="安卓手机安装 Linux 系统">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/ubuntu/setup_ubuntu.sh" beforeDir="false" afterPath="$PROJECT_DIR$/android/ubuntu/setup_ubuntu.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -111,15 +110,7 @@
       <workItem from="1781523329882" duration="8346000" />
       <workItem from="1781698810169" duration="9000" />
       <workItem from="1782230859090" duration="878000" />
-      <workItem from="1783352486406" duration="2373000" />
-    </task>
-    <task id="LOCAL-00014" summary="安卓手机安装 Linux 系统">
-      <option name="closed" value="true" />
-      <created>1780847859638</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1780847859638</updated>
+      <workItem from="1783352486406" duration="2495000" />
     </task>
     <task id="LOCAL-00015" summary="安卓手机安装 Linux 系统">
       <option name="closed" value="true" />
@@ -505,7 +496,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783355090161</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="安卓手机安装 Linux 系统">
+      <option name="closed" value="true" />
+      <created>1783355546268</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1783355546268</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
