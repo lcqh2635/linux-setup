@@ -62,10 +62,14 @@ if command -v nmcli &> /dev/null; then
         nmcli general status
         # 2. 扫描附近的 Wi-Fi 网络：
         # nmcli device wifi list
+        # nmcli device wifi rescan  # 强制重新扫描[reference:2][reference:3]
+        # nmcli device wifi list    # 列出所有可见网络[reference:4][reference:5]
         info "正在连接 Wi-Fi: $WIFI_SSID ..."
         # 3. 连接 Wi-Fi：
         # 将下面的 你的WiFi名称 和 你的WiFi密码 替换为实际内容（如果名称或密码包含空格或特殊字符，请保留双引号）：
         sudo nmcli device wifi connect "$WIFI_SSID" password "$WIFI_PASS" || error "Wi-Fi 连接失败"
+        # sudo nmcli device wifi connect "Xiaomi 15 Pro" password "147258369"
+        # sudo nmcli connection modify "Xiaomi 15 Pro" connection.autoconnect yes
         # 2. 假设你的 Wi-Fi 名字叫 "MyHomeWiFi"，将其设置为自动连接
         sudo nmcli connection modify "$WIFI_SSID" connection.autoconnect yes
         # 查看 NetworkManager 中特定 Wi-Fi 连接的自动连接设置是否成功，你可以使用以下命令来验证：

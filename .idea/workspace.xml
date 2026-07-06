@@ -9,7 +9,7 @@
   <component name="ChangeListManager">
     <list default="true" id="45bff0d3-11c2-4e5e-9cc6-0ab6bd07ee41" name="更改" comment="安卓手机安装 Linux 系统">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/ubuntu/Android 手机刷原生 Linux 系统操作记录.sh" beforeDir="false" afterPath="$PROJECT_DIR$/android/ubuntu/Android 手机刷原生 Linux 系统操作记录.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/ubuntu/setup_ubuntu.sh" beforeDir="false" afterPath="$PROJECT_DIR$/android/ubuntu/setup_ubuntu.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,15 +108,10 @@
       <workItem from="1780921545069" duration="29704000" />
       <workItem from="1781098913798" duration="22646000" />
       <workItem from="1781368380403" duration="34532000" />
-      <workItem from="1781523329882" duration="903000" />
-    </task>
-    <task id="LOCAL-00011" summary="安卓手机安装 Linux 系统">
-      <option name="closed" value="true" />
-      <created>1780108060269</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1780108060269</updated>
+      <workItem from="1781523329882" duration="8346000" />
+      <workItem from="1781698810169" duration="9000" />
+      <workItem from="1782230859090" duration="878000" />
+      <workItem from="1783352486406" duration="1091000" />
     </task>
     <task id="LOCAL-00012" summary="安卓手机安装 Linux 系统">
       <option name="closed" value="true" />
@@ -502,7 +497,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781453878814</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="安卓手机安装 Linux 系统">
+      <option name="closed" value="true" />
+      <created>1781524274289</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1781524274289</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
