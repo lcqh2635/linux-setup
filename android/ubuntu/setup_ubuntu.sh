@@ -70,6 +70,8 @@ if command -v nmcli &> /dev/null; then
         sudo nmcli device wifi connect "$WIFI_SSID" password "$WIFI_PASS" || error "Wi-Fi 连接失败"
         # sudo nmcli device wifi connect "Xiaomi 15 Pro" password "147258369"
         # sudo nmcli connection modify "Xiaomi 15 Pro" connection.autoconnect yes
+        # ip addr | grep inet6
+        # https://test-ipv6.com/
         # 2. 假设你的 Wi-Fi 名字叫 "MyHomeWiFi"，将其设置为自动连接
         sudo nmcli connection modify "$WIFI_SSID" connection.autoconnect yes
         # 查看 NetworkManager 中特定 Wi-Fi 连接的自动连接设置是否成功，你可以使用以下命令来验证：
