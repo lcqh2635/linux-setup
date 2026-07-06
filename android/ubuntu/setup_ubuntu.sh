@@ -68,6 +68,7 @@ if command -v nmcli &> /dev/null; then
         # 3. 连接 Wi-Fi：
         # 将下面的 你的WiFi名称 和 你的WiFi密码 替换为实际内容（如果名称或密码包含空格或特殊字符，请保留双引号）：
         sudo nmcli device wifi connect "$WIFI_SSID" password "$WIFI_PASS" || error "Wi-Fi 连接失败"
+        # sudo nmcli device wifi connect "A3-6-707" password "VT4009030242" || error "Wi-Fi 连接失败"
         # sudo nmcli device wifi connect "Xiaomi 15 Pro" password "147258369"
         # sudo nmcli connection modify "Xiaomi 15 Pro" connection.autoconnect yes
         # ip addr | grep inet6
