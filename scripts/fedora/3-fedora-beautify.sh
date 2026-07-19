@@ -111,10 +111,14 @@ uninstall_gtk_theme() {
 install_themes_and_icons() {
     print_info "正在安装并配置系统字体..."
     echo "正在安装WhiteSur主题..."
-    git clone https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-wallpapers.git --depth=1
-    git clone https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-cursors.git --depth=1
-    git clone https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-icon-theme.git --depth=1
-    git clone https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
+    git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-cursors.git
+
+    git clone --depth=1 https://gitcode.com/gh_mirrors/wh/WhiteSur-wallpapers.git
+    git clone --depth=1 https://gitcode.com/gh_mirrors/wh/WhiteSur-icon-theme.git
+    git clone --depth=1 https://gitcode.com/gh_mirrors/wh/WhiteSur-gtk-theme.git
+
+    git clone --depth=1 https://gitcode.com/gh_mirrors/ma/MacTahoe-icon-theme.git
+    git clone --depth=1 https://gitcode.com/gh_mirrors/ma/MacTahoe-gtk-theme.git
     # 修改 Nautilus 侧边栏不透明度，参考 https://github.com/vinceliuice/WhiteSur-gtk-theme/issues/1127
     # grep '$opacity: ' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
     # sed -i 's/\$opacity: 0\.96/\$opacity: 1/g' ~/下载/WhiteSur-gtk-theme/src/sass/_colors.scss
