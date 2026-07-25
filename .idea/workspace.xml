@@ -115,15 +115,8 @@
       <workItem from="1783425957992" duration="13486000" />
       <workItem from="1783738047028" duration="4000" />
       <workItem from="1784346616155" duration="813000" />
-      <workItem from="1784468929989" duration="711000" />
-    </task>
-    <task id="LOCAL-00016" summary="安卓手机安装 Linux 系统">
-      <option name="closed" value="true" />
-      <created>1780849113757</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1780849113757</updated>
+      <workItem from="1784468929989" duration="1461000" />
+      <workItem from="1784820643204" duration="737000" />
     </task>
     <task id="LOCAL-00017" summary="安卓手机安装 Linux 系统">
       <option name="closed" value="true" />
@@ -509,7 +502,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783355585105</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="安卓手机安装 Linux 系统">
+      <option name="closed" value="true" />
+      <created>1784469658612</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1784469658613</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

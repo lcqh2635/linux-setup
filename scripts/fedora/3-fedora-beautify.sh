@@ -113,7 +113,6 @@ install_themes_and_icons() {
     echo "正在安装WhiteSur主题..."
     git clone --depth=1 https://cdn.gh-proxy.org/https://github.com/vinceliuice/WhiteSur-cursors.git
 
-    git clone --depth=1 https://gitcode.com/gh_mirrors/wh/WhiteSur-wallpapers.git
     git clone --depth=1 https://gitcode.com/gh_mirrors/wh/WhiteSur-icon-theme.git
     git clone --depth=1 https://gitcode.com/gh_mirrors/wh/WhiteSur-gtk-theme.git
 
