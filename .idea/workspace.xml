@@ -9,7 +9,6 @@
   <component name="ChangeListManager">
     <list default="true" id="45bff0d3-11c2-4e5e-9cc6-0ab6bd07ee41" name="更改" comment="安卓手机安装 Linux 系统">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/fedora/3-fedora-beautify.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/fedora/3-fedora-beautify.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,14 +116,8 @@
       <workItem from="1784346616155" duration="813000" />
       <workItem from="1784468929989" duration="1461000" />
       <workItem from="1784820643204" duration="737000" />
-    </task>
-    <task id="LOCAL-00017" summary="安卓手机安装 Linux 系统">
-      <option name="closed" value="true" />
-      <created>1780850681619</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1780850681619</updated>
+      <workItem from="1784942948853" duration="66000" />
+      <workItem from="1784943081590" duration="9000" />
     </task>
     <task id="LOCAL-00018" summary="安卓手机安装 Linux 系统">
       <option name="closed" value="true" />
@@ -510,7 +503,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784469658613</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="安卓手机安装 Linux 系统">
+      <option name="closed" value="true" />
+      <created>1784942958516</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1784942958517</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
